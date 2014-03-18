@@ -1,3 +1,13 @@
+<?php  
+
+    $viewLanguage=array(
+        "es_es"=>array(
+            "quit"=>"Salir",
+        ),
+        
+    )
+
+?>
 <html lang="en">
 
     <head>
@@ -26,16 +36,14 @@
             var desktopsContents = new Object;
             var barContents = new Object;
 
-            $(document).ready(function() {
+            function loadIframeContent(url,container){
+                
+                $('#'+container).html("<iframe id='iframe_"+container+"' style='width:100%;height:100%' />");
+                document.getElementById('iframe_'+container).src = url
+            } 
 
-                $("#browser").treeview({
-                    persist: "location",
-                    collapsed: true,
-                    unique: true
-                });
 
-            });
-            
+
             function desktopChange(name){
                 
                 if ( actualDesktop != '' ) {
@@ -89,7 +97,7 @@
 
     </head>
 
-    <body>
+    <body style="background-image: url('assets/images/misc/wallpaper.jpg')">
 
         <div class="abs" id="wrapper">
             <div class="abs" id="bar_top">
@@ -105,6 +113,12 @@
                                 <a href="#" onclick="desktopChange('<?php echo $targetDesktop  ?>')"><?php echo $subMenu   ?></a>
                             </li>
                             <?php endforeach; ?>
+                            <li>
+                                <hr>
+                            </li>
+                            <li>
+                                <a href="#" onclick="window.open('index.php?app=jqDesktop&mod=home&act=logout', '_self');"  ><?php  echo $viewLanguage[$language]['quit'] ?></a>
+                            </li>
                         </ul>
                     </li>
                 

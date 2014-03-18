@@ -7,7 +7,7 @@ $config=array(
         "enjoyHelper"=>"jqueryui",
         "language"=>"es_es",
         "defaultModule"=>"home",
-        "defaultAction"=>"index",
+        "defaultAction"=>"login",
         
     ),
     "helpers"=>array(
@@ -20,13 +20,6 @@ $config=array(
             "enjoyAdminTools"=>array(
                 "apps"=>array(
                     "enjoyAdmin",
-                    
-                ),
-
-            ),
-            "salud"=>array(
-                "apps"=>array(
-                    "enjoyAdmin",
                 ),
 
             ),
@@ -35,10 +28,10 @@ $config=array(
         "topMenuConfig"=>array(
             "es_es"=> array(
                 //Initial Menus
-                "Enjoy"=>array(
+                "Men&uacute; Principal"=>array(
                     //submenu => desktop
                     "Herramientas Administrativas"=>"enjoyAdminTools",
-                    "Programas de Salud"=>"salud",
+
                 ),
             ),
             

@@ -1,33 +1,53 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
 
+//ini_set('display_errors', '1');error_reporting(E_ALL);
 
 /*
  * General Application Server Controller
  */
 
 
+//TODO: Document the use of php.ini directives variables_order and request_order ( hot to POST over GET )
+
+
 //Set initial defaults
 require_once "applications/appServerConfig.php"; //Expose variable $appServerConfig
 
 $app=$appServerConfig["base"]["defaultApp"];
-if (key_exists("app", $_GET)) {
-    $app=$_GET["app"];
+
+if (isset($INNER)) {
+    $app=$INNER["app"];
 }
+else{
+    
+    if (key_exists("app", $_REQUEST)) {
+        $app=$_REQUEST["app"];
+    }
+}
+
 
 require_once "applications/$app/config.php"; //Expose variable $config
 
 $mod=$config["base"]["defaultModule"];
 $act=$config["base"]["defaultAction"];
 
-if (key_exists("mod", $_GET)) {
-    $mod=$_GET["mod"];
+
+if (isset($INNER)) {
+    $mod=$INNER["mod"];
+    $act=$INNER["act"];
 }
-if (key_exists("act", $_GET)) {
-    $act=$_GET["act"];
+else{
+
+    if (key_exists("mod", $_REQUEST)) {
+    $mod=$_REQUEST["mod"];
+    }
+    if (key_exists("act", $_REQUEST)) {
+        $act=$_REQUEST["act"];
+    }
+
 }
+
 
 $config["flow"]["app"]=$app;
 $config["flow"]["mod"]=$mod;
@@ -60,24 +80,37 @@ $modController = new modController($config);
 $modController->run($act);
 
 //Data result handing
-$view=$modController->resultData["view"];
-$viewFile=$viewsDir."view_$view.php";
 
-if (file_exists($viewFile)) {
-    //Expose the data Output Array as variables for the view
-    if (key_exists("output", $modController->resultData)) {
+$layoutFile="applications/$app/layout.php";
 
+if (isset($modController->resultData["viewFile"])) {
+    $viewFile=$modController->resultData["viewFile"];
+}
+else{
+    $view=$modController->resultData["view"];
+    $viewFile=$viewsDir."view_$view.php";    
+}
+
+if (key_exists("output", $modController->resultData)) {
+    if (is_array($modController->resultData["output"])) {
+        //Expose variables for the view
         foreach ($modController->resultData["output"] as $outputVarName =>$outputVarValue) {
             //Although $outputVarValue is not used, it is necesary for the correct use of $outputVarName
             $$outputVarName = &$modController->resultData["output"][$outputVarName];
         }
-
     }
-    
-    require_once $viewFile;
+    else {
+        echo $modController->resultData["output"];
+        exit(); //May be It is a Web Service
+    }
+
 }
-else if(key_exists("output", $modController->resultData)){
-    echo $modController->resultData["output"];
+
+if (file_exists($layoutFile) and $modController->resultData["useLayout"] and file_exists($viewFile) ) {
+    require_once $layoutFile;
+}        
+elseif (file_exists($viewFile)) {
+    require_once $viewFile;
 }
 
 

@@ -7,15 +7,15 @@ interface navigator_Interface
 }
 interface table_Interface
 {
-    function __construct($config);
+    function __construct(&$model);
     public function get($results,$headers,$additionalFiledsConfig=null);
 }
 
 interface crud_Interface
 {
-    function __construct($config,$fieldsConfig);
-    public function getForm($primaryKey, $register = null);
-    public function listData($primaryKey,$results,$limit=0);
+    function __construct($model);
+    public function getForm($register = null);
+    public function listData($results,$limit=0);
 }
 
 ?>

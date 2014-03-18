@@ -47,13 +47,14 @@ class validatorBase {
                 //$divisor=substr($format,1,1);//d-m-y, divisor = "-"
                 $dateArray=explode("-", $value);
                 
-                $day=$dateArray[0];
+                $year=$dateArray[0];
                 $month=$dateArray[1];
-                $year=$dateArray[3];
+                $day=$dateArray[2];
                 
-                if (checkdate($month, $day, $year)) {
+                if (checkdate((int)$month,(int) $day,(int) $year)) {
                     return true;
                 } else {
+//                    return implode(',',$dateArray).$value;
                     return $validationMessage;
                 }
                 break;

@@ -8,6 +8,7 @@ class base_language {
         
         //Helpers Implementation
         
+        "of" => "de",
         "add" => "Nuevo",
         "edit" => "Editar",
         "delete" => "Borrar",       

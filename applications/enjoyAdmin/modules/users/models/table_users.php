@@ -1,6 +1,6 @@
 <?php
 
-class table_module {
+class table_users {
 
     var $primaryKey = "id";
     var $fieldsConfig;
@@ -13,6 +13,7 @@ class table_module {
                 "definition" => array(
                     "options"=>array(),
                     "type" => "number",
+                    "default" => "",
                     "label" => array(
                         "es_es" => "Serial",
                     ),                    
@@ -23,7 +24,8 @@ class table_module {
                 "definition" => array(
                     "options"=>array("required"),
                     "type" => "string",
-                    "default" => "usuario",
+//                    "widget" => "text",
+                    "default" => "",
                     "label" => array(
                         "es_es" => "Usuario",
                     ),
@@ -34,12 +36,26 @@ class table_module {
                 "definition" => array(
                     "options"=>array("password","required"),
                     "type" => "string",
-                    "default" => date("Y-m-d"),
+                    "default" => "",
                     "label" => array(
                         "es_es" => "Clave",
                     ),                    
                 ),
             ),
+            
+            "id_role" => array(
+                "definition" => array(
+//                    "dataSourceArray"=>"crudDataCall('enjoyAdmin','roles','name');",
+//                    "modelRelationConfig"=>"modelRelation('roles','roles','name');",
+                    "foreignKey"=>array(),
+                    "options"=>array(),
+                    "type" => "number",
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Rol",
+                    ),                    
+                ),
+            ),            
 
             "enjoy_registerConditions" => array(
                 0 => array (

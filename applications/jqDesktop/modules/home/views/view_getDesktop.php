@@ -1,3 +1,25 @@
+<?php
+
+function showTreeMenu($menuArray,$appName) {
+    
+    foreach ($menuArray as $menu =>$target) {
+        
+        if (is_array($target)) {
+            echo "<li><span class='folder'>$menu</span><ul>";
+            showTreeMenu($target,$appName);
+            echo "</ul></li>";
+        }
+        else{
+              echo "<li><a href='#!' onclick=\"loadIframeContent('$target','window_main_$appName')\"><span class='file'>$menu</span></a></li>";
+        }
+        
+    }
+    
+}
+
+
+?>
+
 <?php $iconX=20 ?>
 <?php $iconY=20 ?>
 
@@ -22,54 +44,31 @@
                 </span>
             </div>
             <div class="abs window_content">
-               <div class="window_aside">
-                    <ul id="browser" >
-                            <li><span class="folder">Folder 1</span>
-                                    <ul>
-                                            <li><span class="file">Item 1.1</span></li>
-                                    </ul>
-                            </li>
-                            <li><span class="folder">Folder 2</span>
-                                    <ul>
-                                            <li><span class="folder">Subfolder 2.1</span>
-                                                    <ul id="folder21">
-                                                            <li><span class="file">File 2.1.1</span></li>
-                                                            <li><span class="file">File 2.1.2</span></li>
-                                                    </ul>
-                                            </li>
-                                            <li><span class="file">File 2.2</span></li>
-                                    </ul>
-                            </li>
-                            <li class="closed"><span class="folder">Folder 3 (closed at start)</span>
-                                    <ul>
-                                            <li><span class="file">File 3.1</span></li>
-                                    </ul>
-                            </li>
-                            <li><span class="file">File 4</span></li>
-                    </ul>                     
+                <div class="window_aside" >
                     <script>
-                        $('#browser').removeClass('abs');
-                        $('#browser').addClass('filetree');
+                        $(document).ready(function() {
+
+                            $("#leftMenu_<?php echo $appName ?>").treeview({
+                                persist: "location",
+                                collapsed: true,
+                                unique: false
+                            });
+
+                        });
                     </script>
+                    <ul id="leftMenu_<?php echo $appName ?>" class="filetree" style="font-size: 14px">
                     <?php 
 
-//                    foreach ($appConfig['menu'][$appConfig['base']['language']] as $menu => $target){
-//                        $lastItem=$target;
-//                        while (is_array($lastItem)) {
-//    
-//                        }
-//                        
-//                    }
-
+                    showTreeMenu($appConfig['menu'][$appConfig['base']['language']],$appName);
+                    
                     ?>
-
+                    </ul>
                 </div>
-                <div class="window_main">
-                    MenuDisplayArea                 
+                <div class="window_main" id="window_main_<?php echo $appName ?>">
                 </div>
             </div>
             <div class="abs window_bottom">
-                Button Message
+                ***
             </div>
         </div>
         <span class="abs ui-resizable-handle ui-resizable-se"></span>

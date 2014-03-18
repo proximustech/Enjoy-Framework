@@ -1,6 +1,6 @@
 <?php
 
-class table_module {
+class table_roles {
 
     var $primaryKey = "id";
     var $fieldsConfig;
@@ -11,6 +11,7 @@ class table_module {
             "id" => array(
                 "definition" => array(
                     "type" => "number",
+                    "default" => "",
                     "label" => array(
                         "es_es" => "Serial",
                     ),                    
@@ -20,7 +21,7 @@ class table_module {
                 "definition" => array(
                     "options"=>array("required"),
                     "type" => "string",
-                    "default" => "rol",
+                    "default" => "",
                     "label" => array(
                         "es_es" => "Rol",
                     ),

@@ -18,13 +18,23 @@ $config=array(
         "crud_listMaxLines"=>"50",
         
     ),
+    "custom"=>array(
+        "controlPath"=>"control/",
+        
+    ),
     "menu"=>array(
         //language => menu// last item points to a url
         
         "es_es"=>array(
             "Registro" => array(
-                "Usuarios" => "",
-                "Perfiles" => "",
+                "Usuarios" => "index.php?app=enjoyAdmin&mod=users",
+                "Roles" => "index.php?app=enjoyAdmin&mod=roles",
+                "Aplicaciones" => "index.php?app=enjoyAdmin&mod=applications",
+            ),
+            "Sitios" => array(
+                "Asterisk" => array(
+                    "Digium" => "http://www.digium.com/",
+                ),
             ),
         ),
 

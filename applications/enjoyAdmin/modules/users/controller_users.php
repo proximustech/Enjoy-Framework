@@ -3,10 +3,15 @@
 //Module Controller Class
 require_once 'lib/enjoyClassBase/controllerBase.php';
 
-class modController extends controllerBase {
+class modController extends baseController {
 
-    function index() {
-        $this->crud();
+    function indexAction() {
+
+        $dataRepObject = new app_dataRep();
+        $dataRep = $dataRepObject->getInstance();
+        $model = new usersModel($dataRep, $this->config);       
+        $this->crudAction($model,$dataRep);
+        $dataRepObject->close();
     }
 
 }
