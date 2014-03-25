@@ -1,7 +1,7 @@
 <?php
 
 
-//ini_set('display_errors', '1');error_reporting(E_ALL);
+ini_set('display_errors', '1');error_reporting(E_ALL);
 
 /*
  * General Application Server Controller
@@ -28,6 +28,7 @@ else{
 
 
 require_once "applications/$app/config.php"; //Expose variable $config
+$config["appServerConfig"]=$appServerConfig;
 
 $mod=$config["base"]["defaultModule"];
 $act=$config["base"]["defaultAction"];

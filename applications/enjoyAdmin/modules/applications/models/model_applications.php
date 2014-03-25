@@ -6,7 +6,7 @@ require_once 'lib/enjoyClassBase/modelBase.php';
 require_once "applications/enjoyAdmin/modules/applications/models/table_applications.php";
 
 
-class applicationsModel extends baseModel {
+class applicationsModel extends modelBase {
 
     var $tables="applications";
     var $label=array();

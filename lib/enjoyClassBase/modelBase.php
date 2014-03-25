@@ -2,7 +2,7 @@
 
 require_once 'lib/enjoyClassBase/validatorBase.php';
 
-class baseModel {
+class modelBase {
 
     var $dataRep;
     var $tables;
@@ -85,7 +85,7 @@ class baseModel {
             }
             
         }
-    
+        
     }
     
     function getLastInsertId() {

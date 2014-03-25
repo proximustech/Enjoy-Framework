@@ -7,7 +7,7 @@ require_once "lib/enjoyHelpers/$enjoyHelper.php"; //Brings crud() among other he
 require_once 'lib/enjoyClassBase/controllerBase.php';
 require_once 'lib/enjoyClassBase/identification.php';
 
-class modController extends baseController {
+class modController extends controllerBase {
 
     var $resultData=array();
     var $config;
@@ -46,8 +46,9 @@ class modController extends baseController {
         $dataRep = $dataRepObject->getInstance();        
         
         $e_dbIdentifier=new e_dbIdentifier($dataRep);
-        $e_user= new e_user($e_dbIdentifier, $this->config['custom']['controlPath']);
-        $e_user->check($_POST);
+        $e_user= new e_user($e_dbIdentifier, $this->config["appServerConfig"]);
+        $e_user->profile($_POST);
+        $e_user->check();
         
         if ($e_user->valid) {
 

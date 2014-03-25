@@ -15,7 +15,7 @@ if (file_exists($appDataRepFile)) {
     require_once $appDataRepFile;
 }
  
-class baseController {
+class controllerBase {
 
     var $resultData=array();
     var $config;
@@ -88,6 +88,8 @@ class baseController {
             }
             $this->resultData["output"]["crud"] = $crud->listData($resultData, $resultData["totalRegisters"]);
         }
+        
+        return 'ok';
     }
     
     function dataCallAction() {

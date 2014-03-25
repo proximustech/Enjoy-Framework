@@ -8,7 +8,7 @@ require_once "applications/enjoyAdmin/modules/roles/models/table_roles.php";
 require_once "applications/enjoyAdmin/modules/roles_applications/models/model_roles_applications.php";
 
 
-class rolesModel extends baseModel {
+class rolesModel extends modelBase {
 
     var $tables="roles";
 

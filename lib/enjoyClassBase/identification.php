@@ -4,40 +4,53 @@ class e_user {
 
     var $valid=false;
     var $identified=false;
-    var $info=array();
     var $identifier;
-    var $controlPath;
+    var $appServerConfig;
+    var $data=null;
     var $user;
+    var $userFileName;
 
-    function __construct(&$identifier,$controlPath) {
+    function __construct($identifier,$appServerConfig) {
         $this->identifier=$identifier;
-        $this->controlPath=$controlPath;
+        $this->appServerConfig=$appServerConfig;
     }
     
-    function check($data) {
+    function profile($data) {
+        
+        if ($this->appServerConfig['base']['platform']=='windows')
+            $directorySeparator="\\";
+        else
+            $directorySeparator="/";
+        
+        $this->data=$data;
         $this->user=$data['user'];
-        $this->identified=$this->identifier->check($data);
+        $this->userFileName=$this->appServerConfig['base']['controlPath']."users".$directorySeparator.$this->user.'_info.php';        
+        
+    }
+    
+    function check() {
+        $this->identified=$this->identifier->check($this->data);
         
         //TODO : implement the getInfo method to validate
         if ($this->identified) {
-            $this->valid=true;
+            $info=$this->getInfo();
+            if (is_array($info)) {
+                $this->valid=true;
+            }
         }
         
     }
     
     function getInfo() {
-        $userFileName=$this->controlPath.'users/'.$this->user.'info.php';
-        if (file_exists($userFileName)) {
-            $info=unserialize(file_get_contents($userFileName));
-        }
-        else $info=array();
         
-        return $info;
+        if (file_exists($this->userFileName)) {
+            return unserialize(file_get_contents($this->userFileName));
+        }
+        else return false;
     }
     
-    function saveInfo() {
-        $userFileName=$this->controlPath.'users/'.$this->user.'info.php';
-        file_put_contents($userFileName,serialize($info));
+    function saveInfo($info) {
+        file_put_contents($this->userFileName,serialize($info));
     }
     
     
