@@ -1,18 +1,26 @@
 <?php
 
 
-ini_set('display_errors', '1');error_reporting(E_ALL);
+//ini_set('display_errors', '1');error_reporting(E_ALL);
 
 /*
  * General Application Server Controller
  */
 
+require_once 'lib/misc/security.php';
+$secFilter= new security();
 
+$_GET=$secFilter->filter($_GET,true);
+$_POST=$secFilter->filter($_POST,true);
+$_REQUEST=$secFilter->filter($_REQUEST,true);
+   
 //TODO: Document the use of php.ini directives variables_order and request_order ( hot to POST over GET )
-
 
 //Set initial defaults
 require_once "applications/appServerConfig.php"; //Expose variable $appServerConfig
+
+        
+//filter($modController->resultData["output"]);
 
 $app=$appServerConfig["base"]["defaultApp"];
 
@@ -94,9 +102,15 @@ else{
 
 if (key_exists("output", $modController->resultData)) {
     if (is_array($modController->resultData["output"])) {
+
         //Expose variables for the view
         foreach ($modController->resultData["output"] as $outputVarName =>$outputVarValue) {
             //Although $outputVarValue is not used, it is necesary for the correct use of $outputVarName
+            
+            if ($outputVarName != 'crud') {
+                $modController->resultData["output"][$outputVarName]=$secFilter->filter($modController->resultData["output"][$outputVarName]);
+            }
+            
             $$outputVarName = &$modController->resultData["output"][$outputVarName];
         }
     }

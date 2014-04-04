@@ -64,14 +64,14 @@ class controllerBase {
                 $this->resultData["output"]["label"] = $fkModel->label[$lang]." - ".$this->baseAppTranslation['edit'];
                 $this->resultData["output"]["crud"] = $fkCrud->getForm($fkRegister);
                 $showCrudList = false;
-            } elseif ($_REQUEST["crud"] == "update") {
+            } elseif ($_REQUEST["crud"] == "change") {
                 $model->updateRecord();
-            } elseif ($_REQUEST["crud"] == "fkUpdate") {
+            } elseif ($_REQUEST["crud"] == "fkChange") {
                 $fkModel=$model->foreignKeys[$_REQUEST['fkField']]['model'];
                 $fkModel->updateRecord();
-            } elseif ($_REQUEST["crud"] == "insert") {
+            } elseif ($_REQUEST["crud"] == "add") {
                 $model->insertRecord();
-            } elseif ($_REQUEST["crud"] == "delete") {
+            } elseif ($_REQUEST["crud"] == "remove") {
                 $model->deleteRecord();
             }
         }

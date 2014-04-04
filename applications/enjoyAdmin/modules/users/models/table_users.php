@@ -56,6 +56,16 @@ class table_users {
                     ),                    
                 ),
             ),            
+            "active" => array(
+                "definition" => array(
+                    "options"=>array("required"),
+                    "type" => "bool",
+//                    "widget" => "text",
+                    "label" => array(
+                        "es_es" => "Activo",
+                    ),
+                ),
+            ),          
 
             "enjoy_registerConditions" => array(
                 0 => array (

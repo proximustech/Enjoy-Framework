@@ -1,6 +1,7 @@
 <?php
 
 require_once 'lib/enjoyHelpers/interfaces.php';
+require_once 'lib/misc/security.php';
 
 class navigator implements navigator_Interface {
 
@@ -16,6 +17,12 @@ class navigator implements navigator_Interface {
     }
 
     public function action($act, $label, &$parametersArray = array(), $mod = null) {
+        
+        $secFilter= new security();
+        
+        $parametersArray=$secFilter->filter($parametersArray);        
+        $label=$secFilter->filter($label);        
+        
         $parameters = implode("&", $parametersArray);
         $parametersArray = array();
 
@@ -49,9 +56,12 @@ class table implements table_Interface {
 
     function get($results, $headers, $additionalFiledsConfig = null) {
 
+        $secFilter= new security();
+        $results=$secFilter->filter($results);        
+        
         $navigator = new navigator($this->config);
 
-        $html = "<table class='table'>";
+        $html = "<table class='crudTable'>";
         $html.="<thead><tr>";
         foreach ($headers as $header) {
             $html.="<th>" . $header . "</th>";
@@ -216,6 +226,9 @@ class crud implements crud_Interface {
     }
 
     public function getForm($register = null) {
+        
+        $secFilter= new security();
+        $register=$secFilter->filter($register);
 
         $html = "<br/><form action='index.php' method='GET'><table>";
 
@@ -224,18 +237,18 @@ class crud implements crud_Interface {
             
             if (key_exists('fkField', $_REQUEST)) {
     
-                $crudOperation = 'fkUpdate';
+                $crudOperation = 'fkChange';
                 $html.="<input type='hidden' id='fkField' name='fkField' value='{$_REQUEST['fkField']}'>";
             }
             else{
-                $crudOperation = 'update';
+                $crudOperation = 'change';
                 
             }
             
             $html.="<input type='hidden' id='{$this->model->tables}_{$this->model->primaryKey}' name='{$this->model->tables}_{$this->model->primaryKey}' value='" . $register[$this->model->primaryKey] . "'>";
         } else {
             $editing = false;
-            $crudOperation = 'insert';
+            $crudOperation = 'add';
         }
 
         $app = $this->config["flow"]["app"];
@@ -369,6 +382,7 @@ class crud implements crud_Interface {
                 $options['fields'][]=$linkedDataField;
                 $options['where'][]="$linkedField='{$register[$linkerField]}'";
                 $linkedDataFieldFetch=$subModel->fetch($options);
+                $linkedDataFieldFetch=$secFilter->filter($linkedDataFieldFetch);
                 $linkedDataFieldResultsArray=$linkedDataFieldFetch['results'];
                 foreach ($linkedDataFieldResultsArray as $linkedDataFieldRegister) {
                     $linkedDataFieldRegisters[]=$linkedDataFieldRegister[$linkedDataField];
@@ -385,6 +399,7 @@ class crud implements crud_Interface {
             }
 
             $dataSource=$subModel->getFieldData(null,$linkedDataField);
+            $dataSource=$secFilter->filter($dataSource);
             $dataSourceArray=$dataSource['results'];
             $label=$dataSource['label'];
             
@@ -399,8 +414,6 @@ class crud implements crud_Interface {
             }               
             $html.="</select></td></tr>";
         }
-        
-        
         
         //$html.="<tr><td colspan='2'>$saveButton</td></tr>";
         $html.="<tr><td colspan='2'><br/><input class='btn btn-info' type='submit' value='" . $this->baseAppTranslation["save"] . "'></td></tr>";
@@ -440,7 +453,7 @@ class crud implements crud_Interface {
         $additionalFiledsConfig["actions"][1]["mod"] = $this->config["flow"]["mod"];
         $additionalFiledsConfig["actions"][1]["act"] = $this->config["flow"]["act"];
         $additionalFiledsConfig["actions"][1]["fieldParameters"][] = $this->model->primaryKey;
-        $additionalFiledsConfig["actions"][1]["parameters"][] = "crud=delete";
+        $additionalFiledsConfig["actions"][1]["parameters"][] = "crud=remove";
 
         $table = new Table($this->model);
         $html.=$table->get($results, $headersLabes, $additionalFiledsConfig);
