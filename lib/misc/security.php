@@ -1,7 +1,12 @@
 <?php
 
 class security {
-
+    /**
+     * Recursive method to fiter an array against cross side scripting and sql injection
+     * @param mixed $valueToFilter
+     * @param bool $sqlI
+     * @return string filtered data
+     */
     function filter($valueToFilter, $sqlI = false) {
         
         if (is_array($valueToFilter)) {
@@ -19,7 +24,12 @@ class security {
         
         return $valueToFilter;
     }
-    
+    /**
+     * Fiters a value against cross side scripting and sql injection
+     * @param value $value
+     * @param bool $sqlI
+     * @return string filtered value
+     */    
     function filterValue($value, $sqlI = false) {
 
         $value = strip_tags($value); //filtering XSS

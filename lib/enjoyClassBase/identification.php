@@ -10,11 +10,21 @@ class e_user {
     var $user;
     var $userFileName;
 
+    /**
+     * Creates a user operations handler
+     * @param userIdentificator $identifier To Identificate a user
+     * @param array $appServerConfig
+     */
+    
     function __construct($identifier,$appServerConfig) {
         $this->identifier=$identifier;
         $this->appServerConfig=$appServerConfig;
     }
     
+    /**
+     * Profiles a user inside the Enjoy user control
+     * @param array $data Array with the user key
+     */
     function profile($data) {
         
         if ($this->appServerConfig['base']['platform']=='windows')
@@ -27,6 +37,12 @@ class e_user {
         $this->userFileName=$this->appServerConfig['base']['controlPath']."users".$directorySeparator.$this->user.'_info.php';        
         
     }
+    
+    
+    /**
+     * Checks the validity of a user is identified correctly
+     * and has an information File 
+     */
     
     function check() {
         $this->identified=$this->identifier->check($this->data);
@@ -41,6 +57,11 @@ class e_user {
         
     }
     
+    /**
+     * Returns the info in the user file if exists
+     * @return mixed
+     */
+    
     function getInfo() {
         
         if (file_exists($this->userFileName)) {
@@ -49,10 +70,21 @@ class e_user {
         else return false;
     }
     
+    /**
+     * Saves the user information in to a control file 
+     * @param array $info
+     */
     function saveInfo($info) {
         file_put_contents($this->userFileName,serialize($info));
     }
     
+    /**
+     * Removes the user control file
+     */
+    
+    function removeControlFile() {
+        unlink($this->userFileName);
+    }
     
     
 }
@@ -60,11 +92,32 @@ class e_user {
 class e_dbIdentifier {
     
     var $dataRep;
+    var $appServerConfig;
 
+    /**
+     * Identificates a user through the enjoy_admin user structure
+     * @param PDO $dataRep
+     * @param array $appServerConfig
+     */
     
-    function __construct($dataRep) {
+    function __construct($dataRep,$appServerConfig) {
         $this->dataRep=$dataRep;
+        $this->appServerConfig=$appServerConfig;
     }
+    
+    function encodePassword($password) {
+        
+        $password=md5($this->appServerConfig['encryption']['hashText'].$password);
+        return $password;
+        
+    }
+    
+    /**
+     * Checks if the credentials correspond with the info in the dataBase
+     * @param array $data with user and password keys
+     * @return boolean
+     */
+    
     function check($data) {
 
         /*
@@ -73,11 +126,13 @@ class e_dbIdentifier {
             JOIN applications apps ON ra.id_app=apps.id
          */
         
+        $encodedPassword=$this->encodePassword($data['password']);
+        
         $sql = "SELECT * FROM 
                     users u
                 WHERE 
                     u.user_name='{$data['user']}'
-                    AND u.password='{$data['password']}'
+                    AND u.password='$encodedPassword'
                     AND u.active=1
         ";
 

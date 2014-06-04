@@ -9,6 +9,14 @@ class validatorBase {
     var $primaryKey;
     var $appLang;
 
+    
+    /**
+     * Validates forms acording to a table definition
+     * @param array $config general configuration
+     * @param array $fieldsConfig table definition
+     * @param string $primaryKey
+     */
+    
     function __construct($config, $fieldsConfig,$primaryKey) {
         $this->config = &$config;
         $this->fieldsConfig = &$fieldsConfig;
@@ -64,6 +72,12 @@ class validatorBase {
         }
     }
 
+    
+    /**
+     * Validates each field of a register
+     * @param array $register
+     * @return boolean
+     */
     function validateFields($register) {
 
         foreach ($this->fieldsConfig as $field => $config) {
@@ -82,6 +96,12 @@ class validatorBase {
         return true;
     }
 
+    
+    /**
+     * Validates a register relating the fields each other on the enjoy_registerConditions (table definition)
+     * @param array $register
+     * @return boolean
+     */    
     function validateRegister($register) {
 
         if (key_exists("enjoy_registerConditions", $this->fieldsConfig)) {

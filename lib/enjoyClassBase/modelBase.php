@@ -15,11 +15,22 @@ class modelBase {
     var $result = array();
     var $label=array();
 
+    /**
+     * Base class for the Models
+     * @param PDO $dataRep
+     * @param array $config with the General Config
+     */
+    
     function __construct($dataRep, $config) {
         $this->dataRep = $dataRep;
         $this->config = &$config;
     }
 
+    /**
+     * Fetchs registers limiting the results for pagination purpouses
+     * @param array $options for the fetch method
+     * @return array with the results
+     */
     function fethLimited($options=array()) {
         
         $options["additional"][]="LIMIT 0,".$this->config["helpers"]["crud_listMaxLines"];
@@ -98,6 +109,10 @@ class modelBase {
         return $results[0]["lastId"];    
     }
     
+    /**
+     * Generic insert tool
+     * @param array $options with the fields and values
+     */
     function insert($options) {
 
         list($fieldsSql, $valuesSql) = $this->getInsertConf($options);
@@ -108,6 +123,11 @@ class modelBase {
         $query->execute();
     }
 
+    /**
+     * Fetchs a record according to the model
+     * @return array with the results
+     */
+    
     function fetchRecord() {
 
         $primaryKeyValue = $_REQUEST[$this->tables.'_'.$this->primaryKey];
@@ -117,6 +137,11 @@ class modelBase {
         $register = $resultArray["results"][0];
         return $register;
     }
+    
+     /**
+     * Fetchs a record according to one of the foreign keys of the model
+     * @return array with the results
+     */
     
     function fetchFkRecord() {
 
@@ -167,8 +192,13 @@ class modelBase {
         foreach ($this->fieldsConfig as $field => $configSection) {
             if ($field != $this->primaryKey and substr($field, 0,5)!="enjoy") {
                 $value = $_REQUEST[$this->tables.'_'.$field];
-                $register[$field]=$value;
-                $options["set"][] = "$field='$value'";
+                
+                if (key_exists($this->tables.'_'.$field, $_REQUEST)) {
+                    $register[$field] = $value;
+                    $options["set"][] = "$field='$value'";
+                }
+                
+                
             }
         }
         
@@ -225,6 +255,12 @@ class modelBase {
             $query->execute();
         }
     }
+    
+    /**
+     * Generic update tool
+     * @param array $options to construct the sentence
+     */
+    
     function update($options) {
 
         $whereSql = "";
@@ -240,6 +276,12 @@ class modelBase {
         }
     }
 
+    /**
+     * Fetchs info according with the model
+     * @param array $options to build the sentence
+     * @return array with the result
+     */
+    
     function fetch($options = array()) {
         
         $whereSql = "";
@@ -352,10 +394,15 @@ class modelBase {
             if ($getTotal) {
                 $sql = "SELECT count(*) AS total FROM $this->tables $whereSql $additionalSql";
 
-                $query = $this->dataRep->prepare($sql);
-                $query->execute();
-                $results = $query->fetchAll(PDO::FETCH_ASSOC);
-                $resultArray["totalRegisters"] = $results[0]["total"];
+                try {
+                    $query = $this->dataRep->prepare($sql);
+                    $query->execute();
+                    $results = $query->fetchAll(PDO::FETCH_ASSOC);
+                    $resultArray["totalRegisters"] = $results[0]["total"];
+                } catch (Exception $exc) {
+                    $error = new error($this->config);
+                    $error->show("SQL Error : " . $sql, $exc);
+                }
             }
         }
 
@@ -374,16 +421,17 @@ class modelBase {
         
         $sql = "SELECT $fields FROM $tables $whereSql $additionalSql";
 
-//        echo $sql;
-        
         try {
-                $query = $this->dataRep->prepare($sql);
-                $query->execute();
-                $results = $query->fetchAll(PDO::FETCH_ASSOC);
+            $query = $this->dataRep->prepare($sql);
+            $query->execute();
+            $results = $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $exc) {
-//            echo $sql;
-            echo $exc->getTraceAsString();
+            $error= new error($this->config);
+            $error->show("SQL Error : " . $sql, $exc);
         }
+
+
+
 
 
         $resultArray["results"] = $results;
@@ -391,6 +439,12 @@ class modelBase {
         return $resultArray;
     }
 
+    /**
+     * Parses the $options array to build the WHERE
+     * @param type $options
+     * @return string
+     */
+    
     protected function getWhereConf($options) {
 
         if (key_exists("where", $options)) {
@@ -403,6 +457,11 @@ class modelBase {
         return $whereSql;
     }
 
+     /**
+     * Parses the $options array to build the SQL sentence
+     * @param type $options
+     * @return array with $whereSql, $additionalSql, $fields
+     */
     protected function getSqlConf($options) {
 
         if (key_exists("where", $options)) {
@@ -424,6 +483,13 @@ class modelBase {
 
         return array($whereSql, $additionalSql, $fields);
     }
+    
+    /**
+     * Parses the $options to build an update SQL
+     * @param type $options
+     * @return array with $whereSql, $setSql
+     */
+    
     protected function getSqlUpdateConf($options) {
 
         if (key_exists("where", $options)) {
@@ -441,6 +507,12 @@ class modelBase {
         return array($whereSql, $setSql);
     }
 
+    /**
+     * Parses the $options to build an insert SQL
+     * @param type $options
+     * @return array with $fieldsSql, $valuesSql
+     */    
+    
     protected function getInsertConf($options) {
 
         if (key_exists("fields", $options)) {
@@ -463,17 +535,12 @@ class modelBase {
         return array($fieldsSql, $valuesSql);
     }
     
-//    protected function modelRelation($module,$model,$field,$id='') {
-//        
-//        return array(
-//            'module'=>"$module",
-//            'model'=>"$model",
-//            'field'=>"$field",
-//            'id'=>"$id",
-//        );
-//    
-//    }
-    
+    /**
+     * Recursive Method to get all the tables asociated with a model throug the foreign keys
+     * @param type $fkModel
+     * @return array with the tables
+     */
+
     function getRelatedTables(&$fkModel) {
         $relatedTables=array();
         $relatedTables[]=$fkModel->tables;
@@ -489,6 +556,14 @@ class modelBase {
         return $relatedTables;
     }
     
+    /**
+     * Recursive Method to get all the conditions asociated with a model throug the foreign keys
+     * @param type $field foreign key Field
+     * @param type $fkModel
+     * @param type $fkKeyField field referenced by the foreign key Field
+     * @return array with the conditions
+     */
+    
     function getRelatedConditions($field,&$fkModel,$fkKeyField) {
         $relatedConditions=array();
         $relatedConditions[]="$field=$fkKeyField";
@@ -500,12 +575,17 @@ class modelBase {
             }
             
         }         
-     
-        
+
         return $relatedConditions;
         
     }
     
+    /**
+     * Recursive Method to get caption data field asociated with a model throug the foreign keys
+     * @param type $keyField for example the id of the register
+     * @param type $dataField for example other field of the register
+     * @return array with the label or caption data field
+     */
     
     function getFieldData($keyField,$dataField) {
 

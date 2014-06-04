@@ -7,7 +7,14 @@
             "password"=>"Clave",
         ),
         
-    )
+    );
+            
+            
+    if ($act=='logout') {
+        $beginWidthTransition=true;
+        $backGround='whiteWallpaper.jpg';
+    }
+    else {$beginWidthTransition=false;$backGround='wallpaper.jpg';}
 
 ?>
 <!DOCTYPE html>
@@ -33,8 +40,23 @@
         </style>
 
         <script>
+            
+            <?php if($beginWidthTransition): ?>
+                
+            $(document).ready(function(){
+                $('body').css('background-image', 'url(assets/images/misc/wallpaper.jpg)');
+            });
+                
+            <?php endif; ?>
+            
 
-            function submitLogin() {
+            function submitLogin(){
+                   $('body').css('background-image', 'url(assets/images/misc/whiteWallpaper.jpg)');
+                     window.setTimeout( submitLogin1, 1000 );
+            };
+
+            function submitLogin1() {
+                
                 $.ajax({
                     url: "index.php?app=jqDesktop&mod=home&act=checkLogin",
                     type: "POST",
@@ -49,10 +71,14 @@
                         window.open('index.php?app=jqDesktop&mod=home&act=index', '_self');
                     }
                     else {
+                        
                         $('#message').html(result);
                         $('#user').val('');
                         $('#password').val('');
                         $('#message').addClass('alert');
+                        
+                        $('body').css('background-image', 'url(assets/images/misc/wallpaper.jpg)');                        
+                        
                     }
 
                 }).fail(function(result){
@@ -65,7 +91,7 @@
 
     </head>
 
-    <body valign="middle" style="background-image: url('assets/images/misc/wallpaper.jpg') ">
+    <body valign="middle" style="transition: background 1s linear;background-image: url('assets/images/misc/<?php echo $backGround ?>') ">
 
         <div id="wrapper">
 

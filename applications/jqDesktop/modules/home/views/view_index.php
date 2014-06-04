@@ -36,6 +36,21 @@
             var desktopsContents = new Object;
             var barContents = new Object;
 
+            $(document).ready(function(){
+                $('body').css('background-image', 'url(assets/images/misc/wallpaper.jpg)');
+            });
+
+
+            function logout(){
+                
+                $('body').css('background-image', 'url(assets/images/misc/whiteWallpaper.jpg)');
+                window.setTimeout( logout1, 1000 );
+            }
+            
+            function logout1(){
+                window.open('index.php?app=jqDesktop&mod=home&act=logout', '_self');
+            } 
+            
             function loadIframeContent(url,container){
                 
                 $('#'+container).html("<iframe id='iframe_"+container+"' style='width:100%;height:100%' />");
@@ -97,7 +112,7 @@
 
     </head>
 
-    <body style="background-image: url('assets/images/misc/wallpaper.jpg')">
+    <body style="transition: background 1s linear;background-image: url('assets/images/misc/whiteWallpaper.jpg')">
 
         <div class="abs" id="wrapper">
             <div class="abs" id="bar_top">
@@ -117,7 +132,7 @@
                                 <hr>
                             </li>
                             <li>
-                                <a href="#" onclick="window.open('index.php?app=jqDesktop&mod=home&act=logout', '_self');"  ><?php  echo $viewLanguage[$language]['quit'] ?></a>
+                                <a href="#" onclick="logout()"  ><?php  echo $viewLanguage[$language]['quit'] ?></a>
                             </li>
                         </ul>
                     </li>

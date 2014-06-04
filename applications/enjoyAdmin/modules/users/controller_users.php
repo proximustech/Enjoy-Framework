@@ -8,24 +8,60 @@ class modController extends controllerBase {
 
     function indexAction() {
 
-        $dataRepObject = new app_dataRep();
-        $dataRep = $dataRepObject->getInstance();
-        $model = new usersModel($dataRep, $this->config);       
-        $crudResult=$this->crudAction($model,$dataRep);
+        $e_dbIdentifier=new e_dbIdentifier($this->dataRep,$this->config["appServerConfig"]);
+        $e_user = new e_user($e_dbIdentifier, $this->config["appServerConfig"]);
         
-        if ($_REQUEST["crud"] == "insert" or $_REQUEST["crud"] == "update" and $crudResult=='ok') {
+        
+        if ($_REQUEST["crud"] == "remove") {
+            $options['fields'][]='user_name';
             
-            $e_user = new e_user(null, $this->config["appServerConfig"]); //If not authenticating, does not require identifier
-            $_REQUEST['user']=$_REQUEST['users_user_name'];
-            $e_user->profile($_REQUEST);            
+            if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                session_start();
+                $encryption = new encryption();
+                $userId=$encryption->decode($_REQUEST['users_id'], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+            } else $userId=$_REQUEST['users_id'];
             
-            $info=array();
-            $info['valid']=true;
-            $e_user->saveInfo($info);
-    
+            $options['where'][]='users.id='.$userId;
+            $userInfo=$this->baseModel->fetch($options);    
         }
         
-        $dataRepObject->close();
+        if ($_REQUEST['users_password']=='') {
+            unset($_REQUEST['users_password']); //Avoid saving password if empty
+        }
+        
+        $crudResult=$this->crudAction($this->baseModel,$this->dataRep);
+        
+        if ($crudResult=='ok') {
+            if ($_REQUEST["crud"] == "add" or $_REQUEST["crud"] == "change" ) {
+
+                if ($_REQUEST["crud"] == "add") {
+                    $userId=$this->baseModel->getLastInsertId();
+                }
+                else{
+                    $userId=$_REQUEST['users_id'];
+                }
+                
+                if ( key_exists('users_password', $_REQUEST)) {
+                    $encodedPassword = $e_dbIdentifier->encodePassword($_REQUEST['users_password']);
+                    $this->baseModel->savePassword($userId, $encodedPassword);
+                }                
+                
+                $_REQUEST['user']=$_REQUEST['users_user_name'];
+                $e_user->profile($_REQUEST);            
+
+                $info=array();
+                $info['modifiedStamp']=time();
+                $e_user->saveInfo($info);
+
+            }
+            elseif($_REQUEST["crud"] == "remove") {
+                
+                $_REQUEST['user']=$userInfo['results'][0]['user_name'];
+                $e_user->profile($_REQUEST);            
+                $e_user->removeControlFile();
+            }
+        }
+        
     }
 
 }

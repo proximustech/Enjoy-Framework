@@ -12,10 +12,13 @@ $config=array(
         "language"=>"es_es",
         "defaultModule"=>"users",
         "defaultAction"=>"index",
+        "errorLog"=>true,
+        "debug"=>true,
         
     ),
     "helpers"=>array(
         "crud_listMaxLines"=>"50",
+        "crud_encryptPrimaryKeys"=>true,
         
     ),
     "custom"=>array(

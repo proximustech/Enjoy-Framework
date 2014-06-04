@@ -1,21 +1,27 @@
 <?php
 
-class app_dataRep {
+require_once '/lib/dataRepositories/interfaces.php';
 
-    var $instance;
+class enjoyAdminDataRep implements dataRep_Interface {
+
+    var $instance=null;
+    var $host;
+    var $dbname;
+    var $username;
+    var $password;    
     
     function __construct() {
+        
+        $this->host	= 'localhost';
+        $this->dbname 	= 'enjoy_admin';
+        $this->username = 'root';
+        $this->password = 'samsung';        
         
     }
 
     function getInstance() {
 
-        $host		= 'localhost';
-        $dbname 	= 'enjoy';
-        $username 	= 'root';
-        $password 	= 'samsung';
-        
-        $this->instance = new PDO('mysql:host=' . $host . ';dbname=' . $dbname, $username, $password);
+        $this->instance = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname, $this->username, $this->password);
         $this->instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         return $this->instance;
@@ -23,6 +29,27 @@ class app_dataRep {
     }
     
     function close() {
+        $this->instance = null;
+    }
+
+    public function dbExists($dataBase=null) {
+        
+        if ($dataBase == null) $dataBase=$this->dbname;
+        
+        $sql="SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME='$dataBase'";
+        $query = $this->dataRep->prepare($sql);
+        $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        if (count($results)) {
+            return true;
+        }
+        else return false;
+        
+    }
+
+    public function __destruct() {
+        $this->close();
     }
 
 }

@@ -1,13 +1,57 @@
 <?php
 
+ini_set('display_errors', '0');error_reporting(~E_ALL);
 
-//ini_set('display_errors', '1');error_reporting(E_ALL);
 
 /*
  * General Application Server Controller
  */
 
 require_once 'lib/misc/security.php';
+require_once 'lib/misc/error.php';
+
+
+/*
+ * Error traping
+ */
+
+function exceptionHandler($exception) {
+    
+    global $config;
+    
+    $error=new error($config);
+    $error->show("Uncaught exception", $exception);
+}
+function errorHandler($err_severity,$errno, $errstr, $errfile, $errline) {
+    throw new Exception("$errno, $errstr, $errfile, $errline");
+}
+function shutdownHandler() {
+    
+    global $config;
+    
+    $error=error_get_last();
+    $avoidedErrors=array(E_DEPRECATED,E_NOTICE,E_WARNING);
+    
+    if ( in_array($error['type'], $avoidedErrors) or $error == NULL) {
+        return;
+    }
+    
+    class shutDownExcpetion extends Exception{}
+    $exception = new shutDownExcpetion(print_r($error,true));
+    
+    $error=new error($config);
+    $error->show("shutingDown", $exception);
+}
+
+set_exception_handler('exceptionHandler');
+set_error_handler('errorHandler',E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING );
+register_shutdown_function('shutdownHandler',E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
+
+
+/*
+ * Input Filtering
+ */
+
 $secFilter= new security();
 
 $_GET=$secFilter->filter($_GET,true);
@@ -16,13 +60,11 @@ $_REQUEST=$secFilter->filter($_REQUEST,true);
    
 //TODO: Document the use of php.ini directives variables_order and request_order ( hot to POST over GET )
 
-//Set initial defaults
+//Set initial flow defaults and config
 require_once "applications/appServerConfig.php"; //Expose variable $appServerConfig
 
-        
-//filter($modController->resultData["output"]);
-
 $app=$appServerConfig["base"]["defaultApp"];
+$config["appServerConfig"]=$appServerConfig; //Asigned if Unrecognized Application is thrown
 
 if (isset($INNER)) {
     $app=$INNER["app"];
@@ -35,8 +77,12 @@ else{
 }
 
 
+if (!in_array($app, $config["appServerConfig"]['apps'])) {
+    throw new Exception('Unrecognized Application.');
+}
+
 require_once "applications/$app/config.php"; //Expose variable $config
-$config["appServerConfig"]=$appServerConfig;
+$config["appServerConfig"]=$appServerConfig; //Asigned becouse a new $config exists.
 
 $mod=$config["base"]["defaultModule"];
 $act=$config["base"]["defaultAction"];
@@ -49,7 +95,7 @@ if (isset($INNER)) {
 else{
 
     if (key_exists("mod", $_REQUEST)) {
-    $mod=$_REQUEST["mod"];
+        $mod=$_REQUEST["mod"];
     }
     if (key_exists("act", $_REQUEST)) {
         $act=$_REQUEST["act"];
@@ -75,20 +121,20 @@ $moduleDataRepDir="applications/$app/modules/$mod/dataRep/";
 
 require_once 'dataRep/appServer_dataRep.php';
 
-//$directories["models"]=$modelsDir;
-//$directories["views"]=$viewsDir;
-//$directories["controllers"]=$controllersDir;
-//$directories["applicationDataRepDir"]=$applicationDataRepDir;
+/*
+ * Application Controller Execution
+ */
 
-
-//Application Controller Execution
 require_once $controllersDir."controller_$mod.php";
 
 $modController = new modController($config);
-//$modController->directories=$directories;
 $modController->run($act);
 
-//Data result handing
+
+/*
+ * Data result handing
+ */
+
 
 $layoutFile="applications/$app/layout.php";
 
@@ -122,10 +168,10 @@ if (key_exists("output", $modController->resultData)) {
 }
 
 if (file_exists($layoutFile) and $modController->resultData["useLayout"] and file_exists($viewFile) ) {
-    require_once $layoutFile;
+    require_once $layoutFile; #Show layout wich should require the view
 }        
 elseif (file_exists($viewFile)) {
-    require_once $viewFile;
+    require_once $viewFile; #just show the view
 }
 
 

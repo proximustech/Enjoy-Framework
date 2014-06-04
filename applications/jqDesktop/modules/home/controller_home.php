@@ -17,22 +17,16 @@ class modController extends controllerBase {
     function run($act) {
         
         session_start();
-
         if ($_SESSION["status"] != 'in' and $act!='checkLogin'){
             $act="login";
         }        
-        
         parent::run($act);
-        
-//        $this->resultData["view"] = $act; //Default View
-//        $action=$act."Action";
-//        $this->$action();            
-        
         $this->resultData["useLayout"] = false;
     }
     
     function loginAction() {
     }
+    
     function logOutAction() {
         session_destroy();
         $this->resultData["view"]='login';
@@ -42,10 +36,7 @@ class modController extends controllerBase {
         
         $result='Error.';
         
-        $dataRepObject = new app_dataRep();
-        $dataRep = $dataRepObject->getInstance();        
-        
-        $e_dbIdentifier=new e_dbIdentifier($dataRep);
+        $e_dbIdentifier=new e_dbIdentifier($this->dataRep,$this->config["appServerConfig"]);
         $e_user= new e_user($e_dbIdentifier, $this->config["appServerConfig"]);
         $e_user->profile($_POST);
         $e_user->check();
@@ -55,18 +46,27 @@ class modController extends controllerBase {
             session_start();
             $_SESSION["user"] = $_POST['user'] ;
             $_SESSION["status"] = 'in' ;
-
-            $result='OK';
             
+            $userInfo=$e_user->getInfo();
+            $userInfo['lastLoginStamp']=time();
+            
+            $privilegesResult=$this->baseModel->getPrivileges($_POST['user']);
+            $privileges=array();
+            foreach ($privilegesResult as $privilege) {
+                $privileges[$privilege['role']][$privilege['app']]=1;
+            }
+            $userInfo['privileges']=$privileges;
+            $e_user->saveInfo($userInfo);
+            $_SESSION["userInfo"]=$userInfo;
+            
+            $result='OK';
         }
         
         $this->resultData["output"]=$result;
     }    
     
     function indexAction() {
-        
         $this->resultData["output"]["topMenuConfig"] =$this->config['custom']['topMenuConfig'][$this->config['base']['language']];
-        
     }
 
     

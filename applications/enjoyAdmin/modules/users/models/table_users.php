@@ -34,7 +34,7 @@ class table_users {
             
             "password" => array(
                 "definition" => array(
-                    "options"=>array("password","required"),
+                    "options"=>array("password"),
                     "type" => "string",
                     "default" => "",
                     "label" => array(

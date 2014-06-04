@@ -1,3 +1,5 @@
+<html>
+
 <script src="assets/js/enjoy/e_common.js"></script>
 
 <script src="assets/js/jquery/jquery-1.7.1.min.js"></script>
@@ -16,10 +18,10 @@
 <link href="assets/js/jquery/plugins/bootstrap/bootstrap.theme.min.css" rel="stylesheet">
 <script src="assets/js/jquery/plugins/bootstrap/bootstrap.min.js"></script>
 
-<style>
-
-    
-</style>
-
+<body>
 
 <?php  require_once $viewFile;  ?>
+
+</body>
+
+</html>

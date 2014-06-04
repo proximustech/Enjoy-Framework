@@ -2,6 +2,9 @@
 
 require_once 'lib/enjoyHelpers/interfaces.php';
 require_once 'lib/misc/security.php';
+require_once 'lib/misc/encryption.php';
+
+
 
 class navigator implements navigator_Interface {
 
@@ -9,13 +12,23 @@ class navigator implements navigator_Interface {
     var $lang;
     var $baseAppTranslation;
 
+    /**
+     * Creates Application navigators
+     * @param type $config general Config
+     */    
+    
     function __construct($config) {
 
         $this->config = &$config;
         $baseAppTranslations = new base_language();
         $this->baseAppTranslation = $baseAppTranslations->lang;        
     }
-
+    /**
+     * Creates links
+     * @param string $act Action
+     * @param string $label
+     * @param array $parametersArray
+     */
     public function action($act, $label, &$parametersArray = array(), $mod = null) {
         
         $secFilter= new security();
@@ -32,11 +45,24 @@ class navigator implements navigator_Interface {
         }
         
         $class="btn btn-info";
+        $glyphicon="";
+        
         if ($label==$this->baseAppTranslation["delete"]) {
             $class="btn btn-danger";
+            $glyphicon="<span class='glyphicon glyphicon-remove'></span>";
         }
+        elseif ($label==$this->baseAppTranslation["add"]) {
+            $glyphicon="<span class='glyphicon glyphicon-plus-sign'></span>";
+        }
+        elseif ($label==$this->baseAppTranslation["edit"]) {
+            $glyphicon="<span class='glyphicon glyphicon-pencil'></span>";
+        }
+        else {
+            $glyphicon="<span class='glyphicon glyphicon-share-alt'></span>";
+        }
+        
 
-        return "<a class='$class' href='index.php?app=$app&mod=$mod&act=$act&$parameters'>$label</a>";
+        return "<a class='$class' href='index.php?app=$app&mod=$mod&act=$act&$parameters'>$glyphicon $label </a>";
     }
 
 }
@@ -46,16 +72,25 @@ class table implements table_Interface {
     var $config;
     var $fieldsConfig;
     var $model;
-
+    /**
+     * Creates Tables
+     * @param model $model
+     */
     function __construct(&$model) {
 
         $this->model=&$model;
         $this->config = &$model->config;
         $this->fieldsConfig = &$model->fieldsConfig;
     }
-
+    /**
+     * Generates the table
+     * @param array $results registers
+     * @param array $headers
+     * @param array $additionalFiledsConfig Edit, Delete, etc.
+     */
     function get($results, $headers, $additionalFiledsConfig = null) {
 
+        $encryption= new encryption();
         $secFilter= new security();
         $results=$secFilter->filter($results);        
         
@@ -114,8 +149,15 @@ class table implements table_Interface {
                 
                 if (key_exists($field, $this->model->foreignKeys)) {
     
+                    if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                        $primaryKeyValue = $encryption->encode($resultRow[$this->model->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+                    } else {
+                        $primaryKeyValue = $resultRow[$this->model->primaryKey];
+                    }
+
+
                     $parameters[]="crud=editFkForm";
-                    $parameters[]="{$this->model->tables}_{$this->model->primaryKey}={$resultRow[$this->model->primaryKey]}";
+                    $parameters[]="{$this->model->tables}_{$this->model->primaryKey}=$primaryKeyValue";
                     $parameters[]="fkField=$field";
                     $html.="<td>" . $navigator->action('index', $resultValue, $parameters) . "</td>";
                 }
@@ -141,8 +183,15 @@ class table implements table_Interface {
                     $dependentKeyField=$keyFieldConfig['keyField'];
                     $dependentLabel=$keyFieldConfig['label'][$this->config["base"]["language"]];
 
+                    if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                        $keyValue=$encryption->encode($resultRow[$parentField], $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
+                    }
+                    else{
+                        $keyValue=$resultRow[$parentField];
+                    }
+                    
                     $parameters[]="keyField=".$dependentKeyField;
-                    $parameters[]="keyValue=".$resultRow[$parentField];
+                    $parameters[]="keyValue=".$keyValue;
                     $parameters[]="keyLabel=".$resultValue;
                     $parameters[]="modelLabel=".$this->model->label[$this->config["base"]["language"]];
 
@@ -168,7 +217,15 @@ class table implements table_Interface {
 
                 if (key_exists("fieldParameters", $additionalFiled)) {
                     foreach ($additionalFiled["fieldParameters"] as $fieldParameter) {
-                        $parameters[] = "{$this->model->tables}.$fieldParameter=" . $resultRow[$fieldParameter];
+                        
+                        if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                            $fieldParameterValue=$encryption->encode($resultRow[$fieldParameter], $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
+                        }
+                        else{
+                            $fieldParameterValue=$resultRow[$fieldParameter];
+                        }                        
+                        
+                        $parameters[] = "{$this->model->tables}.$fieldParameter=" . $fieldParameterValue;
                     }
                 }
 
@@ -215,7 +272,10 @@ class crud implements crud_Interface {
     var $baseAppTranslation;
     var $appLang;
     var $fieldsConfig;
-
+    /**
+     * Generates crud views
+     * @param model $model
+     */
     function __construct($model) {
         $this->model=$model;
         $this->config = &$model->config;
@@ -224,13 +284,17 @@ class crud implements crud_Interface {
         $this->appLang = $this->config["base"]["language"];
         $this->fieldsConfig = $model->fieldsConfig;
     }
-
+    /**
+     * Displays a form
+     * @param array $register
+     */
     public function getForm($register = null) {
         
         $secFilter= new security();
+        $encryption= new encryption();
         $register=$secFilter->filter($register);
 
-        $html = "<br/><form action='index.php' method='GET'><table>";
+        $html = "<br/><form id='crudForm' action='index.php' method='GET'><table>";
 
         if ($register != null) {
             $editing = true;
@@ -245,7 +309,14 @@ class crud implements crud_Interface {
                 
             }
             
-            $html.="<input type='hidden' id='{$this->model->tables}_{$this->model->primaryKey}' name='{$this->model->tables}_{$this->model->primaryKey}' value='" . $register[$this->model->primaryKey] . "'>";
+            if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                $primaryKeyValue = $encryption->encode($register[$this->model->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+            } else {
+                $primaryKeyValue = $register[$this->model->primaryKey];
+            }
+
+
+            $html.="<input type='hidden' id='{$this->model->tables}_{$this->model->primaryKey}' name='{$this->model->tables}_{$this->model->primaryKey}' value='" . $primaryKeyValue . "'>";
         } else {
             $editing = false;
             $crudOperation = 'add';
@@ -360,6 +431,11 @@ class crud implements crud_Interface {
                             $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<textarea rows='4' rows='20' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</textarea></td></tr>";
                         }
                         else{
+                            
+                            if ($inputType=='password') {
+                                $value=''; # Avoid showing the password when editing
+                            }
+                            
                             $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value'></td></tr>";
                         }
                     }                    
@@ -416,7 +492,7 @@ class crud implements crud_Interface {
         }
         
         //$html.="<tr><td colspan='2'>$saveButton</td></tr>";
-        $html.="<tr><td colspan='2'><br/><input class='btn btn-info' type='submit' value='" . $this->baseAppTranslation["save"] . "'></td></tr>";
+        $html.="<tr><td colspan='2'><br/><button class='btn btn-info' onclick='document.getElementById('crudForm').submit();' ><span class='glyphicon glyphicon-floppy-disk'></span> " . $this->baseAppTranslation["save"] . "</button></td></tr>";
 
         $html.="<input type='hidden' id='app' name='app' value='$app'>";
         $html.="<input type='hidden' id='mod' name='mod' value='$mod'>";
@@ -425,7 +501,11 @@ class crud implements crud_Interface {
         $html.="<table></form>";
         return $html;
     }
-
+    /**
+     * Displays a list of registers
+     * @param array $results
+     * @param int $limit
+     */
     public function listData($resultData, $limit = 0) {
         
         $results=$resultData['results'];
@@ -460,7 +540,14 @@ class crud implements crud_Interface {
         
         return $html;
     }
-    
+    /**
+     * Used for internal controller calls. Not used for now
+     * @param type $app
+     * @param type $mod
+     * @param type $field
+     * @param type $id
+     * @return type
+     */
     function crudDataCall($app,$mod,$field,$id='') {
         
         $INNER['app']=$app;

@@ -4,7 +4,6 @@
         <script src="assets/js/enjoy/e_common.js"></script>
 
         <script src="assets/js/jquery/jquery-1.7.1.min.js"></script>
-
         <script src="assets/js/jquery/ui/jquery-ui.js"></script>
         <link rel="stylesheet" href="assets/js/jquery/themes/hot-sneaks/jquery-ui.css" />
 
