@@ -148,6 +148,7 @@ class modelBase {
         $primaryKeyValue = $_REQUEST[$this->tables.'_'.$this->primaryKey];
         $fkField = $_REQUEST['fkField'];
         
+        $options['config']['dataFieldConversion']=false;
         $options["fields"][] = $fkField;
         $options["where"][] = "$this->tables.$this->primaryKey='$primaryKeyValue'";
         
@@ -284,6 +285,13 @@ class modelBase {
     
     function fetch($options = array()) {
         
+        if (!key_exists('config', $options)) {
+            $options['config']=array();
+        }
+        if (!key_exists('dataFieldConversion', $options['config'])) {
+            $options['config']['dataFieldConversion']=true;
+        }
+        
         $whereSql = "";
         $additionalSql = "";
         
@@ -335,7 +343,11 @@ class modelBase {
                     $fkRelatedTables=$this->getRelatedTables($fkModel);
                     
                     foreach ($fkRelatedTables as $fkRelatedTable) {
-                        $relatedTables[]=$fkRelatedTable;
+                        
+                        if (!in_array($fkRelatedTable, $relatedTables)) {
+                            $relatedTables[]=$fkRelatedTable;
+                        }
+                        
                     }
                     
                     $fkRelatedConditions=$this->getRelatedConditions($this->tables.'.'.$field,$fkModel,$fkKeyField);
@@ -350,8 +362,10 @@ class modelBase {
                         $relatedFields[]="$fkDataField AS $field";
                     }
                     else{
-                        if ($addField)
-                        $relatedFields[]="{$fkModel->tables}.$fkDataField AS $field";
+                        if ($addField and $options['config']['dataFieldConversion'])
+                            $relatedFields[]="{$fkModel->tables}.$fkDataField AS $field";
+                        else
+                            $relatedFields[]=$this->tables.'.'.$field;
                     }
                     
                     $addField=false;
@@ -603,10 +617,13 @@ class modelBase {
 
             if (substr($dataField, 0, 1) == '_') { //It is a computed field
                 $dataField = substr($dataField, 1);
-            }            
+                $options["fields"][] = "_$dataField AS relationField";                
+            }
+            else {
+                $options["fields"][] = "_{$this->tables}.$dataField AS relationField";                
+            }
             
             $options["fields"][] = "_$keyField AS relationId";
-            $options["fields"][] = "_$dataField AS relationField";
 
             $resultData=$this->fetch($options);
             $resultData['label']=$this->fieldsConfig[$dataField]["definition"]["label"][$this->config["base"]["language"]];

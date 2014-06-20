@@ -1,8 +1,8 @@
 <?php
 
-class table_roles_applications {
+class table_roles_applications_components {
 
-    var $primaryKey = 'id';
+    var $primaryKey = "id";
     var $fieldsConfig;
 
     function __construct() {
@@ -17,22 +17,31 @@ class table_roles_applications {
                     ),                    
                 ),
             ),
-            "id_role" => array(
+            "id_role_app" => array(
                 "definition" => array(
                     "type" => "number",
                     "default" => "",
                     "label" => array(
-                        "es_es" => "Rol",
+                        "es_es" => "Rol y Aplicacion",
                     ),                    
                 ),
             ),
-            "id_app" => array(
+            "id_component" => array(
                 "definition" => array(
-                    "options"=>array("required"),
                     "type" => "number",
                     "default" => "",
                     "label" => array(
-                        "es_es" => "Aplicaci&oacute;n",
+                        "es_es" => "Componente",
+                    ),                    
+                ),
+            ),
+            "permission" => array(
+                "definition" => array(
+                    "options"=>array("required"),
+                    "type" => "bool",
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Permiso",
                     ),
                 ),
             ),

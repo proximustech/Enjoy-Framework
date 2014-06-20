@@ -31,6 +31,9 @@
         
         <script>
             $(document).ready(function() {
+                
+                $("body").hide(0).delay(300).fadeIn(80); //Default Fade In
+                
                 $('.crudTable').dataTable({
                     "bJQueryUI": true,
                     "sPaginationType": "full_numbers",
@@ -38,14 +41,14 @@
                         "sUrl": "assets/js/jquery/plugins/dataTables/languages/<?php  echo $language  ?>.txt"
                     }                    
                 });
+         
             } );
-        </script>        
+            
+        </script>    
         
     </head>
 
     <body>
-
-    <?php  require_once $viewFile;  ?>
-
+        <?php  require_once $viewFile;  ?>
     </body>
 </html>

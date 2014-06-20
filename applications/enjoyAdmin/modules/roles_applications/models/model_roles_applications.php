@@ -6,6 +6,7 @@ require_once 'lib/enjoyClassBase/modelBase.php';
 require_once "applications/enjoyAdmin/modules/roles_applications/models/table_roles_applications.php";
 
 require_once "applications/enjoyAdmin/modules/applications/models/model_applications.php";
+require_once "applications/enjoyAdmin/modules/roles/models/model_roles.php";
 
 
 class roles_applicationsModel extends modelBase {
@@ -14,73 +15,43 @@ class roles_applicationsModel extends modelBase {
     var $label=array();
     var $subModels=array();
 
-    function __construct($dataRep, $config) {
+    function __construct($dataRep, $config,&$incomingModels=array()) {
         parent::__construct($dataRep, $config);
         $table=new table_roles_applications();
         $this->fieldsConfig=$table->fieldsConfig;
         $this->primaryKey=$table->primaryKey;
         
         $applicationsModel=new applicationsModel($dataRep,$config);
+        
+        if (key_exists('roles', $incomingModels)) { // Technique to avoid circular calls
+            $rolesModel=&$incomingModels['roles'];
+        }
+        else{
+            $outgoingModels = array(
+                'roles_applications' => $this,
+            );
+            $rolesModel = new rolesModel($dataRep, $config, $outgoingModels);
+        }        
+        
                 
         $this->label=array(
-            "es_es"=>"Roles Aplicaciones",
+            "es_es"=>"Roles y Aplicaciones",
         );
         
         $this->foreignKeys = array (
             "id_app" => array(
                 "model"=>&$applicationsModel,
                 "keyField"=>'applications.id',
-//                "dataField"=>"name",
+                "dataField"=>"name",
+             ),
+            "id_role" => array(
+                "model"=>&$rolesModel,
+                "keyField"=>'roles.id',
                 "dataField"=>"name",
              ),
         );        
         
-//        $this->subModels=array(
-//            $this->primaryKey=>array(
-//                "subModel"=>&$applicationsModel,
-//                "linkedField"=>'applications.id',
-//            ),
-//        );
-        
-//        $this->dependents=array(
-//            "id"=>array(
-////                "selfCaptionField"=>"name",
-////                "model"=>&$usersModel,
-////                "modelFk"=>"role_id",
-//                "mod"=>"users",
-//                "act"=>"index",
-//                "keyField"=>"role_id",
-//                "label"=>array(
-//                    "es_es" =>"Usuarios",
-//                ),
-//            ),
-//            
-//        );
-        
     }
-    
-//    function dataCall() {
-//        
-//        
-//        if (key_exists('field', $_REQUEST)) {
-//
-//            $relationField = $_REQUEST['field'];
-//            $options["fields"][] = "{$this->primaryKey} AS relationId";
-//            $options["fields"][] = "$relationField AS relationField";
-//        }
-//        if (key_exists('id', $_REQUEST)) {
-//            $relationId = $_REQUEST['id'];
-//            
-//            if ($relationId != '') {
-//                $options["where"][] = "$this->primaryKey='$relationId'";
-//            }
-//            
-//
-//        }
-//
-//        return $this->fetch($options);
-//        
-//    }
     
 }
 

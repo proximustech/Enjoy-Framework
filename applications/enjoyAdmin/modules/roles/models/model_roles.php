@@ -12,20 +12,28 @@ class rolesModel extends modelBase {
 
     var $tables="roles";
 
-    function __construct($dataRep, $config) {
+    function __construct($dataRep, $config,&$incomingModels=array()) {
         parent::__construct($dataRep, $config);
         $table=new table_roles();
         $this->fieldsConfig=$table->fieldsConfig;
         $this->primaryKey=$table->primaryKey;
         
-        $roles_applicationsModel=new roles_applicationsModel($dataRep,$config);
-                
         $this->label=array(
             "es_es"=>"Roles",
         );
         
-        $this->subModels=array(
+        if (key_exists('roles_applications', $incomingModels)) { // Technique to avoid circular calls
+            $roles_applicationsModel=&$incomingModels['roles_applications'];
+        }
+        else{
+            $outgoingModels = array(
+                'roles' => $this,
+            );
+            $roles_applicationsModel=new roles_applicationsModel($dataRep,$config,$outgoingModels);
+        }
             
+        $this->subModels=array(
+
             0=>array(
                 "model"=>&$roles_applicationsModel ,
                 "linkerField"=>$this->primaryKey,
@@ -34,6 +42,8 @@ class rolesModel extends modelBase {
                 "type"=>'multiple',
             ),
         );
+                
+        
         
         $this->dependents=array(
             "id"=>array(

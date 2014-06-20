@@ -27,8 +27,7 @@ class usersModel extends modelBase {
             "id_role" => array(
                 "model"=>&$rolesModel,
                 "keyField"=>'roles.id',
-//                "dataField"=>"name",
-                "dataField"=>"_CONCAT(roles.id,'-',roles.name)",
+                "dataField"=>"name",
              ),
         );
         

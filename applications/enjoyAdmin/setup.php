@@ -87,22 +87,26 @@ class enjoyAdminSetup {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
             CREATE TABLE IF NOT EXISTS `roles_applications` (
-              `id_role` bigint(20) DEFAULT NULL,
-              `id_app` int(11) DEFAULT NULL
+              `id` bigint(20) NOT NULL AUTO_INCREMENT,
+              `id_role` bigint(20) NOT NULL,
+              `id_app` int(11) NOT NULL,
+              PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
             CREATE TABLE IF NOT EXISTS `roles_applications_components` (
-              `id` int(10) DEFAULT NULL,
-              `id_role_application` int(10) DEFAULT NULL,
+              `id` int(10) NOT NULL AUTO_INCREMENT,
+              `id_role_app` int(10) DEFAULT NULL,
               `id_component` int(10) DEFAULT NULL,
-              `permission` int(10) DEFAULT NULL
+              `permission` tinyint(4) DEFAULT NULL,
+              PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='module permissions';
 
             CREATE TABLE IF NOT EXISTS `roles_applications_modules` (
-              `id` int(10) DEFAULT NULL,
-              `id_role_application` int(10) DEFAULT NULL,
-              `id_module` int(10) DEFAULT NULL,
-              `permission` int(10) DEFAULT NULL
+              `id` bigint(20) NOT NULL AUTO_INCREMENT,
+              `id_role_app` int(10) NOT NULL,
+              `id_module` int(10) NOT NULL,
+              `permission` text,
+              PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='module permissions';
 
             CREATE TABLE IF NOT EXISTS `users` (
@@ -128,8 +132,41 @@ class enjoyAdminSetup {
         $adminPassword = $e_dbIdentifier->encodePassword($this->appServerConfig['base']['adminUser']); //Example: user "admin", password "admin"
         
         $sql="
-            INSERT INTO `users` (`id_role`, `user_name`, `password`, `active`) 
-                VALUES (0, '{$this->appServerConfig['base']['adminUser']}', '$adminPassword', 1);
+            INSERT INTO `roles` ( `name`) 
+                VALUES ('Administrator');
+        ";
+            
+        $query = $this->dataRep->prepare($sql);
+        $query->execute();
+    
+        $sql="
+            INSERT INTO `users` ( `user_name`, `password`, `active`, `id_role`) 
+                VALUES ('{$this->appServerConfig['base']['adminUser']}', '$adminPassword', 1,1);
+        ";
+            
+        $query = $this->dataRep->prepare($sql);
+        $query->execute();
+        
+        $sql="
+            INSERT INTO `applications` ( `name`) 
+                VALUES ('enjoyAdmin');
+        ";
+            
+        $query = $this->dataRep->prepare($sql);
+        $query->execute();
+    
+        $sql="
+            INSERT INTO 
+                `modules` (`id_app`, `name`) 
+            VALUES
+                (1, 'users'),
+                (1, 'roles'),
+                (1, 'applications'),
+                (1, 'roles_applications'),
+                (1, 'modules'),
+                (1, 'components'),
+                (1, 'roles_applications_components'),
+                (1, 'roles_applications_modules')
         ";
             
         $query = $this->dataRep->prepare($sql);

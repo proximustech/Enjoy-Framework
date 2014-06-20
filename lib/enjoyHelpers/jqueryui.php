@@ -374,14 +374,21 @@ class crud implements crud_Interface {
                 }                
                 
                 if ($type=='bool') {
+                    
+                    if ($this->config["base"]["language"]=='es_es') {
+                        $relationFieldTrue="Si";
+                        $relationFieldFalse="No";
+                    }
+                    
+                    
                     $dataSourceArray = array(
                         0 => array(
                             'relationId'=>'1',
-                            'relationField'=>'Si',
+                            'relationField'=>$relationFieldTrue,
                         ),
                         1 => array(
                             'relationId'=>'0',
-                            'relationField'=>'No',
+                            'relationField'=>$relationFieldFalse,
                         ),
                     );
                 }                  
