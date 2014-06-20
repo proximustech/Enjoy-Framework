@@ -2,18 +2,69 @@
 
 function showTreeMenu($menuArray,$appName) {
     
+    global $isAdmin;
+    global $privileges;
+
+
+    $finalResult="";
     foreach ($menuArray as $menu =>$target) {
         
         if (is_array($target)) {
-            echo "<li><span class='folder'>$menu</span><ul>";
-            showTreeMenu($target,$appName);
-            echo "</ul></li>";
+            $tempResult=showTreeMenu($target,$appName);
+            if ($tempResult != "") {
+                $finalResult.= "<li><span class='folder'>$menu</span><ul>";
+                $finalResult.= $tempResult;
+                $finalResult.= "</ul></li>";
+            }
         }
         else{
-              echo "<li><a href='#!' onclick=\"loadIframeContent('$target','window_main_$appName')\"><span class='file'>$menu</span></a></li>";
+            $showLink=true;
+            if (strtolower(substr($target,0,5))=='index') { // is a link inside enjoy
+                $showLink=false;
+                $okApp=false;
+                $urlArray=explode('?', $target);
+                $parameters=$urlArray[1];
+                $parametersArray=explode('&', $parameters);
+                
+                foreach ($parametersArray as $parameter) {
+                    $parameterArray=explode('=', $parameter);
+                    $name=$parameterArray[0];
+                    $value=$parameterArray[1];
+                    
+                    if ($name=='app') {
+                        if (key_exists($value, $privileges)) { // if the application is registered inside the user privileges
+                            $okApp=true;
+                        }
+                    }
+                    
+                }
+                
+                //No matter the order of the parameters. thats why I repeat the foreach
+                if ($okApp) {
+                    foreach ($parametersArray as $parameter) {
+                        $parameterArray = explode('=', $parameter);
+                        $name = $parameterArray[0];
+                        $value = $parameterArray[1];
+
+                        if ($name == 'mod') {
+                            if (key_exists($value, $privileges[$appName])) { // if the module is registered inside the user privileges of the application
+                                $showLink=true;
+                                
+                            }
+                        }
+                    }
+                }
+                
+            }
+            if ($showLink or $isAdmin) {
+                $finalResult.= "<li><a href='#!' onclick=\"loadIframeContent('$target','window_main_$appName')\"><span class='file'>$menu</span></a></li>";
+            }
+            
         }
         
     }
+    
+    return $finalResult;
     
 }
 
@@ -59,7 +110,7 @@ function showTreeMenu($menuArray,$appName) {
                     <ul id="leftMenu_<?php echo $appName ?>" class="filetree" style="font-size: 14px">
                     <?php 
 
-                    showTreeMenu($appConfig['menu'][$appConfig['base']['language']],$appName);
+                    echo showTreeMenu($appConfig['menu'][$appConfig['base']['language']],$appName);
                     
                     ?>
                     </ul>

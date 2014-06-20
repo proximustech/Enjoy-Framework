@@ -91,8 +91,8 @@ class table implements table_Interface {
     function get($results, $headers, $additionalFiledsConfig = null) {
 
         $encryption= new encryption();
-        $secFilter= new security();
-        $results=$secFilter->filter($results);        
+        $security= new security();
+        $results=$security->filter($results);        
         
         $navigator = new navigator($this->config);
 
@@ -147,23 +147,45 @@ class table implements table_Interface {
     
                 }
                 
+                
+                $showUnlinkedData=false;
                 if (key_exists($field, $this->model->foreignKeys)) {
-    
-                    if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
-                        $primaryKeyValue = $encryption->encode($resultRow[$this->model->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
-                    } else {
-                        $primaryKeyValue = $resultRow[$this->model->primaryKey];
+                    
+                    $fkModuleName=$this->model->foreignKeys[$field]['model']->tables;
+                    
+                    if (key_exists($fkModuleName, $_SESSION['userInfo']['privileges'][$this->config['flow']['app']])) {
+                        $fkModulePermissions=$_SESSION['userInfo']['privileges'][$this->config['flow']['app']][$fkModuleName];
+                        $fkViewPermission=$security->checkCrudPermission('V', $fkModulePermissions);
+                        $fkChangePermission=$security->checkCrudPermission('C', $fkModulePermissions);
+                       
                     }
+                    
+                    if ($fkChangePermission or $fkViewPermission or $this->config['permission']['isAdmin']) {
+                        
+                        if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                            $primaryKeyValue = $encryption->encode($resultRow[$this->model->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+                        } else {
+                            $primaryKeyValue = $resultRow[$this->model->primaryKey];
+                        }
 
 
-                    $parameters[]="crud=editFkForm";
-                    $parameters[]="{$this->model->tables}_{$this->model->primaryKey}=$primaryKeyValue";
-                    $parameters[]="fkField=$field";
-                    $html.="<td>" . $navigator->action('index', $resultValue, $parameters) . "</td>";
+                        $parameters[]="crud=editFkForm";
+                        $parameters[]="{$this->model->tables}_{$this->model->primaryKey}=$primaryKeyValue";
+                        $parameters[]="fkField=$field";
+                        $html.="<td>" . $navigator->action('index', $resultValue, $parameters) . "</td>";
+                    }
+                    else $showUnlinkedData=true;
+                    
+    
                 }
                 else{
+                    $showUnlinkedData=true;
+                }
+                
+                if ($showUnlinkedData) {
                     $html.="<td>" . $resultValue . "</td>";
                 }
+                
                 
             }
             
@@ -290,9 +312,9 @@ class crud implements crud_Interface {
      */
     public function getForm($register = null) {
         
-        $secFilter= new security();
+        $security= new security();
         $encryption= new encryption();
-        $register=$secFilter->filter($register);
+        $register=$security->filter($register);
 
         $html = "<br/><form id='crudForm' action='index.php' method='GET'><table>";
 
@@ -465,7 +487,7 @@ class crud implements crud_Interface {
                 $options['fields'][]=$linkedDataField;
                 $options['where'][]="$linkedField='{$register[$linkerField]}'";
                 $linkedDataFieldFetch=$subModel->fetch($options);
-                $linkedDataFieldFetch=$secFilter->filter($linkedDataFieldFetch);
+                $linkedDataFieldFetch=$security->filter($linkedDataFieldFetch);
                 $linkedDataFieldResultsArray=$linkedDataFieldFetch['results'];
                 foreach ($linkedDataFieldResultsArray as $linkedDataFieldRegister) {
                     $linkedDataFieldRegisters[]=$linkedDataFieldRegister[$linkedDataField];
@@ -482,7 +504,7 @@ class crud implements crud_Interface {
             }
 
             $dataSource=$subModel->getFieldData(null,$linkedDataField);
-            $dataSource=$secFilter->filter($dataSource);
+            $dataSource=$security->filter($dataSource);
             $dataSourceArray=$dataSource['results'];
             $label=$dataSource['label'];
             
@@ -498,8 +520,17 @@ class crud implements crud_Interface {
             $html.="</select></td></tr>";
         }
         
-        //$html.="<tr><td colspan='2'>$saveButton</td></tr>";
-        $html.="<tr><td colspan='2'><br/><button class='btn btn-info' onclick='document.getElementById('crudForm').submit();' ><span class='glyphicon glyphicon-floppy-disk'></span> " . $this->baseAppTranslation["save"] . "</button></td></tr>";
+        $moduleName=$this->model->tables;
+
+        if (key_exists($moduleName, $_SESSION['userInfo']['privileges'][$this->config['flow']['app']])) {
+            $modulePermissions=$_SESSION['userInfo']['privileges'][$this->config['flow']['app']][$moduleName];
+            $addPermission=$security->checkCrudPermission('A', $modulePermissions);
+            $changePermission=$security->checkCrudPermission('C', $modulePermissions);
+        }
+
+        if ($changePermission and $editing or ( $addPermission and !$editing ) or $this->config['permission']['isAdmin'] ) {
+            $html.="<tr><td colspan='2'><br/><button class='btn btn-info' onclick='document.getElementById('crudForm').submit();' ><span class='glyphicon glyphicon-floppy-disk'></span> " . $this->baseAppTranslation["save"] . "</button></td></tr>";
+        }
 
         $html.="<input type='hidden' id='app' name='app' value='$app'>";
         $html.="<input type='hidden' id='mod' name='mod' value='$mod'>";
@@ -515,10 +546,20 @@ class crud implements crud_Interface {
      */
     public function listData($resultData, $limit = 0) {
         
+        if (!$this->config['permission']['list']) {
+            return "";
+        }
+        
+        
         $results=$resultData['results'];
         $navigator = new navigator($this->config);
         $createParams[] = "crud=createForm";
-        $html = "<br/><div>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</div><br>";
+        
+        $html = "<br/>";
+        if ($this->config['permission']['add']) {
+            $html = "<div>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</div><br>";
+        }
+        
 
         $headers = array_keys($results[0]);
         $headersLabes = array();
@@ -528,19 +569,30 @@ class crud implements crud_Interface {
             $headersLabes[] = $label;
         }
 
-        $additionalFiledsConfig["headers"][] = $this->baseAppTranslation["operations"];
+        
 
-        $additionalFiledsConfig["actions"][0]["label"] = $this->baseAppTranslation["edit"];
-        $additionalFiledsConfig["actions"][0]["mod"] = $this->config["flow"]["mod"];
-        $additionalFiledsConfig["actions"][0]["act"] = $this->config["flow"]["act"];
-        $additionalFiledsConfig["actions"][0]["fieldParameters"][] = $this->model->primaryKey;
-        $additionalFiledsConfig["actions"][0]["parameters"][] = "crud=editForm";
-
-        $additionalFiledsConfig["actions"][1]["label"] = $this->baseAppTranslation["delete"];
-        $additionalFiledsConfig["actions"][1]["mod"] = $this->config["flow"]["mod"];
-        $additionalFiledsConfig["actions"][1]["act"] = $this->config["flow"]["act"];
-        $additionalFiledsConfig["actions"][1]["fieldParameters"][] = $this->model->primaryKey;
-        $additionalFiledsConfig["actions"][1]["parameters"][] = "crud=remove";
+        if ($this->config['permission']['change'] or $this->config['permission']['view']) {
+            $additionalFiledsConfig["actions"][0]["label"] = $this->baseAppTranslation["edit"];
+            $additionalFiledsConfig["actions"][0]["mod"] = $this->config["flow"]["mod"];
+            $additionalFiledsConfig["actions"][0]["act"] = $this->config["flow"]["act"];
+            $additionalFiledsConfig["actions"][0]["fieldParameters"][] = $this->model->primaryKey;
+            $additionalFiledsConfig["actions"][0]["parameters"][] = "crud=editForm";
+            
+        }
+        
+        if ($this->config['permission']['remove']) {
+            
+            $additionalFiledsConfig["actions"][1]["label"] = $this->baseAppTranslation["delete"];
+            $additionalFiledsConfig["actions"][1]["mod"] = $this->config["flow"]["mod"];
+            $additionalFiledsConfig["actions"][1]["act"] = $this->config["flow"]["act"];
+            $additionalFiledsConfig["actions"][1]["fieldParameters"][] = $this->model->primaryKey;
+            $additionalFiledsConfig["actions"][1]["parameters"][] = "crud=remove";
+        }
+        
+        if (isset($additionalFiledsConfig["actions"])) {
+            $additionalFiledsConfig["headers"][] = $this->baseAppTranslation["operations"];
+        }
+        
 
         $table = new Table($this->model);
         $html.=$table->get($results, $headersLabes, $additionalFiledsConfig);

@@ -1,5 +1,5 @@
 <?php
- 
+
 ini_set('display_errors', '0');error_reporting(~E_ALL);
 
 
@@ -52,11 +52,11 @@ register_shutdown_function('shutdownHandler',E_ALL & ~E_DEPRECATED & ~E_NOTICE &
  * Input Filtering
  */
 
-$secFilter= new security();
+$security= new security();
 
-$_GET=$secFilter->filter($_GET,true);
-$_POST=$secFilter->filter($_POST,true);
-$_REQUEST=$secFilter->filter($_REQUEST,true);
+$_GET=$security->filter($_GET,true);
+$_POST=$security->filter($_POST,true);
+$_REQUEST=$security->filter($_REQUEST,true);
    
 //TODO: Document the use of php.ini directives variables_order and request_order ( hot to POST over GET )
 
@@ -122,6 +122,40 @@ $moduleDataRepDir="applications/$app/modules/$mod/dataRep/";
 require_once 'dataRep/appServer_dataRep.php';
 
 /*
+ * Permissions set
+ */
+
+if (isset($config['base']['useAuthentication'])) {
+    if ($config['base']['useAuthentication']) {
+        session_start();
+        if (isset($_SESSION['userInfo']['privileges'])) {
+            if($_SESSION['user']==$config['appServerConfig']['base']['adminUser']){
+                
+                $config['permission']['isAdmin']=true;
+                $config['permission']['list'] = true;
+                $config['permission']['view'] = true;
+                $config['permission']['add'] = true;
+                $config['permission']['change'] = true;
+                $config['permission']['remove'] = true;
+            }
+            else if (isset($_SESSION['userInfo']['privileges'][$app][$mod])) {
+                $modulePermissions=$_SESSION['userInfo']['privileges'][$app][$mod];
+                
+                $config['permission']['isAdmin']=false;
+                $config['permission']['list']=$security->checkCrudPermission('L', $modulePermissions);
+                $config['permission']['view']=$security->checkCrudPermission('V', $modulePermissions);
+                $config['permission']['add']=$security->checkCrudPermission('A', $modulePermissions);
+                $config['permission']['change']=$security->checkCrudPermission('C', $modulePermissions);
+                $config['permission']['remove']=$security->checkCrudPermission('R', $modulePermissions);
+                
+            }
+        } else throw new Exception('Authentication error.');
+    }
+}
+
+
+
+/*
  * Application Controller Execution
  */
 
@@ -154,7 +188,7 @@ if (key_exists("output", $modController->resultData)) {
             //Although $outputVarValue is not used, it is necesary for the correct use of $outputVarName
             
             if ($outputVarName != 'crud') {
-                $modController->resultData["output"][$outputVarName]=$secFilter->filter($modController->resultData["output"][$outputVarName]);
+                $modController->resultData["output"][$outputVarName]=$security->filter($modController->resultData["output"][$outputVarName]);
             }
             
             $$outputVarName = &$modController->resultData["output"][$outputVarName];

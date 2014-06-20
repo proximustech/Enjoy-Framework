@@ -14,6 +14,7 @@ $config=array(
         "defaultAction"=>"index",
         "errorLog"=>true,
         "debug"=>true,
+        "useAuthentication"=>true, //Defines if the application use permissions schema
         
     ),
     "helpers"=>array(

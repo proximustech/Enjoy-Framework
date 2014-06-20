@@ -60,6 +60,24 @@ class security {
         }
         return $value;
     }
+    
+
+    /**
+     * Searches if the permission is in the permissionsChain ( sees if the user has certain permission )
+     * @param string $permission
+     * @param string $permissionsChain
+     * @return boolean
+     */
+    
+    function checkCrudPermission($permission,$permissionsChain) {
+        $permission=strtolower($permission);
+        $permissionsChain = strtolower($permissionsChain);
+        
+        if (stripos($permissionsChain, $permission) !== false) {
+            return true;
+        }
+        else return false;
+    }
 }
 
 ?>

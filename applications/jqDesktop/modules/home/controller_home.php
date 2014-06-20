@@ -50,11 +50,16 @@ class modController extends controllerBase {
             $userInfo=$e_user->getInfo();
             $userInfo['lastLoginStamp']=time();
             
-            $privilegesResult=$this->baseModel->getPrivileges($_POST['user']);
+            list($modulesPrivileges,$componentsPrivileges)=$this->baseModel->getPrivileges($_POST['user']);
             $privileges=array();
-            foreach ($privilegesResult as $privilege) {
-                $privileges[$privilege['role']][$privilege['app']]=1;
+            foreach ($modulesPrivileges as $privilege) {
+                $privileges[$privilege['app']][$privilege['module']]=$privilege['permission'];
             }
+            foreach ($componentsPrivileges as $privilege) {
+                $privileges[$privilege['app']][$privilege['component']]=$privilege['permission'];
+            }
+
+            $userInfo['role']=$privilege['role'];
             $userInfo['privileges']=$privileges;
             $e_user->saveInfo($userInfo);
             $_SESSION["userInfo"]=$userInfo;
@@ -79,7 +84,13 @@ class modController extends controllerBase {
             unset($config);
         }
         
+        if ($this->config['appServerConfig']['base']['adminUser']==$_SESSION['user']) {
+            $isAdmin=true;
+        } else $isAdmin=false;
         
+        
+        $this->resultData["output"]["isAdmin"]=$isAdmin;
+        $this->resultData["output"]["privileges"]=$_SESSION['userInfo']['privileges'];
         $this->resultData["output"]["desktopConfig"]=$desktopConfig;
         
     }
