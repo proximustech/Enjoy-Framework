@@ -25,7 +25,9 @@
         <script src="assets/js/jquery/plugins/bootstrap/bootstrap.min.js"></script>
 
         <style>
-
+            .crudTable tr:hover  {
+                background-color: #BFE7F2 !important;
+            }
 
         </style>
         
@@ -41,14 +43,14 @@
                         "sUrl": "assets/js/jquery/plugins/dataTables/languages/<?php  echo $language  ?>.txt"
                     }                    
                 });
-         
+                
             } );
             
         </script>    
         
     </head>
 
-    <body>
+    <body style="overflow: auto !important">
         <?php  require_once $viewFile;  ?>
     </body>
 </html>

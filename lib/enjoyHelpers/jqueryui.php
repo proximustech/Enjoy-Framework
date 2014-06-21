@@ -253,6 +253,14 @@ class table implements table_Interface {
 
                 $additionalFieldActionsCode .=" " . $navigator->action($action, $label, $parameters, $module) . " ";
             }
+            
+            $buttonsCode="";
+            foreach ($additionalFiledsConfig["buttons"] as $buttonInfo) {
+                $primaryKeyValue=$resultRow[$this->model->primaryKey];
+                if ($this->config["helpers"]['crud_encryptPrimaryKeys'])
+                    $primaryKeyValue=$encryption->encode($primaryKeyValue, $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
+                $buttonsCode="<button class='btn btn-danger' onclick=\"{$buttonInfo['jsFunction']}('{$primaryKeyValue}');\"><span class='glyphicon glyphicon-remove'></span>".$buttonInfo['label']."</button>";
+            }
 
             $additionalFieldExtraCode = "";
 
@@ -261,18 +269,19 @@ class table implements table_Interface {
                 foreach ($additionalFiledsConfig["extra"] as $additionalFiled) {
 
                     $type = $additionalFiled["type"];
-                    $source = $additionalFiled["source"];
-                    $options = $additionalFiled["options"];
 
                     if ($type == "image") {
+                        $source = $additionalFiled["source"];
+                        $options = $additionalFiled["options"];
                         $additionalFieldExtraCode .=" <img src='$source' $options > ";
                     }
                 }
             }
 
             if ($additionalFieldActionsCode != "") {
-                $html.="<td>$dependents" . $additionalFieldActionsCode . "</td>";
+                $html.="<td>$dependents" . $additionalFieldActionsCode . " ".$buttonsCode. "</td>";
             }
+
 
             if ($additionalFieldExtraCode) {
                 $html.="<td>" . $additionalFieldExtraCode . "</td>";
@@ -582,11 +591,14 @@ class crud implements crud_Interface {
         
         if ($this->config['permission']['remove']) {
             
-            $additionalFiledsConfig["actions"][1]["label"] = $this->baseAppTranslation["delete"];
-            $additionalFiledsConfig["actions"][1]["mod"] = $this->config["flow"]["mod"];
-            $additionalFiledsConfig["actions"][1]["act"] = $this->config["flow"]["act"];
-            $additionalFiledsConfig["actions"][1]["fieldParameters"][] = $this->model->primaryKey;
-            $additionalFiledsConfig["actions"][1]["parameters"][] = "crud=remove";
+//            $additionalFiledsConfig["actions"][1]["label"] = $this->baseAppTranslation["delete"];
+//            $additionalFiledsConfig["actions"][1]["mod"] = $this->config["flow"]["mod"];
+//            $additionalFiledsConfig["actions"][1]["act"] = $this->config["flow"]["act"];
+//            $additionalFiledsConfig["actions"][1]["fieldParameters"][] = $this->model->primaryKey;
+//            $additionalFiledsConfig["actions"][1]["parameters"][] = "crud=remove";
+            
+            $additionalFiledsConfig["buttons"][0]["label"] = $this->baseAppTranslation["delete"];
+            $additionalFiledsConfig["buttons"][0]["jsFunction"] = "showDelete";
         }
         
         if (isset($additionalFiledsConfig["actions"])) {
@@ -596,6 +608,34 @@ class crud implements crud_Interface {
 
         $table = new Table($this->model);
         $html.=$table->get($results, $headersLabes, $additionalFiledsConfig);
+
+        //Delete modal confirmation
+        $html.="
+
+            <div class='modal fade' id='delete' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+              <div class='modal-dialog'>
+                <div class='modal-content'>
+                  <div class='modal-header'>
+                    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                    <h4 class='modal-title' id='myModalLabel'>".strtoupper($this->baseAppTranslation["delete"])."</h4>
+                  </div>
+                  <div id='modal-body' class='modal-body'>
+                  </div>
+                  <div id='modal-footer' class='modal-footer'>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            
+            <script>
+                function showDelete(id){
+                    $('#modal-body').html('{$this->baseAppTranslation["deleteConfirmation"]}');
+                    $('#modal-footer').html('<a href=\'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}&{$this->model->tables}_{$this->model->primaryKey}='+id+'&crud=remove\' class=\'btn btn-danger\'>{$this->baseAppTranslation["yes"]}</a><a class=\'btn\' data-dismiss=\'modal\' >{$this->baseAppTranslation["no"]}</a>');
+                    $('#delete').modal('show');
+                }
+            </script>
+
+        ";
         
         return $html;
     }

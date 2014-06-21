@@ -14,6 +14,9 @@ class base_language {
         "delete" => "Borrar",       
         "save" => "Guardar",       
         "operations" => "Operaciones",
+        "yes" => "Si",
+        "no" => "No",
+        "deleteConfirmation" => "Desea eliminar el registro?",
         
         //Validation
         
