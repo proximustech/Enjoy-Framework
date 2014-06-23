@@ -1,0 +1,256 @@
+<?php
+
+//TODO create app repository
+
+function creataDataRepFile($fileName,$app) {
+    
+    $content='<?php
+
+require_once "/lib/dataRepositories/interfaces.php";
+
+class '.$app.'DataRep implements dataRep_Interface {
+
+    var $instance=null;
+    var $host;
+    var $dbname;
+    var $username;
+    var $password;    
+    
+    function __construct() {
+        
+        $this->host	= "localhost";
+        $this->dbname 	= "'.$app.'";
+        $this->username = "";
+        $this->password = "";        
+        
+    }
+
+    function getInstance() {
+
+        $this->instance = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->dbname, $this->username, $this->password);
+        $this->instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        return $this->instance;
+        
+    }
+    
+    function close() {
+        $this->instance = null;
+    }
+
+    public function dbExists($dataBase=null) {
+        
+        if ($dataBase == null) $dataBase=$this->dbname;
+        
+        $sql="SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME=\'$dataBase\'";
+        $query = $this->dataRep->prepare($sql);
+        $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        if (count($results)) {
+            return true;
+        }
+        else return false;
+        
+    }
+
+    public function __destruct() {
+        $this->close();
+    }
+
+}';
+    createFile($fileName,$content);
+    
+}
+function createModel($fileName,$app,$module) {
+    
+    $content='<?php
+
+//Model Class
+
+require_once "lib/enjoyClassBase/modelBase.php";
+require_once "applications/'.$app.'/modules/'.$module.'/models/table_'.$module.'.php";
+
+//require_once "applications/'.$app.'/modules/_*_/models/model_*_.php";
+
+
+class '.$module.'Model extends modelBase {
+
+    var $tables="'.$module.'";
+
+    function __construct($dataRep, $config) {
+        parent::__construct($dataRep, $config);
+        $table=new table_'.$module.'();
+        $this->fieldsConfig=$table->fieldsConfig;
+        $this->primaryKey=$table->primaryKey;
+        
+        //$_*_Model=new applicationsModel($dataRep,$config);
+                
+        $this->label=array(
+            "es_es"=>"You Should set the label of the Module.",
+        );
+        
+//        $this->foreignKeys = array (
+//            "id_X" => array(
+//                "model"=>&$_*_Model,
+//                "keyField"=>"tableName.idPossibly",
+//                "dataField"=>"another Field of the foreign table with data",
+//             ),
+//        );
+
+//        $this->subModels=array( //For many to many relations for example
+
+//            0=>array(
+//                "model"=>&$_*_Model ,
+//                "linkerField"=>$this->primaryKey,
+//                "linkedField"=>"field that references this primary key",
+//                "linkedDataField"=>"similar as a foreignKey dataField",
+//                "type"=>"multiple",
+//            ),
+//        );
+
+//        $this->dependents=array(
+//            "id"=>array(
+//                "mod"=>"users",
+//                "act"=>"index",
+//                "keyField"=>"field referenced by the dependent table",
+//                "label"=>array(
+//                    "es_es" =>"Usuarios",
+//                ),
+//            ),
+            
+//        );
+
+
+        
+    }
+    
+}';
+    
+    createFile($fileName,$content);
+}
+function createModelTable($fileName,$module) {
+    
+    $content='<?php
+
+class table_'.$module.' {
+
+    var $primaryKey = "id";
+    var $fieldsConfig;
+
+    function __construct() {
+
+        $this->fieldsConfig = array(
+            "id" => array(
+                "definition" => array(
+                    "type" => "number",
+                    //"options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Serial",
+                    ),
+                    //"widget" => "text",
+                ),
+            ),
+        );
+    }        
+}   ';
+
+    createFile($fileName,$content);
+}
+function createView($fileName) {
+    
+    $content='<h2><?php  echo $label  ?></h2>
+<?php echo $crud  ?>';
+    
+    createFile($fileName,$content);
+}
+function createController($fileName) {
+    
+    $content='<?php
+        
+//Module Controller Class
+require_once "lib/enjoyClassBase/controllerBase.php";
+
+class modController extends controllerBase {
+
+    function indexAction() {
+        $this->crudAction($this->baseModel,$this->dataRep);
+    }
+
+}';
+    createFile($fileName,$content);
+
+}
+
+
+function createFile($fileName,$content) {
+    $handle = fopen($fileName, "a+");
+    fwrite($handle, $content);
+    fclose($handle);
+}
+
+
+require_once "../applications/appServerConfig.php"; //Expose variable $appServerConfig
+
+if ($appServerConfig['base']['platform']=='windows')
+    $ds="\\"; // Directory Separator
+else
+    $ds="/";
+
+
+
+/*
+ * Start
+ */
+
+
+$app=$argv[1];
+$modules=$argv[2];
+$modulesArray=explode(',', $modules);
+
+$dataRepDir='..'.$ds."applications".$ds.$app.$ds."dataRep";
+$dataRepFile=$dataRepDir.$ds."app_dataRep.php";
+
+if (!file_exists($dataRepDir)) {
+    mkdir($dataRepDir, '0770', TRUE);
+}
+if (!file_exists($dataRepFile)) {
+    creataDataRepFile($dataRepFile,$app);
+}
+
+foreach ($modulesArray as $module) {
+    $modulePath='..'.$ds."applications".$ds.$app.$ds."modules".$ds.$module;
+    $modelsPath=$modulePath.$ds."models";
+    $viewsPath=$modulePath.$ds."views";
+    
+    if (!file_exists($modulePath)) {
+        mkdir($modulePath, '0770', TRUE);
+    }
+    if (!file_exists($modelsPath)) {
+        mkdir($modelsPath, '0770', TRUE);
+    }
+    if (!file_exists($viewsPath)) {
+        mkdir($viewsPath, '0770', TRUE);
+    }
+    
+    $modelFileName=$modelsPath.$ds."model_$module.php";
+    $modelTableFileName=$modelsPath.$ds."table_$module.php";
+    $viewFileName=$viewsPath.$ds."view_index.php";
+    $controllerFileName=$modulePath.$ds."controller_$module.php";
+    
+    if (!file_exists($modelFileName)) {
+        createModel($modelFileName,$app,$module);
+    }
+    if (!file_exists($modelTableFileName)) {
+        createModelTable($modelTableFileName,$module);
+    }
+    if (!file_exists($viewFileName)) {
+        createView($viewFileName);
+    }
+    if (!file_exists($controllerFileName)) {
+        createController($controllerFileName);
+    }
+    
+    
+}

@@ -106,11 +106,11 @@ class controllerBase {
                 }
                 
                 if ($this->config['appServerConfig']['base']['platform']=='windows')
-                    $directorySeparator="\\";
+                    $ds="\\"; //Directory Separator
                 else
-                    $directorySeparator="/";
+                    $ds="/";
 
-                $filesPath=$this->config['appServerConfig']['base']['controlPath']."files".$directorySeparator.$this->config['flow']['app'].$directorySeparator.$this->config['flow']['mod'].$directorySeparator.$field;
+                $filesPath=$this->config['appServerConfig']['base']['controlPath']."files".$ds.$this->config['flow']['app'].$ds.$this->config['flow']['mod'].$ds.$field;
             
             }            
       
@@ -121,7 +121,7 @@ class controllerBase {
             } elseif ($_REQUEST["crud"] == "downloadFile") {
                 $register = $model->fetchRecord();
                 $fileName=$register[$_REQUEST["fileField"]];
-                $fileLocation=$filesPath.$directorySeparator.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$fileName;
+                $fileLocation=$filesPath.$ds.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$fileName;
                 
                 if (file_exists($fileLocation)) {
                     header('Content-Description: File Transfer');
@@ -155,7 +155,7 @@ class controllerBase {
                     foreach ($fileFields as $fileField) {
                         
                         if ($_FILES[$model->tables.'_'.$fileField]['name'] != "" and $register[$fileField] != "") {
-                            $fileLocation=$filesPath.$directorySeparator.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$register[$fileField];
+                            $fileLocation=$filesPath.$ds.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$register[$fileField];
                             unlink($fileLocation);
                             $_REQUEST[$model->tables.'_'.$fileField]=$_FILES[$model->tables.'_'.$fileField]['name'];
                         }
@@ -170,14 +170,14 @@ class controllerBase {
                 if (count($fileFields)) {
                     
                     if (!file_exists($filesPath)) {
-                        mkdir($filesPath, '0777', TRUE);
+                        mkdir($filesPath, '0770', TRUE);
                     }
                     
                     foreach ($fileFields as $fileField) {
                         
                         if ($_FILES[$model->tables.'_'.$fileField]['name'] != "") {
                             
-                            $newFileLocation=$filesPath.$directorySeparator.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$_FILES[$model->tables.'_'.$fileField]['name'];
+                            $newFileLocation=$filesPath.$ds.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$_FILES[$model->tables.'_'.$fileField]['name'];
                             move_uploaded_file($_FILES[$model->tables.'_'.$fileField]['tmp_name'], $newFileLocation);
                         }
                         
@@ -203,12 +203,12 @@ class controllerBase {
                 if (count($fileFields)) {
                     
                     if (!file_exists($filesPath)) {
-                        mkdir($filesPath, '0777', TRUE);
+                        mkdir($filesPath, '0770', TRUE);
                     }
                     
                     $newId=$model->getLastInsertId();
                     foreach ($fileFields as $fileField) {
-                        $newFileLocation=$filesPath.$directorySeparator.$newId.'_'.$_FILES[$model->tables.'_'.$fileField]['name'];
+                        $newFileLocation=$filesPath.$ds.$newId.'_'.$_FILES[$model->tables.'_'.$fileField]['name'];
                         move_uploaded_file($_FILES[$model->tables.'_'.$fileField]['tmp_name'], $newFileLocation);
                     }
                 }                
@@ -217,7 +217,7 @@ class controllerBase {
                 if (count($fileFields)) {
                     $register = $model->fetchRecord();
                     foreach ($fileFields as $fileField) {
-                        $fileLocation=$filesPath.$directorySeparator.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$register[$fileField];
+                        $fileLocation=$filesPath.$ds.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$register[$fileField];
                         unlink($fileLocation);
                     }
                 }                 
