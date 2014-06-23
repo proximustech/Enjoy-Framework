@@ -20,7 +20,6 @@ $appServerConfig=array(
         "basicExample",
         "jqDesktop",
         "enjoyAdmin",
-        "eos",
     ),
    
 )
