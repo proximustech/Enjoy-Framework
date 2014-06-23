@@ -38,7 +38,7 @@ class modController extends controllerBase {
         else
             $directorySeparator="/";
 
-        $controlDirectories=array('users','errorLog');
+        $controlDirectories=array('users','errorLog','files');
         foreach ($controlDirectories as $directory) {
 
             mkdir($this->config['appServerConfig']['base']['controlPath'].$directorySeparator.$directory);

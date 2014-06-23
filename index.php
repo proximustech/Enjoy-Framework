@@ -40,7 +40,7 @@ function shutdownHandler() {
     $exception = new shutDownExcpetion(print_r($error,true));
     
     $error=new error($config);
-    $error->show("shutingDown", $exception);
+    $error->show("shutting Down", $exception);
 }
 
 set_exception_handler('exceptionHandler');
@@ -150,6 +150,14 @@ if (isset($config['base']['useAuthentication'])) {
                 
             }
         } else throw new Exception('Authentication error.');
+    }
+    else{
+        $config['permission']['isAdmin']=true;
+        $config['permission']['list'] = true;
+        $config['permission']['view'] = true;
+        $config['permission']['add'] = true;
+        $config['permission']['change'] = true;
+        $config['permission']['remove'] = true;        
     }
 }
 

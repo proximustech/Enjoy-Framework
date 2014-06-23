@@ -57,6 +57,11 @@ class navigator implements navigator_Interface {
         elseif ($label==$this->baseAppTranslation["edit"]) {
             $glyphicon="<span class='glyphicon glyphicon-pencil'></span>";
         }
+        elseif (substr($label,0,9)=='glyphicon') {
+            $glyphicon="<span class='glyphicon $label'></span>";
+            $class="btn btn-sm btn-info";
+            $label="";
+        }
         else {
             $glyphicon="<span class='glyphicon glyphicon-share-alt'></span>";
         }
@@ -183,7 +188,19 @@ class table implements table_Interface {
                 }
                 
                 if ($showUnlinkedData) {
-                    $html.="<td>" . $resultValue . "</td>";
+                    
+                    $downloadCode="";
+                    if ($this->fieldsConfig[$field]["definition"]["type"]=='file') {
+
+                        $parameters[]="fileField=$field";
+                        $parameters[]="crud=downloadFile";
+                        $parameters[] = "{$this->model->tables}_{$this->model->primaryKey}=" . $resultRow[$this->model->primaryKey];
+
+                        $downloadCode= $navigator->action($this->config['flow']['act'], "glyphicon-download", $parameters);                
+                    }
+                    
+                    
+                    $html.="<td>$downloadCode " . $resultValue . "</td>";
                 }
                 
                 
@@ -325,7 +342,8 @@ class crud implements crud_Interface {
         $encryption= new encryption();
         $register=$security->filter($register);
 
-        $html = "<br/><form id='crudForm' action='index.php' method='GET'><table>";
+        $html = "<br/><form id='crudForm' action='index.php' method='POST' enctype='multipart/form-data'><table>";
+        $html.="<input type='hidden' name='MAX_FILE_SIZE' value='100000000000000000000000000' />";
 
         if ($register != null) {
             $editing = true;
@@ -459,9 +477,12 @@ class crud implements crud_Interface {
                         $html.="<script>jQuery( function( ) { $( '#{$this->model->tables}_$field' ).datepicker({showOn: 'button',buttonImage: 'assets/images/icons/calendar.png',showOtherMonths : true ,selectOtherMonths : true ,showButtonPanel : true ,changeMonth : true ,changeYear : true ,dateFormat : 'yy-mm-dd' ,changeMonth: true, }); });</script>";
                         $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value' readonly ></td></tr>";
                     }                                        
-                    if ($type=='dateTime') {
+                    elseif ($type=='dateTime') {
                         $html.="<script>jQuery( function( ) { $( '#{$this->model->tables}_$field' ).datetimepicker({showOn: 'button',buttonImage: 'assets/images/icons/calendar.png',showOtherMonths : true ,selectOtherMonths : true ,showButtonPanel : true ,changeMonth: true,changeYear: true,dateFormat : 'yy-mm-dd',timeFormat : 'HH:mm:ss', }); });</script>";
                         $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value' readonly ></td></tr>";
+                    }                                        
+                    elseif ($type=='file') {
+                        $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='file' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</td></tr>";
                     }                                        
                     elseif ($type=='string') {
                         if ( $widget=='textarea') {

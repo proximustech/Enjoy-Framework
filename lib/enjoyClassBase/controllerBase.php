@@ -98,11 +98,44 @@ class controllerBase {
 
         if (key_exists("crud", $_REQUEST)) {
             
+            $fileFields=array();
+            foreach ($model->fieldsConfig as $field => $fieldConfig) {
+                
+                if ($fieldConfig['definition']['type']=='file') {
+                    $fileFields[]=$field;
+                }
+                
+                if ($this->config['appServerConfig']['base']['platform']=='windows')
+                    $directorySeparator="\\";
+                else
+                    $directorySeparator="/";
+
+                $filesPath=$this->config['appServerConfig']['base']['controlPath']."files".$directorySeparator.$this->config['flow']['app'].$directorySeparator.$this->config['flow']['mod'].$directorySeparator.$field;
             
+            }            
+      
             if ($_REQUEST["crud"] == "createForm") {
                 $this->resultData["output"]["label"] = $model->label[$lang]." - ".$this->baseAppTranslation['add'];
                 $this->resultData["output"]["crud"] = $crud->getForm();
                 $showCrudList = false;
+            } elseif ($_REQUEST["crud"] == "downloadFile") {
+                $register = $model->fetchRecord();
+                $fileName=$register[$_REQUEST["fileField"]];
+                $fileLocation=$filesPath.$directorySeparator.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$fileName;
+                
+                if (file_exists($fileLocation)) {
+                    header('Content-Description: File Transfer');
+                    header('Content-Type: application/octet-stream');
+                    header('Content-Disposition: attachment; filename=' . $fileName);
+                    header('Expires: 0');
+                    header('Cache-Control: must-revalidate');
+                    header('Pragma: public');
+                    header('Content-Length: ' . filesize($fileLocation));
+                    ob_clean();
+                    flush();
+                    readfile($fileLocation);
+                    exit;
+                }
             } elseif ($_REQUEST["crud"] == "editForm") {
                 $register = $model->fetchRecord();
                 $this->resultData["output"]["label"] = $model->label[$lang]." - ".$this->baseAppTranslation['edit'];
@@ -116,7 +149,41 @@ class controllerBase {
                 $this->resultData["output"]["crud"] = $fkCrud->getForm($fkRegister);
                 $showCrudList = false;
             } elseif ($_REQUEST["crud"] == "change") {
+                
+                if (count($fileFields)) {
+                    $register = $model->fetchRecord();
+                    foreach ($fileFields as $fileField) {
+                        
+                        if ($_FILES[$model->tables.'_'.$fileField]['name'] != "" and $register[$fileField] != "") {
+                            $fileLocation=$filesPath.$directorySeparator.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$register[$fileField];
+                            unlink($fileLocation);
+                            $_REQUEST[$model->tables.'_'.$fileField]=$_FILES[$model->tables.'_'.$fileField]['name'];
+                        }
+                        elseif ($register[$fileField] != "") {
+                            $_REQUEST[$model->tables.'_'.$fileField]=$register[$fileField];
+                        }
+                    }
+                }                  
+                
                 $model->updateRecord();
+                
+                if (count($fileFields)) {
+                    
+                    if (!file_exists($filesPath)) {
+                        mkdir($filesPath, '0777', TRUE);
+                    }
+                    
+                    foreach ($fileFields as $fileField) {
+                        
+                        if ($_FILES[$model->tables.'_'.$fileField]['name'] != "") {
+                            
+                            $newFileLocation=$filesPath.$directorySeparator.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$_FILES[$model->tables.'_'.$fileField]['name'];
+                            move_uploaded_file($_FILES[$model->tables.'_'.$fileField]['tmp_name'], $newFileLocation);
+                        }
+                        
+                    }
+                }                  
+                
             } elseif ($_REQUEST["crud"] == "fkChange") {
                 $fkModel=$model->foreignKeys[$_REQUEST['fkField']]['model'];
                 
@@ -126,8 +193,34 @@ class controllerBase {
 
                 $fkModel->updateRecord();
             } elseif ($_REQUEST["crud"] == "add") {
+                
+                if (count($fileFields)) {
+                    foreach ($fileFields as $fileField) {
+                        $_REQUEST[$model->tables.'_'.$fileField]=$_FILES[$model->tables.'_'.$fileField]['name'];
+                    }
+                }
                 $model->insertRecord();
+                if (count($fileFields)) {
+                    
+                    if (!file_exists($filesPath)) {
+                        mkdir($filesPath, '0777', TRUE);
+                    }
+                    
+                    $newId=$model->getLastInsertId();
+                    foreach ($fileFields as $fileField) {
+                        $newFileLocation=$filesPath.$directorySeparator.$newId.'_'.$_FILES[$model->tables.'_'.$fileField]['name'];
+                        move_uploaded_file($_FILES[$model->tables.'_'.$fileField]['tmp_name'], $newFileLocation);
+                    }
+                }                
+                
             } elseif ($_REQUEST["crud"] == "remove") {
+                if (count($fileFields)) {
+                    $register = $model->fetchRecord();
+                    foreach ($fileFields as $fileField) {
+                        $fileLocation=$filesPath.$directorySeparator.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$register[$fileField];
+                        unlink($fileLocation);
+                    }
+                }                 
                 $model->deleteRecord();
             }
         }

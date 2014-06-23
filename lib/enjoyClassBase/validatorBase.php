@@ -40,6 +40,9 @@ class validatorBase {
         }
         
         switch ($type) {
+            case "file":
+                return true;
+                break;
             case "number":
                 $validationMessage.=$this->baseAppTranslation["numericTypeValidation"];
                 if (is_numeric($value)) {
