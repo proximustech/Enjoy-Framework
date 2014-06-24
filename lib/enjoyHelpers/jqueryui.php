@@ -216,26 +216,33 @@ class table implements table_Interface {
                         <ul class='dropdown-menu'>";
                       
                 
-                foreach ($this->model->dependents as $parentField =>$keyFieldConfig) {
-                    $dependentModule=$keyFieldConfig['mod'];
-                    $dependentAction=$keyFieldConfig['act'];
-                    $dependentKeyField=$keyFieldConfig['keyField'];
-                    $dependentLabel=$keyFieldConfig['label'][$this->config["base"]["language"]];
+//                foreach ($this->model->dependents as $parentField =>$keyFieldConfig) {
+                foreach ($this->model->dependents as $parentField =>$parentFieldArray) {
+                    
+                    foreach ($parentFieldArray as $keyFieldNumber=>$keyFieldConfig) {
 
-                    if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
-                        $keyValue=$encryption->encode($resultRow[$parentField], $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
-                    }
-                    else{
-                        $keyValue=$resultRow[$parentField];
+                        $dependentModule=$keyFieldConfig['mod'];
+                        $dependentAction=$keyFieldConfig['act'];
+                        $dependentKeyField=$keyFieldConfig['keyField'];
+                        $dependentLabel=$keyFieldConfig['label'][$this->config["base"]["language"]];
+
+                        if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                            $keyValue=$encryption->encode($resultRow[$parentField], $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
+                        }
+                        else{
+                            $keyValue=$resultRow[$parentField];
+                        }
+
+                        $parameters[]="keyField=".$dependentKeyField;
+                        $parameters[]="keyValue=".$keyValue;
+                        $parameters[]="keyLabel=".$resultValue;
+                        $parameters[]="modelLabel=".$this->model->label[$this->config["base"]["language"]];
+
+                        $dependents.= "<li>".$navigator->action($dependentAction, $dependentLabel, $parameters,$dependentModule)."</li> ";
+    //                    $dependents.= " ".$navigator->action($dependentAction, $dependentLabel, $parameters,$dependentModule) ." ";
+                        
                     }
                     
-                    $parameters[]="keyField=".$dependentKeyField;
-                    $parameters[]="keyValue=".$keyValue;
-                    $parameters[]="keyLabel=".$resultValue;
-                    $parameters[]="modelLabel=".$this->model->label[$this->config["base"]["language"]];
-
-                    $dependents.= "<li>".$navigator->action($dependentAction, $dependentLabel, $parameters,$dependentModule)."</li> ";
-//                    $dependents.= " ".$navigator->action($dependentAction, $dependentLabel, $parameters,$dependentModule) ." ";
                 }
                 
                 $dependents.="</ul></div>";
@@ -484,7 +491,7 @@ class crud implements crud_Interface {
                     elseif ($type=='file') {
                         $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='file' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</td></tr>";
                     }                                        
-                    elseif ($type=='string') {
+                    elseif ($type=='string' or $type=="number") {
                         if ( $widget=='textarea') {
     
                             $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<textarea rows='4' rows='20' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</textarea></td></tr>";

@@ -47,15 +47,20 @@ class rolesModel extends modelBase {
         
         $this->dependents=array(
             "id"=>array(
-//                "selfCaptionField"=>"name",
-//                "model"=>&$usersModel,
-//                "modelFk"=>"role_id",
-                "mod"=>"users",
-                "act"=>"index",
-                "keyField"=>"id_role",
-                "label"=>array(
-                    "es_es" =>"Usuarios",
-                ),
+                
+                0=>array(
+    //                "selfCaptionField"=>"name",
+    //                "model"=>&$usersModel,
+    //                "modelFk"=>"role_id",
+                    "mod"=>"users",
+                    "act"=>"index",
+                    "keyField"=>"id_role",
+                    "label"=>array(
+                        "es_es" =>"Usuarios",
+                    ),
+                    
+                ),                
+                
             ),
             
         );
