@@ -48,9 +48,9 @@ class modController extends controllerBase {
     
     function setupApplications() {
         
+        $setUpApps=array();
         foreach ($this->config['appServerConfig']['apps'] as $app) {
             
-            $setUpApps=array();
             if (file_exists("./applications/$app/setup.php")) {
                 if (!file_exists("./applications/$app/installed")) {
                 
@@ -62,7 +62,7 @@ class modController extends controllerBase {
                     
                     if ($installed) {
                         $handle = fopen("./applications/$app/installed", "a+");
-                        fwrite($handle,"If this file exists, application setup WON'T be executed.\n");
+                        fwrite($handle,"If this file exists, application Setup WON'T be executed.\n");
                         fclose($handle);
                     }
                     

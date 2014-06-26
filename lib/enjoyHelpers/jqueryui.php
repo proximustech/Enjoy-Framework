@@ -350,7 +350,7 @@ class crud implements crud_Interface {
         $register=$security->filter($register);
 
         $html = "<br/><form id='crudForm' action='index.php' method='POST' enctype='multipart/form-data'><table>";
-        $html.="<input type='hidden' name='MAX_FILE_SIZE' value='100000000000000000000000000' />";
+//        $html.="<input type='hidden' name='MAX_FILE_SIZE' value='100000000000000000000000000' />";
 
         if ($register != null) {
             $editing = true;
@@ -559,6 +559,7 @@ class crud implements crud_Interface {
         
         $moduleName=$this->model->tables;
 
+        //Makes a detailed verification of the permissions becouse some times the $this->config['permission'] refers to a different module
         if (key_exists($moduleName, $_SESSION['userInfo']['privileges'][$this->config['flow']['app']])) {
             $modulePermissions=$_SESSION['userInfo']['privileges'][$this->config['flow']['app']][$moduleName];
             $addPermission=$security->checkCrudPermission('A', $modulePermissions);
@@ -661,6 +662,7 @@ class crud implements crud_Interface {
                     $('#modal-footer').html('<a href=\'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}&{$this->model->tables}_{$this->model->primaryKey}='+id+'&crud=remove\' class=\'btn btn-danger\'>{$this->baseAppTranslation["yes"]}</a><a class=\'btn\' data-dismiss=\'modal\' >{$this->baseAppTranslation["no"]}</a>');
                     $('#delete').modal('show');
                 }
+                window.history.replaceState( {} , 'List', 'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}' );
             </script>
 
         ";

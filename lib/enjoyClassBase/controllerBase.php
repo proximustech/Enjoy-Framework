@@ -148,7 +148,7 @@ class controllerBase {
                 $this->resultData["output"]["label"] = $fkModel->label[$lang]." - ".$this->baseAppTranslation['edit'];
                 $this->resultData["output"]["crud"] = $fkCrud->getForm($fkRegister);
                 $showCrudList = false;
-            } elseif ($_REQUEST["crud"] == "change") {
+            } elseif ($_REQUEST["crud"] == "change" and $this->config['permission']['change']) {
                 
                 if (count($fileFields)) {
                     $register = $model->fetchRecord();
@@ -170,7 +170,7 @@ class controllerBase {
                 if (count($fileFields)) {
                     
                     if (!file_exists($filesPath)) {
-                        mkdir($filesPath, '0770', TRUE);
+                        mkdir($filesPath, 0770, TRUE);
                     }
                     
                     foreach ($fileFields as $fileField) {
@@ -191,8 +191,68 @@ class controllerBase {
                     $_REQUEST[$fkModel->tables.'_'.$fkModel->primaryKey] = $encryption->decode($_REQUEST[$fkModel->tables.'_'.$fkModel->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
                 }
 
-                $fkModel->updateRecord();
-            } elseif ($_REQUEST["crud"] == "add") {
+                //Foreign Permission validation
+                $security= new security();
+                $fkModuleName=$fkModel->tables;
+
+                if (key_exists($fkModuleName, $_SESSION['userInfo']['privileges'][$this->config['flow']['app']]) or $this->config['permission']['isAdmin']) {
+                    $fkModulePermissions=$_SESSION['userInfo']['privileges'][$this->config['flow']['app']][$fkModuleName];
+                    $fkChangePermission=$security->checkCrudPermission('C', $fkModulePermissions);
+                    if ($fkChangePermission or $this->config['permission']['isAdmin']) {
+                        
+                        if ($this->config['appServerConfig']['base']['platform'] == 'windows')
+                            $ds = "\\"; //Directory Separator
+                        else
+                            $ds = "/";
+                        
+                        $fkFileFields = array();
+                        foreach ($fkModel->fieldsConfig as $field => $fieldConfig) {
+
+                            if ($fieldConfig['definition']['type'] == 'file') {
+                                $fkFileFields[] = $field;
+                            }
+
+                            $fkFilesPath = $this->config['appServerConfig']['base']['controlPath'] . "files" . $ds . $this->config['flow']['app'] . $ds . $fkModuleName . $ds . $field;
+                        }
+                        
+
+                        if (count($fkFileFields)) {
+                            $register = $fkModel->fetchRecord();
+                            foreach ($fkFileFields as $fileField) {
+
+                                if ($_FILES[$fkModel->tables.'_'.$fileField]['name'] != "" and $register[$fileField] != "") {
+                                    $fileLocation=$fkFilesPath.$ds.$_REQUEST[$fkModel->tables.'_'.$fkModel->primaryKey].'_'.$register[$fileField];
+                                    unlink($fileLocation);
+                                    $_REQUEST[$fkModel->tables.'_'.$fileField]=$_FILES[$fkModel->tables.'_'.$fileField]['name'];
+                                }
+                                elseif ($register[$fileField] != "") {
+                                    $_REQUEST[$fkModel->tables.'_'.$fileField]=$register[$fileField];
+                                }
+                            }
+                        }                   
+                        
+                        $fkModel->updateRecord();
+                        
+                        if (count($fkFileFields)) {
+
+                            if (!file_exists($fkFilesPath)) {
+                                mkdir($fkFilesPath, 0770, TRUE);
+                            }
+
+                            foreach ($fkFileFields as $fileField) {
+
+                                if ($_FILES[$fkModel->tables . '_' . $fileField]['name'] != "") {
+
+                                    $newFileLocation = $fkFilesPath . $ds . $_REQUEST[$fkModel->tables . '_' . $fkModel->primaryKey] . '_' . $_FILES[$fkModel->tables . '_' . $fileField]['name'];
+                                    move_uploaded_file($_FILES[$fkModel->tables . '_' . $fileField]['tmp_name'], $newFileLocation);
+                                }
+                            }
+                        }
+                    }
+                }                
+                
+                
+            } elseif ($_REQUEST["crud"] == "add" and $this->config['permission']['add']) {
                 
                 if (count($fileFields)) {
                     foreach ($fileFields as $fileField) {
@@ -203,7 +263,7 @@ class controllerBase {
                 if (count($fileFields)) {
                     
                     if (!file_exists($filesPath)) {
-                        mkdir($filesPath, '0770', TRUE);
+                        mkdir($filesPath, 0770, TRUE);
                     }
                     
                     $newId=$model->getLastInsertId();
@@ -213,7 +273,7 @@ class controllerBase {
                     }
                 }                
                 
-            } elseif ($_REQUEST["crud"] == "remove") {
+            } elseif ($_REQUEST["crud"] == "remove" and $this->config['permission']['remove']) {
                 if (count($fileFields)) {
                     $register = $model->fetchRecord();
                     foreach ($fileFields as $fileField) {

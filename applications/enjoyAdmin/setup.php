@@ -55,70 +55,155 @@ class enjoyAdminSetup {
         #Structure
         
         $sql="
-
-            CREATE TABLE IF NOT EXISTS `applications` (
-              `id` int(10) NOT NULL AUTO_INCREMENT,
-              `name` varchar(64) NOT NULL,
-              `test` varchar(64) NOT NULL,
+            -- -----------------------------------------------------
+            -- Table `enjoy_admin`.`applications`
+            -- -----------------------------------------------------
+            CREATE TABLE IF NOT EXISTS `enjoy_admin`.`applications` (
+              `id` INT(10) NOT NULL AUTO_INCREMENT,
+              `name` VARCHAR(254) NOT NULL,
               PRIMARY KEY (`id`),
-              UNIQUE KEY `name` (`name`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+              UNIQUE INDEX `name` (`name` ASC))
+            ENGINE = InnoDB;
 
-            CREATE TABLE IF NOT EXISTS `components` (
-              `id` bigint(20) NOT NULL AUTO_INCREMENT,
-              `id_app` smallint(6) NOT NULL,
-              `name` varchar(2048) NOT NULL,
-              PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-            CREATE TABLE IF NOT EXISTS `modules` (
-              `id` int(10) NOT NULL AUTO_INCREMENT,
-              `id_app` int(10) DEFAULT NULL,
-              `name` varchar(50) NOT NULL,
+            -- -----------------------------------------------------
+            -- Table `enjoy_admin`.`components`
+            -- -----------------------------------------------------
+            CREATE TABLE IF NOT EXISTS `enjoy_admin`.`components` (
+              `id` INT NOT NULL AUTO_INCREMENT,
+              `id_app` INT(10) NOT NULL,
+              `name` VARCHAR(254) NOT NULL,
               PRIMARY KEY (`id`),
-              UNIQUE KEY `name` (`name`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+              INDEX `fk_components_applications1_idx` (`id_app` ASC),
+              CONSTRAINT `fk_components_applications1`
+                FOREIGN KEY (`id_app`)
+                REFERENCES `enjoy_admin`.`applications` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE NO ACTION)
+            ENGINE = InnoDB;
 
-            CREATE TABLE IF NOT EXISTS `roles` (
-              `id` int(10) NOT NULL AUTO_INCREMENT,
-              `name` varchar(50) DEFAULT NULL,
+
+            -- -----------------------------------------------------
+            -- Table `enjoy_admin`.`modules`
+            -- -----------------------------------------------------
+            CREATE TABLE IF NOT EXISTS `enjoy_admin`.`modules` (
+              `id` INT(10) NOT NULL AUTO_INCREMENT,
+              `id_app` INT(10) NULL DEFAULT NULL,
+              `name` VARCHAR(254) NOT NULL,
               PRIMARY KEY (`id`),
-              UNIQUE KEY `name` (`name`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+              UNIQUE INDEX `name` (`name` ASC),
+              INDEX `fk_modules_applications1_idx` (`id_app` ASC),
+              CONSTRAINT `fk_modules_applications1`
+                FOREIGN KEY (`id_app`)
+                REFERENCES `enjoy_admin`.`applications` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE NO ACTION)
+            ENGINE = InnoDB;
 
-            CREATE TABLE IF NOT EXISTS `roles_applications` (
-              `id` bigint(20) NOT NULL AUTO_INCREMENT,
-              `id_role` bigint(20) NOT NULL,
-              `id_app` int(11) NOT NULL,
-              PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-            CREATE TABLE IF NOT EXISTS `roles_applications_components` (
-              `id` int(10) NOT NULL AUTO_INCREMENT,
-              `id_role_app` int(10) DEFAULT NULL,
-              `id_component` int(10) DEFAULT NULL,
-              `permission` tinyint(4) DEFAULT NULL,
-              PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='module permissions';
-
-            CREATE TABLE IF NOT EXISTS `roles_applications_modules` (
-              `id` bigint(20) NOT NULL AUTO_INCREMENT,
-              `id_role_app` int(10) NOT NULL,
-              `id_module` int(10) NOT NULL,
-              `permission` text,
-              PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='module permissions';
-
-            CREATE TABLE IF NOT EXISTS `users` (
-              `id` bigint(20) NOT NULL AUTO_INCREMENT,
-              `id_role` int(11) NOT NULL,
-              `user_name` varchar(64) NOT NULL,
-              `password` varchar(64) NOT NULL,
-              `active` int(10) DEFAULT NULL,
+            -- -----------------------------------------------------
+            -- Table `enjoy_admin`.`roles`
+            -- -----------------------------------------------------
+            CREATE TABLE IF NOT EXISTS `enjoy_admin`.`roles` (
+              `id` INT NOT NULL AUTO_INCREMENT,
+              `name` VARCHAR(254) NULL DEFAULT NULL,
               PRIMARY KEY (`id`),
-              UNIQUE KEY `user_name` (`user_name`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+              UNIQUE INDEX `name` (`name` ASC))
+            ENGINE = InnoDB;
 
+
+            -- -----------------------------------------------------
+            -- Table `enjoy_admin`.`roles_applications`
+            -- -----------------------------------------------------
+            CREATE TABLE IF NOT EXISTS `enjoy_admin`.`roles_applications` (
+              `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+              `id_role` INT NOT NULL,
+              `id_app` INT(10) NOT NULL,
+              PRIMARY KEY (`id`),
+              INDEX `fk_roles_applications_applications1_idx` (`id_app` ASC),
+              INDEX `fk_roles_applications_roles1_idx` (`id_role` ASC),
+              CONSTRAINT `fk_roles_applications_applications1`
+                FOREIGN KEY (`id_app`)
+                REFERENCES `enjoy_admin`.`applications` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE NO ACTION,
+              CONSTRAINT `fk_roles_applications_roles1`
+                FOREIGN KEY (`id_role`)
+                REFERENCES `enjoy_admin`.`roles` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE NO ACTION)
+            ENGINE = InnoDB;
+
+
+            -- -----------------------------------------------------
+            -- Table `enjoy_admin`.`roles_applications_components`
+            -- -----------------------------------------------------
+            CREATE TABLE IF NOT EXISTS `enjoy_admin`.`roles_applications_components` (
+              `id` INT(10) NOT NULL AUTO_INCREMENT,
+              `id_role_app` BIGINT(20) NOT NULL,
+              `id_component` INT NOT NULL,
+              `permission` TINYINT(4) NOT NULL,
+              PRIMARY KEY (`id`),
+              INDEX `fk_roles_applications_components_roles_applications1_idx` (`id_role_app` ASC),
+              INDEX `fk_roles_applications_components_components1_idx` (`id_component` ASC),
+              CONSTRAINT `fk_roles_applications_components_roles_applications1`
+                FOREIGN KEY (`id_role_app`)
+                REFERENCES `enjoy_admin`.`roles_applications` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE NO ACTION,
+              CONSTRAINT `fk_roles_applications_components_components1`
+                FOREIGN KEY (`id_component`)
+                REFERENCES `enjoy_admin`.`components` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE NO ACTION)
+            ENGINE = InnoDB
+            COMMENT = ' /* comment truncated */ /*module permissions*/'
+            ROW_FORMAT = COMPACT;
+
+
+            -- -----------------------------------------------------
+            -- Table `enjoy_admin`.`roles_applications_modules`
+            -- -----------------------------------------------------
+            CREATE TABLE IF NOT EXISTS `enjoy_admin`.`roles_applications_modules` (
+              `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+              `id_role_app` BIGINT(20) NOT NULL,
+              `id_module` INT(10) NOT NULL,
+              `permission` TEXT NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              INDEX `fk_roles_applications_modules_roles_applications1_idx` (`id_role_app` ASC),
+              INDEX `fk_roles_applications_modules_modules1_idx` (`id_module` ASC),
+              CONSTRAINT `fk_roles_applications_modules_roles_applications1`
+                FOREIGN KEY (`id_role_app`)
+                REFERENCES `enjoy_admin`.`roles_applications` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE NO ACTION,
+              CONSTRAINT `fk_roles_applications_modules_modules1`
+                FOREIGN KEY (`id_module`)
+                REFERENCES `enjoy_admin`.`modules` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE NO ACTION)
+            ENGINE = InnoDB
+            COMMENT = ' /* comment truncated */ /*module permissions*/';
+
+
+            -- -----------------------------------------------------
+            -- Table `enjoy_admin`.`users`
+            -- -----------------------------------------------------
+            CREATE TABLE IF NOT EXISTS `enjoy_admin`.`users` (
+              `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+              `id_role` INT NOT NULL,
+              `user_name` VARCHAR(254) NOT NULL,
+              `password` VARCHAR(254) NOT NULL,
+              `active` TINYINT NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE INDEX `user_name` (`user_name` ASC),
+              INDEX `fk_users_roles_idx` (`id_role` ASC),
+              CONSTRAINT `fk_users_roles`
+                FOREIGN KEY (`id_role`)
+                REFERENCES `enjoy_admin`.`roles` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE NO ACTION)
+            ENGINE = InnoDB;
 
         ";
         
