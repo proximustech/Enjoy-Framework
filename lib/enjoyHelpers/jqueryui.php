@@ -233,9 +233,11 @@ class table implements table_Interface {
                             $keyValue=$resultRow[$parentField];
                         }
 
+                        $resultRowValues = array_values($resultRow);
+                        
                         $parameters[]="keyField=".$dependentKeyField;
                         $parameters[]="keyValue=".$keyValue;
-                        $parameters[]="keyLabel=".$resultValue;
+                        $parameters[]="keyLabel=".$resultRowValues[1];
                         $parameters[]="modelLabel=".$this->model->label[$this->config["base"]["language"]];
 
                         $dependents.= "<li>".$navigator->action($dependentAction, $dependentLabel, $parameters,$dependentModule)."</li> ";
@@ -418,7 +420,22 @@ class crud implements crud_Interface {
                     $dataField=$this->model->foreignKeys[$field]['dataField'];
                     $fkModel=&$this->model->foreignKeys[$field]['model'];
                     
-                    $dataSource=$fkModel->getFieldData($keyField,$dataField);
+                    $fkOptions=array();
+                    if (key_exists("keyField", $_REQUEST)) {
+                        if ($_REQUEST['keyField']==$field  ) {
+                            
+                            if (!$editing) { //To allow changing the foreign key when editing
+                                $fkOptions['where'][]= $fkModel->tables.".{$fkModel->primaryKey}={$_REQUEST['keyValue']}";
+                            }
+                            
+                            $html.="<input type='hidden' id='keyField' name='keyField' value='{$_REQUEST['keyField']}'>";
+                            $html.="<input type='hidden' id='keyValue' name='keyValue' value='{$_REQUEST['keyValue']}'>";
+                            $html.="<input type='hidden' id='keyLabel' name='keyLabel' value='{$_REQUEST['keyLabel']}'>";
+                            $html.="<input type='hidden' id='modelLabel' name='modelLabel' value='{$fkModel->label[$this->appLang]}'>";
+                        }
+                    }
+
+                    $dataSource=$fkModel->getFieldData($keyField,$dataField,$fkOptions);
                     $dataSourceArray=$dataSource['results'];
                     
                 }
@@ -591,10 +608,19 @@ class crud implements crud_Interface {
         
         $results=$resultData['results'];
         $navigator = new navigator($this->config);
-        $createParams[] = "crud=createForm";
         
         $html = "<br/>";
         if ($this->config['permission']['add']) {
+            
+            $additionalFkParameters="";
+            if (key_exists("keyField", $_REQUEST)) {
+                $createParams[] = "keyField={$_REQUEST['keyField']}";
+                $createParams[] = "keyValue={$_REQUEST['keyValue']}";
+                $createParams[] = "keyLabel={$_REQUEST['keyLabel']}";
+                $createParams[] = "modelLabel={$_REQUEST['modelLabel']}";
+                $additionalFkParameters.=implode('&', $createParams);
+            }
+            $createParams[] = "crud=createForm";
             $html = "<div>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</div><br>";
         }
         
@@ -609,12 +635,19 @@ class crud implements crud_Interface {
 
         
 
-        if ($this->config['permission']['change'] or $this->config['permission']['view']) {
+        if ($this->config['permission']['change'] or $this->config['permission']['view']) {            
             $additionalFiledsConfig["actions"][0]["label"] = $this->baseAppTranslation["edit"];
             $additionalFiledsConfig["actions"][0]["mod"] = $this->config["flow"]["mod"];
             $additionalFiledsConfig["actions"][0]["act"] = $this->config["flow"]["act"];
             $additionalFiledsConfig["actions"][0]["fieldParameters"][] = $this->model->primaryKey;
             $additionalFiledsConfig["actions"][0]["parameters"][] = "crud=editForm";
+            
+            if (key_exists("keyField", $_REQUEST)) {
+                $additionalFiledsConfig["actions"][0]["parameters"][] = "keyField={$_REQUEST['keyField']}";
+                $additionalFiledsConfig["actions"][0]["parameters"][] = "keyValue={$_REQUEST['keyValue']}";
+                $additionalFiledsConfig["actions"][0]["parameters"][] = "keyLabel={$_REQUEST['keyLabel']}";
+            }               
+            
             
         }
         
@@ -659,10 +692,10 @@ class crud implements crud_Interface {
             <script>
                 function showDelete(id){
                     $('#modal-body').html('{$this->baseAppTranslation["deleteConfirmation"]}');
-                    $('#modal-footer').html('<a href=\'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}&{$this->model->tables}_{$this->model->primaryKey}='+id+'&crud=remove\' class=\'btn btn-danger\'>{$this->baseAppTranslation["yes"]}</a><a class=\'btn\' data-dismiss=\'modal\' >{$this->baseAppTranslation["no"]}</a>');
+                    $('#modal-footer').html('<a href=\'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}&{$this->model->tables}_{$this->model->primaryKey}='+id+'&crud=remove&$additionalFkParameters\' class=\'btn btn-danger\'>{$this->baseAppTranslation["yes"]}</a><a class=\'btn\' data-dismiss=\'modal\' >{$this->baseAppTranslation["no"]}</a>');
                     $('#delete').modal('show');
                 }
-                window.history.replaceState( {} , 'List', 'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}' );
+                window.history.replaceState( {} , 'List', 'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}&$additionalFkParameters' );
             </script>
 
         ";

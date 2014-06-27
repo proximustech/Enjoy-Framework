@@ -595,13 +595,13 @@ class modelBase {
     }
     
     /**
-     * Recursive Method to get caption data field asociated with a model throug the foreign keys
+     * Recursive Method to get the data field registers asociated with a model throug the foreign keys
      * @param type $keyField for example the id of the register
      * @param type $dataField for example other field of the register
      * @return array with the label or caption data field
      */
     
-    function getFieldData($keyField,$dataField) {
+    function getFieldData($keyField,$dataField,$options=array()) {
 
         if (key_exists($dataField, $this->foreignKeys)) {
             
@@ -609,7 +609,7 @@ class modelBase {
             $fkDataField = $this->foreignKeys[$dataField]['dataField'];
             
             $fkModel = &$this->foreignKeys[$dataField]['model'];
-            $results=$fkModel->getFieldData($fkKeyField,$fkDataField);
+            $results=$fkModel->getFieldData($fkKeyField,$fkDataField,$options);
             return $results;
             
             
