@@ -30,12 +30,12 @@ $config=array(
         //language => menu// last item points to a url
         
         "es_es"=>array(
-            "Usuarios" => "index.php?app=enjoyAdmin&mod=users",
             "Roles" => "index.php?app=enjoyAdmin&mod=roles",
+            "Usuarios" => "index.php?app=enjoyAdmin&mod=users",
             "Aplicaciones" => "index.php?app=enjoyAdmin&mod=applications",
             "Modulos de Aplicaciones" => "index.php?app=enjoyAdmin&mod=modules",
-            "Componentes" => "index.php?app=enjoyAdmin&mod=components",
             "Permisos de Modulos" => "index.php?app=enjoyAdmin&mod=roles_applications_modules",
+            "Componentes de Aplicaciones" => "index.php?app=enjoyAdmin&mod=components",
             "Permisos de Componentes" => "index.php?app=enjoyAdmin&mod=roles_applications_components",
             "Sitios Web" => array(
                 "Enjoy" => "http://www.enjoyframework.com/",

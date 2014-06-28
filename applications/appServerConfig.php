@@ -20,6 +20,7 @@ $appServerConfig=array(
         "basicExample",
         "jqDesktop",
         "enjoyAdmin",
+        "calendar",
     ),
    
 )
