@@ -35,8 +35,10 @@
             $(document).ready(function() {
                 
                 $("body").hide(0).delay(300).fadeIn(80); //Default Fade In
+                history.go = function(){};
                 
                 $('.crudTable').dataTable({
+                    "iDisplayLength": 50,
                     "bJQueryUI": true,
                     "sPaginationType": "full_numbers",
                     "oLanguage": {

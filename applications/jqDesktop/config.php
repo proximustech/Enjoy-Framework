@@ -23,6 +23,12 @@ $config=array(
                 ),
 
             ),
+            "userApps"=>array(
+                "apps"=>array(
+                    "calendar",
+                ),
+
+            ),
             
         ),
         "topMenuConfig"=>array(
@@ -31,6 +37,7 @@ $config=array(
                 "Men&uacute; Principal"=>array(
                     //submenu => desktop
                     "Herramientas Administrativas"=>"enjoyAdminTools",
+                    "Programas de Usuario"=>"userApps",
 
                 ),
             ),

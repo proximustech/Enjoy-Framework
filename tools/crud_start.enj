@@ -6,7 +6,7 @@ function creataDataRepFile($fileName,$app) {
     
     $content='<?php
 
-require_once "/lib/dataRepositories/interfaces.php";
+require_once "lib/dataRepositories/interfaces.php";
 
 class '.$app.'DataRep implements dataRep_Interface {
 
@@ -71,7 +71,7 @@ function createModel($fileName,$app,$module) {
 require_once "lib/enjoyClassBase/modelBase.php";
 require_once "applications/'.$app.'/modules/'.$module.'/models/table_'.$module.'.php";
 
-//require_once "applications/'.$app.'/modules/_*_/models/model_*_.php";
+//require_once "applications/'.$app.'/modules/---/models/model_---.php";
 
 
 class '.$module.'Model extends modelBase {
@@ -84,26 +84,25 @@ class '.$module.'Model extends modelBase {
         $this->fieldsConfig=$table->fieldsConfig;
         $this->primaryKey=$table->primaryKey;
         
-        //$_*_Model=new applicationsModel($dataRep,$config);
+        //$---Model=new ---Model($dataRep,$config);
                 
         $this->label=array(
             "es_es"=>"You Should set the label of the Module.",
         );
         
 //        $this->foreignKeys = array (
-//            "id_X" => array(
-//                "model"=>&$_*_Model,
-//                "keyField"=>"tableName.idPossibly",
+//            "---_id" => array(
+//                "model"=>&$---Model,
+//                "keyField"=>"theOthertableName.idPossibly",
 //                "dataField"=>"another Field of the foreign table with data",
 //             ),
 //        );
 
 //        $this->subModels=array( //For many to many relations for example
-
 //            0=>array(
-//                "model"=>&$_*_Model ,
+//                "model"=>&$---Model ,
 //                "linkerField"=>$this->primaryKey,
-//                "linkedField"=>"field that references this primary key",
+//                "linkedField"=>"external field that references this primary key",
 //                "linkedDataField"=>"similar as a foreignKey dataField",
 //                "type"=>"multiple",
 //            ),
@@ -111,18 +110,17 @@ class '.$module.'Model extends modelBase {
 
 //        $this->dependents=array(
 //            "id"=>array(
-//                "mod"=>"users",
-//                "act"=>"index",
-//                "keyField"=>"field referenced by the dependent table",
-//                "label"=>array(
-//                    "es_es" =>"Usuarios",
-//                ),
+//                0=>array(
+//                  "mod"=>"someModule",
+//                    "act"=>"index",
+//                    "keyField"=>"field of the dependent table that references here",
+//                    "label"=>array(
+//                        "es_es" =>"DependentCaption",
+//                    ),
+//                ),              
 //            ),
-            
 //        );
 
-
-        
     }
     
 }';
@@ -149,7 +147,7 @@ class table_'.$module.' {
                     "label" => array(
                         "es_es" => "Serial",
                     ),
-                    //"widget" => "text",
+                    //"widget" => "textarea",
                 ),
             ),
         );

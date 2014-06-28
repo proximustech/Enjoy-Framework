@@ -1,6 +1,6 @@
 <?php
 
-require_once '/lib/dataRepositories/interfaces.php';
+require_once 'lib/dataRepositories/interfaces.php';
 
 class enjoyAdminDataRep implements dataRep_Interface {
 

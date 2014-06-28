@@ -35,7 +35,7 @@ class roles_applications_modulesModel extends modelBase {
             "id_module" => array(
                 "model"=>&$modulesModel,
                 "keyField"=>'modules.id',
-                "dataField"=>"name",
+                "dataField"=>"_CONCAT(applications.name,'-',modules.name)",
              ),
             
         );
