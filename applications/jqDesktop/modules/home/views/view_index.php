@@ -1,14 +1,13 @@
 <?php  
-
     $viewLanguage=array(
         "es_es"=>array(
             "quit"=>"Salir",
         ),
         
     )
-
 ?>
-<html lang="en">
+<?php if($config['client']=='desktop'): ?>
+<html>
 
     <head>
         
@@ -149,3 +148,22 @@
     </body>
 
 </html>
+<?php else: ?>
+<div data-role="page" id="mainMenu" data-theme="a" ><!-- dialog-->
+    <div id="content" class="ui-content" role="main">
+        
+        <?php foreach ($topMenuConfig as $menu => $notUsted): ?>
+        
+            <div data-role="collapsible">
+                <h4><?php echo $menu; ?></h4>
+                <?php foreach ($topMenuConfig[$menu] as $subMenu => $targetDesktop): ?>
+                    <a class="ui-btn" href="index.php?app=jqDesktop&mod=home&act=getApps&desktopName=<?php echo $targetDesktop; ?>"  ><?php echo $subMenu; ?></a>
+                <?php endforeach; ?>
+            </div>        
+        
+        <?php endforeach; ?>
+        <a class="ui-btn" href="#" onclick="logout()" ><?php echo $viewLanguage[$language]['quit'] ?></a>
+        
+    </div>
+</div>   
+<?php endif; ?>

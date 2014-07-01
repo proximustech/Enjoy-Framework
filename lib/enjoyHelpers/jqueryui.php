@@ -66,8 +66,13 @@ class navigator implements navigator_Interface {
             $glyphicon="<span class='glyphicon glyphicon-share-alt'></span>";
         }
         
-
-        return "<a class='$class' href='index.php?app=$app&mod=$mod&act=$act&$parameters'>$glyphicon $label </a>";
+        if ($act!=null) {
+            return "<a class='$class' href='index.php?app=$app&mod=$mod&act=$act&$parameters'>$glyphicon $label </a>";
+        }
+        else{
+            return "<a class='$class' href='index.php?$parameters'>$glyphicon $label </a>";
+        }
+        
     }
 
 }
@@ -621,7 +626,21 @@ class crud implements crud_Interface {
                 $additionalFkParameters.=implode('&', $createParams);
             }
             $createParams[] = "crud=createForm";
-            $html = "<div>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</div><br>";
+            
+            $toolBar="";
+            if ($this->config['client'] != 'desktop') {
+                
+                $mobileMenuParams[]="app=jqDesktop";
+                $mobileMenuParams[]="mod=home";
+                $mobileMenuParams[]="act=getAppMenu";
+                $mobileMenuParams[]="desktopName={$_COOKIE["desktop"]}";
+                $mobileMenuParams[]="appName={$this->config['flow']['app']}";
+                
+                $toolBar.=$navigator->action(null, "glyphicon-th-list", $mobileMenuParams);
+                
+            }
+            
+            $html = "<div style='width:100%'><span style='text-align:left'>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style='text-align:right'>$toolBar</span></div><br>";
         }
         
 

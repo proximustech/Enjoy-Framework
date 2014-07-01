@@ -12,6 +12,32 @@ require_once 'lib/misc/error.php';
 
 
 /*
+ * Client Identification
+ */
+
+function getClient() {
+    
+    $client='desktop';
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    
+    if (strpos($user_agent, 'iPhone') !== FALSE) {
+        $client='mobile';
+    }
+    elseif (strpos($user_agent, 'iPad') !== FALSE) {
+        $client='mobile';
+    }
+    elseif (strpos($user_agent, 'Android') !== FALSE) {
+        $client='mobile';
+    }
+    elseif (strpos($user_agent, 'Explorer') !== FALSE) {
+        $client='mobile';
+    }
+    
+    return $client;
+    
+}
+
+/*
  * Error traping
  */
 
@@ -104,9 +130,13 @@ else{
 }
 
 
+$client=getClient();
+
 $config["flow"]["app"]=$app;
 $config["flow"]["mod"]=$mod;
 $config["flow"]["act"]=$act;
+$config["client"]=$client;
+
 $language=$config["base"]["language"];
 
 

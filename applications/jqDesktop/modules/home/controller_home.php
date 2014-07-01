@@ -19,9 +19,13 @@ class modController extends controllerBase {
         session_start();
         if ($_SESSION["status"] != 'in' and $act!='checkLogin'){
             $act="login";
-        }        
+        }
         parent::run($act);
         $this->resultData["useLayout"] = false;
+        $actionsWithLayout=array('getAppMenu','getApps');
+        if (in_array($act, $actionsWithLayout) or ($act=='index' and $this->config['client']=='mobile') ) {
+            $this->resultData["useLayout"] = true;
+        }
     }
     
     function loginAction() {
@@ -73,7 +77,13 @@ class modController extends controllerBase {
     function indexAction() {
         $this->resultData["output"]["topMenuConfig"] =$this->config['custom']['topMenuConfig'][$this->config['base']['language']];
     }
+    function getAppsAction() { //Used in the mobile version
+        $this->getDesktopAction();
+    }
+    function getAppMenuAction() {//Used in the mobile version
+        $this->getDesktopAction();
 
+    }
     
     function getDesktopAction() {
         
@@ -88,9 +98,12 @@ class modController extends controllerBase {
             $isAdmin=true;
         } else $isAdmin=false;
         
+        setcookie("desktop", $_REQUEST['desktopName']);
         
         $this->resultData["output"]["isAdmin"]=$isAdmin;
         $this->resultData["output"]["privileges"]=$_SESSION['userInfo']['privileges'];
+        $this->resultData["output"]["desktop"]=$_REQUEST['desktopName']; //Used in the mobile version
+        $this->resultData["output"]["app"]=$_REQUEST['appName']; //Used in the mobile version
         $this->resultData["output"]["desktopConfig"]=$desktopConfig;
         
     }
