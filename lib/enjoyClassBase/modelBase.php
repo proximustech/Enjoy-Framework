@@ -358,8 +358,15 @@ class modelBase {
                     
                     
                     if (substr($fkDataField,0,1)=='_') { //It is a computed field
-                        $fkDataField=substr($fkDataField, 1);
-                        $relatedFields[]="$fkDataField AS $field";
+                        
+                        if ($options['config']['dataFieldConversion']) {
+                            
+                            $fkDataField=substr($fkDataField, 1);
+                            $relatedFields[]="$fkDataField AS $field";
+                        }
+                        else
+                            $relatedFields[]=$this->tables.'.'.$field;
+                        
                     }
                     else{
                         if ($addField and $options['config']['dataFieldConversion'])

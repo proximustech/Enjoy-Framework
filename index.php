@@ -26,10 +26,13 @@ function getClient() {
     elseif (strpos($user_agent, 'iPad') !== FALSE) {
         $client='mobile';
     }
+    elseif (strpos($user_agent, 'iPod') !== FALSE) {
+        $client='mobile';
+    }
     elseif (strpos($user_agent, 'Android') !== FALSE) {
         $client='mobile';
     }
-    elseif (strpos($user_agent, 'Explorer') !== FALSE) {
+    elseif (strpos($user_agent, 'Windows Phone') !== FALSE) {
         $client='mobile';
     }
     
