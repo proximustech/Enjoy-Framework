@@ -31,6 +31,10 @@ interface table_Interface
     public function get($results,$headers,$additionalFiledsConfig=null);
 }
 
+interface messages_Interface
+{
+    public function errorMessage($message);
+}
 interface crud_Interface
 {
     /**

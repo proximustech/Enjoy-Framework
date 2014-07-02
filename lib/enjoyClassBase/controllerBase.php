@@ -78,6 +78,7 @@ class controllerBase {
     
     function crudAction($model,$dataRep) {
 
+        $messenger = new messages();
         $crud = new crud($model);
         $lang=$this->config["base"]["language"];
         $baseAppTranslations = new base_language();
@@ -259,7 +260,13 @@ class controllerBase {
                         $_REQUEST[$model->tables.'_'.$fileField]=$_FILES[$model->tables.'_'.$fileField]['name'];
                     }
                 }
-                $model->insertRecord();
+                try {
+                    $model->insertRecord();
+                } catch (Exception $exc) {
+                    $this->resultData["output"]["crud"] = $messenger->errorMessage($exc->getMessage());
+                    return;
+                }
+
                 if (count($fileFields)) {
                     
                     if (!file_exists($filesPath)) {

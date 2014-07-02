@@ -18,7 +18,7 @@ $config=array(
         
     ),
     "helpers"=>array(
-        "crud_listMaxLines"=>"50",
+        "crud_listMaxLines"=>"50000",
         "crud_encryptPrimaryKeys"=>true,
         
     ),

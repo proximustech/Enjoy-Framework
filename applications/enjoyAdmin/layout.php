@@ -26,7 +26,7 @@
 
         <style>
             .crudTable tr:hover  {
-                background-color: #BFE7F2 !important;
+                background-color: #00E7CA !important;
             }
 
         </style>
@@ -53,6 +53,9 @@
     </head>
 
     <body style="overflow: auto !important">
+<!--        <span class="btn-group">
+            <button type="button" class="btn btn-default" onclick="window.history.back();"><span class="glyphicon glyphicon-arrow-left"></span></button>
+        </span>-->
         <?php  require_once $viewFile;  ?>
     </body>
 </html>

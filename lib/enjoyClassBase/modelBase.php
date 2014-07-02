@@ -56,13 +56,15 @@ class modelBase {
         $validationResult=$validator->validateFields($register);
         
         if ($validationResult!== true) {
-            exit($validationResult);
+            throw new Exception($validationResult);
+//            exit($validationResult);
         }
         
         $validationResult=$validator->validateRegister($register);
         
         if ($validationResult!== true) {
-            exit($validationResult);
+            throw new Exception($validationResult);
+//            exit($validationResult);
         }
         
         $this->insert($options);

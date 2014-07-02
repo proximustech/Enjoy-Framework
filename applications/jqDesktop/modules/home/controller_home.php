@@ -79,6 +79,17 @@ class modController extends controllerBase {
     }
     function getAppsAction() { //Used in the mobile version
         $this->getDesktopAction();
+        $topMenuConfig=$this->config['custom']['topMenuConfig'][$this->config['base']['language']];
+        
+        foreach ($topMenuConfig as $menu => $notUsted){
+            foreach ($topMenuConfig[$menu] as $subMenu => $targetDesktop){
+                if ($targetDesktop==$_REQUEST['desktopName']) {
+                    break;
+                }
+            }
+        }
+
+        $this->resultData["output"]["header"] =$subMenu;        
     }
     function getAppMenuAction() {//Used in the mobile version
         $this->getDesktopAction();

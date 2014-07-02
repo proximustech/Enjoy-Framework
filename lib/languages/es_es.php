@@ -16,6 +16,8 @@ class base_language {
         "operations" => "Operaciones",
         "yes" => "Si",
         "no" => "No",
+        "back" => "Atras",
+        "cancel" => "Cancelar",
         "deleteConfirmation" => "Desea eliminar el registro?",
         
         //Validation

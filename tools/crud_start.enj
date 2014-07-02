@@ -158,7 +158,8 @@ class table_'.$module.' {
 }
 function createView($fileName) {
     
-    $content='<h2><?php  echo $label  ?></h2>
+    $content='<span style="font-size: xx-large;">&nbsp;&nbsp;<?php  echo $label  ?></span>
+<br/>
 <?php echo $crud  ?>';
     
     createFile($fileName,$content);

@@ -5,6 +5,23 @@ require_once 'lib/misc/security.php';
 require_once 'lib/misc/encryption.php';
 
 
+class messages implements messages_Interface{
+    public function errorMessage($message) {
+
+        $html='
+        <div class="alert alert-danger fade in" role="alert">
+            <button class="close" data-dismiss="alert" type="button"></button>
+            <h4></h4>
+            <p>
+                '.$message.'
+            </p>
+            <p>
+                <button class="btn btn-warning" type="button" onclick="history.back();"><span class="glyphicon glyphicon-arrow-left"></span></button>
+            </p>
+        </div>';
+        return $html;
+    }
+}
 
 class navigator implements navigator_Interface {
 
@@ -199,8 +216,13 @@ class table implements table_Interface {
 
                         $parameters[]="fileField=$field";
                         $parameters[]="crud=downloadFile";
-                        $parameters[] = "{$this->model->tables}_{$this->model->primaryKey}=" . $resultRow[$this->model->primaryKey];
-
+                        
+                        if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                            $parameters[] = "{$this->model->tables}_{$this->model->primaryKey}=" . $encryption->encode($resultRow[$this->model->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
+                        }
+                        else{
+                            $parameters[] = "{$this->model->tables}_{$this->model->primaryKey}=" . $resultRow[$this->model->primaryKey];
+                        }
                         $downloadCode= $navigator->action($this->config['flow']['act'], "glyphicon-download", $parameters);                
                     }
                     
@@ -588,10 +610,13 @@ class crud implements crud_Interface {
             $changePermission=$security->checkCrudPermission('C', $modulePermissions);
         }
 
+        $submitButton="";
         if ($changePermission and $editing or ( $addPermission and !$editing ) or $this->config['permission']['isAdmin'] ) {
-            $html.="<tr><td colspan='2'><br/><button class='btn btn-info' onclick='document.getElementById('crudForm').submit();' ><span class='glyphicon glyphicon-floppy-disk'></span> " . $this->baseAppTranslation["save"] . "</button></td></tr>";
+            $submitButton="<button class='btn btn-info' onclick=\"document.getElementById('crudForm').submit();\" ><span class='glyphicon glyphicon-floppy-disk'></span> " . $this->baseAppTranslation["save"] . "</button>";
         }
 
+        $html.="<tr><td colspan='2'><br/><a class='btn btn-warning' href='javascript:history.back();' ><span class='glyphicon glyphicon-arrow-left'></span> " . $this->baseAppTranslation["cancel"] . "</a>&nbsp;&nbsp;$submitButton</td></tr>";
+        
         $html.="<input type='hidden' id='app' name='app' value='$app'>";
         $html.="<input type='hidden' id='mod' name='mod' value='$mod'>";
         $html.="<input type='hidden' id='act' name='act' value='$act'>";
@@ -640,7 +665,7 @@ class crud implements crud_Interface {
                 
             }
             
-            $html = "<div style='width:100%'><span style='text-align:left'>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style='text-align:right'>$toolBar</span></div><br>";
+            $html = "<div style='width:100%'><span style='text-align:left'>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</span><span style='width:10%;text-align:right;position:absolute'>$toolBar</span></div><br>";
         }
         
 

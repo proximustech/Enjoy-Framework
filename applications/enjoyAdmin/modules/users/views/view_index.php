@@ -1,2 +1,3 @@
-<h2><?php  echo $label  ?></h2>
+<span style="font-size: xx-large;">&nbsp;&nbsp;<?php  echo $label  ?></span>
+<br/>
 <?php echo $crud  ?>

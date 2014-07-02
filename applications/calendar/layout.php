@@ -26,7 +26,7 @@
 
         <style>
             .crudTable tr:hover  {
-                background-color: #BFE7F2 !important;
+                background-color: #00E7CA !important;
             }
 
         </style>
