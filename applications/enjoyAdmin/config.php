@@ -22,10 +22,6 @@ $config=array(
         "crud_encryptPrimaryKeys"=>true,
         
     ),
-    "custom"=>array(
-        "controlPath"=>"control/",
-        
-    ),
     "menu"=>array(
         //language => menu// last item points to a url
         

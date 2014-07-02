@@ -14,8 +14,8 @@ class calendarDataRep implements dataRep_Interface {
         
         $this->host	= "localhost";
         $this->dbname 	= "enjoy_calendar";
-        $this->username = "root";
-        $this->password = "samsung";        
+        $this->username = "";
+        $this->password = "";        
         
     }
 

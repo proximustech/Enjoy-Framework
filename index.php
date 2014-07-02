@@ -152,8 +152,6 @@ $applicationDataRepDir="applications/$app/dataRep/";
 $moduleDataRepDir="applications/$app/modules/$mod/dataRep/";
 
 
-require_once 'dataRep/appServer_dataRep.php';
-
 /*
  * Permissions set
  */

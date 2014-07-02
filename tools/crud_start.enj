@@ -203,6 +203,9 @@ else
  * Start
  */
 
+if (count($argv) < 3) {
+    exit ("\r\ncrud_start.enj Builds the crud structure.\r\nEj:php crud_start.enj \"appName\" \"module1,module2,etc\")\r\nRemember to have correspondence between the names of the modules and the DB tables.\r\n\r\n");
+}
 
 $app=$argv[1];
 $modules=$argv[2];

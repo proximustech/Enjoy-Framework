@@ -9,7 +9,7 @@ class messages implements messages_Interface{
     public function errorMessage($message) {
 
         $html='
-        <div class="alert alert-danger fade in" role="alert">
+        <div class="alert alert-danger fade in" role="alert" style="width:50%">
             <button class="close" data-dismiss="alert" type="button"></button>
             <h4></h4>
             <p>
