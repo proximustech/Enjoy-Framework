@@ -9,7 +9,7 @@ class modController extends controllerBase {
         
         $messages=array();
         
-        $hashTextError="Error: The ['appServerConfig']['encryption']['hashText'] setting in applications/appServerConfig.php MUST BE set with any long string and SHOULD NOT BE empty.";
+        $hashTextError="Error: The \$appServerConfig['encryption']['hashText'] setting in applications/appServerConfig.php MUST BE set with any long string and SHOULD NOT BE empty.";
         if (isset($this->config['appServerConfig']['encryption']['hashText'])) {
             if ($this->config['appServerConfig']['encryption']['hashText']!='') {
                 if (!file_exists($this->config['appServerConfig']['base']['controlPath'])) {

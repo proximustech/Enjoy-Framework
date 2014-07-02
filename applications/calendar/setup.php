@@ -2,7 +2,7 @@
 
 require_once "./applications/calendar/dataRep/app_dataRep.php"; //Brings app_dataRep()
 
-class enjoyAdminSetup {
+class calendarSetup {
 
     var $dataRep;
     var $appServerConfig;

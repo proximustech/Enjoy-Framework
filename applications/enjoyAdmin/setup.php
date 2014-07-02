@@ -14,7 +14,7 @@ class enjoyAdminSetup {
     
     function run() {
         
-        $adminUserError="Error: The ['appServerConfig']['base']['adminUser'] setting in appServerConfig.php MUST BE set with any string and SHOULD NOT BE empty.";
+        $adminUserError="Error: The \$appServerConfig['base']['adminUser'] setting in appServerConfig.php MUST BE set with any string and SHOULD NOT BE empty.";
         
         if (!isset($this->appServerConfig['base']['adminUser'])) {
             return array(false,$adminUserError);
@@ -216,46 +216,91 @@ class enjoyAdminSetup {
         $e_dbIdentifier=new e_dbIdentifier($this->dataRep,$this->appServerConfig);
         $adminPassword = $e_dbIdentifier->encodePassword($this->appServerConfig['base']['adminUser']); //Example: user "admin", password "admin"
         
-        $sql="
-            INSERT INTO `roles` ( `name`) 
-                VALUES ('Administrator');
-        ";
-            
-        $query = $this->dataRep->prepare($sql);
-        $query->execute();
-    
-        $sql="
-            INSERT INTO `users` ( `user_name`, `password`, `active`, `id_role`) 
-                VALUES ('{$this->appServerConfig['base']['adminUser']}', '$adminPassword', 1,1);
-        ";
-            
-        $query = $this->dataRep->prepare($sql);
-        $query->execute();
         
-        $sql="
-            INSERT INTO `applications` ( `name`) 
-                VALUES ('enjoyAdmin');
-        ";
-            
+        $sql="SELECT * FROM roles";
         $query = $this->dataRep->prepare($sql);
         $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);        
+        
+        if (count($results)==0) {
+
+            $sql="
+                INSERT INTO `roles` ( `name`) 
+                    VALUES ('Administrator');
+            ";
+
+            $query = $this->dataRep->prepare($sql);
+            $query->execute();
+            
+            $sql = "SELECT LAST_INSERT_ID() AS lastId";
+
+            $query = $this->dataRep->prepare($sql);
+            $query->execute();
+            $results = $query->fetchAll(PDO::FETCH_ASSOC);
+            $roleId=$results[0]["lastId"];                
+            
+            
+        } else $roleId=$results[0]["id"];
+        
+        $sql="SELECT * FROM users WHERE user_name='{$this->appServerConfig['base']['adminUser']}'";
+        $query = $this->dataRep->prepare($sql);
+        $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);        
+        
+        if (count($results)==0) {
+
+            $sql="
+                INSERT INTO `users` ( `user_name`, `password`, `active`, `id_role`) 
+                    VALUES ('{$this->appServerConfig['base']['adminUser']}', '$adminPassword', 1,$roleId);
+            ";
+
+            $query = $this->dataRep->prepare($sql);
+            $query->execute();
+            
+        }
+
+        $sql="SELECT * FROM applications WHERE name='enjoyAdmin'";
+        $query = $this->dataRep->prepare($sql);
+        $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);        
+        
+        if (count($results)==0) {        
+
+            $sql="
+                INSERT INTO `applications` ( `name`) 
+                    VALUES ('enjoyAdmin');
+            ";
+
+            $query = $this->dataRep->prepare($sql);
+            $query->execute();
+            
+            $sql = "SELECT LAST_INSERT_ID() AS lastId";
+
+            $query = $this->dataRep->prepare($sql);
+            $query->execute();
+            $results = $query->fetchAll(PDO::FETCH_ASSOC);
+            $appId=$results[0]["lastId"];  
+            
+            $sql="
+                INSERT INTO 
+                    `modules` (`id_app`, `name`) 
+                VALUES
+                    ($appId, 'users'),
+                    ($appId, 'roles'),
+                    ($appId, 'applications'),
+                    ($appId, 'roles_applications'),
+                    ($appId, 'modules'),
+                    ($appId, 'components'),
+                    ($appId, 'roles_applications_components'),
+                    ($appId, 'roles_applications_modules')
+            ";
+
+            $query = $this->dataRep->prepare($sql);
+            $query->execute();            
+        
+        }
     
-        $sql="
-            INSERT INTO 
-                `modules` (`id_app`, `name`) 
-            VALUES
-                (1, 'users'),
-                (1, 'roles'),
-                (1, 'applications'),
-                (1, 'roles_applications'),
-                (1, 'modules'),
-                (1, 'components'),
-                (1, 'roles_applications_components'),
-                (1, 'roles_applications_modules')
-        ";
-            
-        $query = $this->dataRep->prepare($sql);
-        $query->execute();
+
     
     }
 
