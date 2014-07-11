@@ -445,6 +445,10 @@ class modelBase {
         $sql = "SELECT $fields FROM $tables $whereSql $additionalSql";
 
         try {
+            if (key_exists('set', $options['config'])) {
+                $this->dataRep->exec("SET CHARACTER SET {$options['config']['set']}");
+            }
+            
             $query = $this->dataRep->prepare($sql);
             $query->execute();
             $results = $query->fetchAll(PDO::FETCH_ASSOC);

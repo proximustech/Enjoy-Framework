@@ -456,7 +456,15 @@ class crud implements crud_Interface {
                             }
                             
                             $html.="<input type='hidden' id='keyField' name='keyField' value='{$_REQUEST['keyField']}'>";
-                            $html.="<input type='hidden' id='keyValue' name='keyValue' value='{$_REQUEST['keyValue']}'>";
+                            
+                            if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                                $keyValue = $encryption->encode($_REQUEST['keyValue'], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+                            }
+                            else{
+                                $keyValue=$_REQUEST['keyValue'];
+                            }                            
+                            
+                            $html.="<input type='hidden' id='keyValue' name='keyValue' value='$keyValue'>";
                             $html.="<input type='hidden' id='keyLabel' name='keyLabel' value='{$_REQUEST['keyLabel']}'>";
                             $html.="<input type='hidden' id='modelLabel' name='modelLabel' value='{$fkModel->label[$this->appLang]}'>";
                         }
@@ -638,6 +646,7 @@ class crud implements crud_Interface {
         
         $results=$resultData['results'];
         $navigator = new navigator($this->config);
+        $encryption= new encryption();
         
         $html = "<br/>";
         if ($this->config['permission']['add']) {
@@ -645,7 +654,15 @@ class crud implements crud_Interface {
             $additionalFkParameters="";
             if (key_exists("keyField", $_REQUEST)) {
                 $createParams[] = "keyField={$_REQUEST['keyField']}";
-                $createParams[] = "keyValue={$_REQUEST['keyValue']}";
+                
+                if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                    $keyValue = $encryption->encode($_REQUEST['keyValue'], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+                }
+                else{
+                    $keyValue=$_REQUEST['keyValue'];
+                }                    
+                
+                $createParams[] = "keyValue=$keyValue";
                 $createParams[] = "keyLabel={$_REQUEST['keyLabel']}";
                 $createParams[] = "modelLabel={$_REQUEST['modelLabel']}";
                 $additionalFkParameters.=implode('&', $createParams);
