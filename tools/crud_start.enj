@@ -174,7 +174,7 @@ require_once "lib/enjoyClassBase/controllerBase.php";
 class modController extends controllerBase {
 
     function indexAction() {
-        $this->crudAction($this->baseModel,$this->dataRep);
+        $this->crud($this->baseModel,$this->dataRep);
     }
 
 }';
@@ -201,6 +201,9 @@ $config=array(
         "errorLog"=>false,
         "debug"=>false,
         "useAuthentication"=>true, //Defines if the application use permissions schema
+        "publicActions"=>array( //In concordance with useAuthentication = true when some action modules does not require authentication
+            "module"=>array("action",),
+        ),         
         
     ),
     "helpers"=>array(
@@ -241,7 +244,7 @@ function createLayoutFile($fileName) {
         <link rel="stylesheet" href="assets/js/jquery/plugins/dataTables/media/css/jquery.dataTables_themeroller.css" />
 
         <link href="assets/js/jquery/plugins/bootstrap/bootstrap.min.css" rel="stylesheet">
-        <link href="assets/js/jquery/plugins/bootstrap/bootstrap.theme.min.css" rel="stylesheet">
+        <link href="assets/js/jquery/plugins/bootstrap/bootstrap-theme.min.css" rel="stylesheet">
         <script src="assets/js/jquery/plugins/bootstrap/bootstrap.min.js"></script>
 
         <style>
@@ -279,13 +282,13 @@ function createLayoutFile($fileName) {
     
     createFile($fileName,$content);
 }
-function createSetupFile($fileName,$appName) {
+function createSetupFile($fileName,$app) {
     
     $content='<?php
 
-require_once "./applications/'.$appName.'/dataRep/app_dataRep.php"; //Brings app_dataRep()
+require_once "./applications/'.$app.'/dataRep/app_dataRep.php"; //Brings app_dataRep()
 
-class '.$appName.'Setup {
+class '.$app.'Setup {
 
     var $dataRep;
     var $appServerConfig;
@@ -296,7 +299,7 @@ class '.$appName.'Setup {
     
     function run() {
         
-        $dataRepObject = new calendarDataRep();
+        $dataRepObject = new '.$app.'DataRep();
         
         try {
             $this->dataRep = $dataRepObject->getInstance();

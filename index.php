@@ -93,7 +93,14 @@ $_REQUEST=$security->filter($_REQUEST,true);
 require_once "applications/appServerConfig.php"; //Expose variable $appServerConfig
 
 $app=$appServerConfig["base"]["defaultApp"];
-$config["appServerConfig"]=$appServerConfig; //Asigned if Unrecognized Application is thrown
+
+if (key_exists("domains", $appServerConfig["base"])) {
+    if (key_exists($_SERVER['SERVER_NAME'], $appServerConfig["base"]["domains"])) {
+        $app=$appServerConfig["base"]["domains"][$_SERVER['SERVER_NAME']];
+    }
+}
+
+$config["appServerConfig"]=$appServerConfig;
 
 if (isset($INNER)) {
     $app=$INNER["app"];
@@ -180,7 +187,23 @@ if (isset($config['base']['useAuthentication'])) {
                 $config['permission']['remove']=$security->checkCrudPermission('R', $modulePermissions);
                 
             }
-        } else throw new Exception('Authentication error.');
+        } else {
+            
+            $authError=true;
+            if (key_exists('publicActions', $config['base'])) {
+                if (key_exists($mod, $config['base']['publicActions'])) {
+                    if (in_array($act, $config['base']['publicActions'][$mod])) {
+                        $authError=false;
+                    }
+                }
+                
+            }
+            
+            if ($authError) {
+                throw new Exception('Authentication error.');
+            }
+            
+        }
     }
     else{
         $config['permission']['isAdmin']=true;

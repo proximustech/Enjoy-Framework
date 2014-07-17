@@ -76,7 +76,7 @@ class controllerBase {
      * @return string html of the crud result
      */
     
-    function crudAction($model,$dataRep) {
+    function crud($model,$dataRep) {
 
         $messenger = new messages();
         $crud = new crud($model);

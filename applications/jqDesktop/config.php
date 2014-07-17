@@ -26,6 +26,7 @@ $config=array(
             "userApps"=>array(
                 "apps"=>array(
                     "calendar",
+                    "cms",
                 ),
 
             ),

@@ -29,7 +29,7 @@ class modController extends controllerBase {
             unset($_REQUEST['users_password']); //Avoid saving password if empty
         }
         
-        $crudResult=$this->crudAction($this->baseModel,$this->dataRep);
+        $crudResult=$this->crud($this->baseModel,$this->dataRep);
         
         if ($crudResult=='ok') {
             if ($_REQUEST["crud"] == "add" or $_REQUEST["crud"] == "change" ) {

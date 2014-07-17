@@ -705,7 +705,7 @@ class crud implements crud_Interface {
             
             if (key_exists("keyField", $_REQUEST)) {
                 $additionalFiledsConfig["actions"][0]["parameters"][] = "keyField={$_REQUEST['keyField']}";
-                $additionalFiledsConfig["actions"][0]["parameters"][] = "keyValue={$_REQUEST['keyValue']}";
+                $additionalFiledsConfig["actions"][0]["parameters"][] = "keyValue=$keyValue";
                 $additionalFiledsConfig["actions"][0]["parameters"][] = "keyLabel={$_REQUEST['keyLabel']}";
             }               
             

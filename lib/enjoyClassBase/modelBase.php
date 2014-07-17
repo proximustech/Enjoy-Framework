@@ -401,8 +401,6 @@ class modelBase {
         }
         
         if (count($options)) {
-            list($whereSql, $additionalSql, $fields) = $this->getSqlConf($options);
-
             $getTotal = false;
             if (key_exists("additional", $options)) {
                 foreach ($options["additional"] as $additionalComponent) {
@@ -413,34 +411,50 @@ class modelBase {
                 }
             }
 
-
             if ($getTotal) {
-                $sql = "SELECT count(*) AS total FROM $this->tables $whereSql $additionalSql";
+                if (key_exists('where', $options)) {
+                    foreach ($this->subModels as $subModelEnry => $subModelConfig) {
 
-                try {
-                    $query = $this->dataRep->prepare($sql);
-                    $query->execute();
-                    $results = $query->fetchAll(PDO::FETCH_ASSOC);
-                    $resultArray["totalRegisters"] = $results[0]["total"];
-                } catch (Exception $exc) {
-                    $error = new error($this->config);
-                    $error->show("SQL Error : " . $sql, $exc);
-                }
+                        $subModel=&$subModelConfig['model'];
+                        $linkerField=$subModelConfig['linkerField'];
+                        $linkedField=$subModelConfig['linkedField'];
+
+                        $relatedTables[]=$subModel->tables;
+                        $relatedOptions['where'][]=$this->tables.'.'.$linkerField.'='.$subModel->tables.'.'.$linkedField;
+
+                    }   
+                }                  
             }
         }
 
         $tables=implode(',',$relatedTables);
-        
         $options['fields']=$relatedFields;
-        
         if (key_exists('where', $relatedOptions)) {
             foreach ($relatedOptions['where'] as $relatedCondition) {
                 $options['where'][]=$relatedCondition;
             }
     
-        }
+        }        
+        
         
         list($whereSql, $additionalSql, $fields) = $this->getSqlConf($options);
+        
+        if ($getTotal) {
+
+            $sql = "SELECT count(*) AS total FROM $tables $whereSql $additionalSql";
+
+            try {
+                $query = $this->dataRep->prepare($sql);
+                $query->execute();
+                $results = $query->fetchAll(PDO::FETCH_ASSOC);
+                $resultArray["totalRegisters"] = $results[0]["total"];
+            } catch (Exception $exc) {
+                $error = new error($this->config);
+                $error->show("SQL Error : " . $sql, $exc);
+            }
+
+        }        
+        
         
         $sql = "SELECT $fields FROM $tables $whereSql $additionalSql";
 
@@ -456,10 +470,6 @@ class modelBase {
             $error= new error($this->config);
             $error->show("SQL Error : " . $sql, $exc);
         }
-
-
-
-
 
         $resultArray["results"] = $results;
 
