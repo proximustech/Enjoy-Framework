@@ -77,7 +77,10 @@ class navigator implements navigator_Interface {
         elseif (substr($label,0,9)=='glyphicon') {
             $glyphicon="<span class='glyphicon $label'></span>";
             $class="btn btn-sm btn-info";
-            $label="";
+            
+            if ($label=="glyphicon-th-list") {
+                $label="Menu";
+            }else $label="";
         }
         else {
             $glyphicon="<span class='glyphicon glyphicon-share-alt'></span>";
@@ -239,7 +242,7 @@ class table implements table_Interface {
                 
                 $dependents.="
                     <div class='btn-group'>
-                        <button class='btn btn-inverse dropdown-toggle' data-toggle='dropdown'><span class='caret'></span></button>
+                        <button class='btn btn-inverse dropdown-toggle' data-toggle='dropdown'>&nbsp;<span class='caret'></span>&nbsp;</button>
                         <ul class='dropdown-menu'>";
                       
                 
@@ -682,7 +685,7 @@ class crud implements crud_Interface {
                 
             }
             
-            $html = "<div style='width:100%'><span style='text-align:left'>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</span><span style='width:10%;text-align:right;position:absolute'>$toolBar</span></div><br>";
+            $html = "<div style='width:100%'><span style='text-align:left'>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</span><span style='width:80%;text-align:right;position:absolute'>$toolBar</span></div><br>";
         }
         
 
