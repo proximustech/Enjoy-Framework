@@ -94,9 +94,9 @@ require_once "applications/appServerConfig.php"; //Expose variable $appServerCon
 
 $app=$appServerConfig["base"]["defaultApp"];
 
-if (key_exists("domains", $appServerConfig["base"])) {
-    if (key_exists($_SERVER['SERVER_NAME'], $appServerConfig["base"]["domains"])) {
-        $app=$appServerConfig["base"]["domains"][$_SERVER['SERVER_NAME']];
+if (key_exists("domains", $appServerConfig)) {
+    if (key_exists($_SERVER['SERVER_NAME'], $appServerConfig["domains"])) {
+        $app=$appServerConfig["domains"][$_SERVER['SERVER_NAME']];
     }
 }
 
