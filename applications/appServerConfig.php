@@ -20,6 +20,10 @@ $appServerConfig=array(
         "jqDesktop",
         "enjoyAdmin",
         "calendar",
+        "cms",
+    ),
+    "domains"=>array( //To asociate domains with certain application
+        //"domain"=>"application",
     ),
    
 )
