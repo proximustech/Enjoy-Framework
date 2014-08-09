@@ -68,11 +68,11 @@ class error {
                 <div id='debugInfo' style='font-size:12px;'>
                     <ul>
                         <li><a href='#general'>General</a></li>
-						<li><a href='#get'>\$_GET</a></li>
-						<li><a href='#post'>\$_POST</a></li>
-						<li><a href='#request'>\$_REQUEST</a></li>
-						<li><a href='#session'>\$_SESSION</a></li>
-						<li><a href='#cookie'>\$_COOKIE</a></li>
+                        <li><a href='#get'>\$_GET</a></li>
+                        <li><a href='#post'>\$_POST</a></li>
+                        <li><a href='#request'>\$_REQUEST</a></li>
+                        <li><a href='#session'>\$_SESSION</a></li>
+                        <li><a href='#cookie'>\$_COOKIE</a></li>
                     </ul>
                     <div id='general'>";
 

@@ -34,6 +34,7 @@ interface table_Interface
 interface messages_Interface
 {
     public function errorMessage($message);
+    public function operationStatus($message,$okOperation);
 }
 interface crud_Interface
 {

@@ -99,6 +99,7 @@ class controllerBase {
 
         if (key_exists("crud", $_REQUEST)) {
             
+            $showOperationStatus = false;
             $fileFields=array();
             foreach ($model->fieldsConfig as $field => $fieldConfig) {
                 
@@ -151,6 +152,8 @@ class controllerBase {
                 $showCrudList = false;
             } elseif ($_REQUEST["crud"] == "change" and $this->config['permission']['change']) {
                 
+                $showOperationStatus = true;
+                
                 if (count($fileFields)) {
                     $register = $model->fetchRecord();
                     foreach ($fileFields as $fileField) {
@@ -166,8 +169,15 @@ class controllerBase {
                     }
                 }                  
                 
-                $model->updateRecord();
-                
+                try {
+                    $okOperation=$model->updateRecord();
+                } catch (Exception $exc) {
+                    $this->resultData["output"]["crud"] = $messenger->errorMessage($exc->getMessage());
+                    return;
+                }
+
+
+
                 if (count($fileFields)) {
                     
                     if (!file_exists($filesPath)) {
@@ -183,9 +193,12 @@ class controllerBase {
                         }
                         
                     }
-                }                  
+                }
                 
             } elseif ($_REQUEST["crud"] == "fkChange") {
+                
+                $showOperationStatus = true;
+                
                 $fkModel=$model->foreignKeys[$_REQUEST['fkField']]['model'];
                 
                 if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
@@ -232,7 +245,7 @@ class controllerBase {
                             }
                         }                   
                         
-                        $fkModel->updateRecord();
+                        $okOperation=$fkModel->updateRecord();
                         
                         if (count($fkFileFields)) {
 
@@ -255,13 +268,15 @@ class controllerBase {
                 
             } elseif ($_REQUEST["crud"] == "add" and $this->config['permission']['add']) {
                 
+                $showOperationStatus = true;
+                
                 if (count($fileFields)) {
                     foreach ($fileFields as $fileField) {
                         $_REQUEST[$model->tables.'_'.$fileField]=$_FILES[$model->tables.'_'.$fileField]['name'];
                     }
                 }
                 try {
-                    $model->insertRecord();
+                    $okOperation=$model->insertRecord();
                 } catch (Exception $exc) {
                     $this->resultData["output"]["crud"] = $messenger->errorMessage($exc->getMessage());
                     return;
@@ -278,9 +293,12 @@ class controllerBase {
                         $newFileLocation=$filesPath.$ds.$newId.'_'.$_FILES[$model->tables.'_'.$fileField]['name'];
                         move_uploaded_file($_FILES[$model->tables.'_'.$fileField]['tmp_name'], $newFileLocation);
                     }
-                }                
+                }
                 
             } elseif ($_REQUEST["crud"] == "remove" and $this->config['permission']['remove']) {
+                
+                $showOperationStatus = true;
+                
                 if (count($fileFields)) {
                     $register = $model->fetchRecord();
                     foreach ($fileFields as $fileField) {
@@ -288,7 +306,7 @@ class controllerBase {
                         unlink($fileLocation);
                     }
                 }                 
-                $model->deleteRecord();
+                $okOperation=$model->deleteRecord();
             }
         }
 
@@ -303,8 +321,24 @@ class controllerBase {
                 $this->resultData["output"]["label"] = $model->label[$lang];
             }
             $this->resultData["output"]["crud"] = $crud->listData($resultData, $resultData["totalRegisters"]);
+            
+            if ($showOperationStatus) {
+                
+                $baseAppTranslations = new base_language();
+                $this->baseAppTranslation = $baseAppTranslations->lang;                 
+                
+                if ($okOperation) {
+                    $message=$this->baseAppTranslation['okOperationTrue'];
+                }
+                else{
+                    $message=$this->baseAppTranslation['okOperationFalse'];
+                }
+                $operationStatusHtml=$messenger->operationStatus($message,$okOperation);
+                $this->resultData["output"]["crud"]=$operationStatusHtml.$this->resultData["output"]["crud"];
+
+            }
+            
         }
-        
         return 'ok';
     }
     

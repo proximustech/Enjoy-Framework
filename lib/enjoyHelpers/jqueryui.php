@@ -21,6 +21,23 @@ class messages implements messages_Interface{
         </div>';
         return $html;
     }
+
+    public function operationStatus($message,$okOperation) {
+        
+        if ($okOperation) {
+            $class="success";
+        }else $class="danger";
+        
+        
+        $html='
+        <div class="alert alert-'.$class.' fade in" role="alert" style="width:100%">
+            <p>
+                '.$message.'
+            </p>
+        </div>';
+        return $html;        
+    }
+
 }
 
 class navigator implements navigator_Interface {
@@ -651,11 +668,67 @@ class crud implements crud_Interface {
         $navigator = new navigator($this->config);
         $encryption= new encryption();
         
-        $html = "<br/>";
+//        $html = "<br/>";
+        $addButtonHtml="";
         if ($this->config['permission']['add']) {
             
             $additionalFkParameters="";
             if (key_exists("keyField", $_REQUEST)) {
+                
+                $keyFieldCascadeArray=unserialize($_COOKIE[$this->config["flow"]["app"].'_'.'keyFieldCascadeData']);
+                
+                $actualKeyFieldCascadePosition=null;
+                $keyFieldCascadeCounter=0;
+                foreach ($keyFieldCascadeArray as $cookieAdditionalFkParameters) {
+
+                    $tempArray=explode(':',$cookieAdditionalFkParameters);
+                    $label=$tempArray[0];
+
+                    if ($label == $this->model->label[$this->appLang]) {
+                        $actualKeyFieldCascadePosition=$keyFieldCascadeCounter;
+                    }                        
+                    $keyFieldCascadeCounter++;
+                }
+
+                if ($actualKeyFieldCascadePosition !== null) {
+                    for ($index = count($keyFieldCascadeArray) -1 ; $index >= $actualKeyFieldCascadePosition; $index--) {
+                        array_pop($keyFieldCascadeArray);
+                    }                    
+                }                
+                
+                if (count($keyFieldCascadeArray)==0) {
+                    unset($keyFieldCascadeArray);
+                }
+                
+                if (is_array($keyFieldCascadeArray)) {
+                    
+                    $toolBar='
+                        <div class="btn-group">
+                            <button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown">&nbsp;<span class="glyphicon glyphicon-send"></span>&nbsp;</button>
+                            <ul class="dropdown-menu">';
+                    
+
+                    
+                    foreach ($keyFieldCascadeArray as $cookieAdditionalFkParameters) {
+                        
+                        $tempArray=explode(':',$cookieAdditionalFkParameters);
+                        $label=$tempArray[0];
+                        $link=$tempArray[1];
+
+                        $toolBar.="    
+                            <li>
+                                <a class='btn btn-info' href='$link'><span class='glyphicon glyphicon-share-alt'></span> $label </a>
+                            </li>";
+
+                    }
+                    
+                    
+                    $toolBar.='            </ul>
+                        </div>';                
+                    
+                }                     
+                
+                
                 $createParams[] = "keyField={$_REQUEST['keyField']}";
                 
                 if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
@@ -669,10 +742,14 @@ class crud implements crud_Interface {
                 $createParams[] = "keyLabel={$_REQUEST['keyLabel']}";
                 $createParams[] = "modelLabel={$_REQUEST['modelLabel']}";
                 $additionalFkParameters.=implode('&', $createParams);
-            }
+                
+                $keyFieldCascadeArray[]=$this->model->label[$this->appLang].":index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}&".$additionalFkParameters;
+                setcookie($this->config["flow"]["app"].'_'."keyFieldCascadeData", serialize($keyFieldCascadeArray));           
+                
+            } else setcookie($this->config["flow"]["app"].'_'."keyFieldCascadeData", '');
+            
             $createParams[] = "crud=createForm";
             
-            $toolBar="";
             if ($this->config['client'] != 'desktop') {
                 
                 $mobileMenuParams[]="app=jqDesktop";
@@ -684,9 +761,9 @@ class crud implements crud_Interface {
                 $toolBar.=$navigator->action(null, "glyphicon-th-list", $mobileMenuParams);
                 
             }
-            
-            $html = "<div style='width:100%'><span style='text-align:left'>".$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams) . "</span><span style='width:80%;text-align:right;position:absolute'>$toolBar</span></div><br>";
+            $addButtonHtml=$navigator->action($this->config["flow"]["act"], $this->baseAppTranslation["add"], $createParams);
         }
+        $html = "<div style='width:100%'><span style='text-align:left'>".$addButtonHtml. "</span><span style='width:50%;text-align:right;position:absolute'>$toolBar</span></div><br>";
         
 
         $headers = array_keys($results[0]);

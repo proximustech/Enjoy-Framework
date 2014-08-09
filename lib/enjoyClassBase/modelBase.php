@@ -67,37 +67,53 @@ class modelBase {
 //            exit($validationResult);
         }
         
-        $this->insert($options);
-        $newPrimaryKey=$this->getLastInsertId();
+        $okOperation=$this->insert($options);
         
-        foreach ($this->subModels as $subModelEnry => $subModelConfig) {
-    
-            $subModel=&$subModelConfig['model'];
-            $linkerField=$subModelConfig['linkerField'];
-            $linkedField=$subModelConfig['linkedField'];
-            $linkedDataField=$subModelConfig['linkedDataField'];
-            $type=$subModelConfig['type'];
-            
-            if (!isset($_REQUEST[$this->tables.'_'.$linkerField])) {
-                $_REQUEST[$subModel->tables.'_'.$linkedField]=$newPrimaryKey;
-            }
-            else{
-                $_REQUEST[$subModel->tables.'_'.$linkedField]=$_REQUEST[$this->tables.'_'.$linkerField];
-            }
-            
-            
-            $linkedDataFieldVar=$_REQUEST[$subModel->tables.'_'.$linkedDataField];
-            
-            if (is_array($linkedDataFieldVar)) {
-                foreach ($linkedDataFieldVar as $linkedDataFieldValue) {
-                    $_REQUEST[$subModel->tables.'_'.$linkedDataField]=$linkedDataFieldValue;
-                    $subModel->insertRecord();
+        if ($okOperation) {
+            $newPrimaryKey=$this->getLastInsertId();
+
+            foreach ($this->subModels as $subModelEnry => $subModelConfig) {
+
+                $subModel=&$subModelConfig['model'];
+                $linkerField=$subModelConfig['linkerField'];
+                $linkedField=$subModelConfig['linkedField'];
+                $linkedDataField=$subModelConfig['linkedDataField'];
+                $type=$subModelConfig['type'];
+
+                if (!isset($_REQUEST[$this->tables.'_'.$linkerField])) {
+                    $_REQUEST[$subModel->tables.'_'.$linkedField]=$newPrimaryKey;
                 }
-            }elseif($linkedDataFieldVar!=''){
-                $subModel->insertRecord();
+                else{
+                    $_REQUEST[$subModel->tables.'_'.$linkedField]=$_REQUEST[$this->tables.'_'.$linkerField];
+                }
+
+
+                $linkedDataFieldVar=$_REQUEST[$subModel->tables.'_'.$linkedDataField];
+
+                if (is_array($linkedDataFieldVar)) {
+                    foreach ($linkedDataFieldVar as $linkedDataFieldValue) {
+                        $_REQUEST[$subModel->tables.'_'.$linkedDataField]=$linkedDataFieldValue;
+                        $okOperation=$subModel->insertRecord();
+                        
+                        if (!$okOperation) {
+                            break 2;
+                        }
+                        
+                    }
+                }elseif($linkedDataFieldVar!=''){
+                    $okOperation=$subModel->insertRecord();
+                    
+                    if (!$okOperation) {
+                        break 2;
+                    }                    
+                    
+                }
+
             }
             
         }
+        
+        return $okOperation;
         
     }
     
@@ -121,9 +137,19 @@ class modelBase {
         
         $sql = "INSERT INTO $this->tables $fieldsSql VALUES $valuesSql";
 
-        $query = $this->dataRep->prepare($sql);
-        $query->execute();
-    }
+            try {
+                $query = $this->dataRep->prepare($sql);
+                $query->execute();
+                $okOperation=true;
+            } catch (Exception $exc) {
+                $error= new error($this->config);
+                $error->log($exc->getMessage());
+                $okOperation=false;
+            }
+            
+            return $okOperation;
+            
+        }
 
     /**
      * Fetchs a record according to the model
@@ -171,19 +197,27 @@ class modelBase {
     function deleteRecord() {
 
         $options["where"][] = "$this->primaryKey='".$_REQUEST[$this->tables.'_'.$this->primaryKey]."'";
-        $this->delete($options);
+        $okOperation=$this->delete($options);
         unset($options);
         
-        foreach ($this->subModels as $subModelEnry => $subModelConfig) {
-    
-            $subModel=&$subModelConfig['model'];
-            $linkerField=$subModelConfig['linkerField'];
-            $linkedField=$subModelConfig['linkedField'];
-            
-            $options["where"][] = "{$subModel->tables}.$linkedField='{$_REQUEST[$this->tables.'_'.$linkerField]}'";
-            $subModel->delete($options);
-            
-        }        
+        if ($okOperation) {
+            foreach ($this->subModels as $subModelEnry => $subModelConfig) {
+
+                $subModel=&$subModelConfig['model'];
+                $linkerField=$subModelConfig['linkerField'];
+                $linkedField=$subModelConfig['linkedField'];
+
+                $options["where"][] = "{$subModel->tables}.$linkedField='{$_REQUEST[$this->tables.'_'.$linkerField]}'";
+                $okOperation=$subModel->delete($options);
+                if (!$okOperation) {
+                    break;
+                }
+
+            }
+        }
+        
+        
+        return $okOperation;
         
     }
 
@@ -208,43 +242,64 @@ class modelBase {
         $validationResult=$validator->validateFields($register);
         
         if ($validationResult!== true) {
-            exit($validationResult);
+//            exit($validationResult);
+            throw new Exception($validationResult);
         }
         
         $validationResult=$validator->validateRegister($register);
         
         if ($validationResult!== true) {
-            exit($validationResult);
+//            exit($validationResult);
+            throw new Exception($validationResult);
         }
                 
 
         $options["where"][] = "$this->primaryKey='".$_REQUEST[$this->tables.'_'.$this->primaryKey]."'";
-        $this->update($options);
-        unset($options);
-        foreach ($this->subModels as $subModelEnry => $subModelConfig) {
-    
-            $subModel=&$subModelConfig['model'];
-            $linkerField=$subModelConfig['linkerField'];
-            $linkedField=$subModelConfig['linkedField'];
-            $linkedDataField=$subModelConfig['linkedDataField'];
-            $type=$subModelConfig['type'];
-            
-            $_REQUEST[$subModel->tables.'_'.$linkedField]=$_REQUEST[$this->tables.'_'.$linkerField];
-            
-            $linkedDataFieldVar=$_REQUEST[$subModel->tables.'_'.$linkedDataField];
-            
-            $options["where"][] = "{$subModel->tables}.$linkedField='{$_REQUEST[$this->tables.'_'.$linkerField]}'";
-            $subModel->delete($options);
-            if (is_array($linkedDataFieldVar)) {
-                foreach ($linkedDataFieldVar as $linkedDataFieldValue) {
-                    $_REQUEST[$subModel->tables.'_'.$linkedDataField]=$linkedDataFieldValue;
-                    $subModel->insertRecord();
+        $okOperation=$this->update($options);
+        
+        if ($okOperation) {
+
+            unset($options);
+            foreach ($this->subModels as $subModelEnry => $subModelConfig) {
+
+                $subModel=&$subModelConfig['model'];
+                $linkerField=$subModelConfig['linkerField'];
+                $linkedField=$subModelConfig['linkedField'];
+                $linkedDataField=$subModelConfig['linkedDataField'];
+                $type=$subModelConfig['type'];
+
+                $_REQUEST[$subModel->tables.'_'.$linkedField]=$_REQUEST[$this->tables.'_'.$linkerField];
+
+                $linkedDataFieldVar=$_REQUEST[$subModel->tables.'_'.$linkedDataField];
+
+                $options["where"][] = "{$subModel->tables}.$linkedField='{$_REQUEST[$this->tables.'_'.$linkerField]}'";
+                $okOperation=$subModel->delete($options);
+                
+                if ($okOperation) {
+                    
+                    if (is_array($linkedDataFieldVar)) {
+                        foreach ($linkedDataFieldVar as $linkedDataFieldValue) {
+                            $_REQUEST[$subModel->tables.'_'.$linkedDataField]=$linkedDataFieldValue;
+                            $okOperation=$subModel->insertRecord();
+                            if (!$okOperation) {
+                                break;
+                            }
+                        }
+                    }elseif($linkedDataFieldVar!=''){
+                        $okOperation=$subModel->insertRecord();
+                        if (!$okOperation) {
+                            break;
+                        }
+                    }
                 }
-            }elseif($linkedDataFieldVar!=''){
-                $subModel->insertRecord();
-            }
+                else break;
+                
+
+            }        
             
-        }        
+        }
+        
+        return $okOperation;
         
     }
 
@@ -254,9 +309,18 @@ class modelBase {
         if ($whereSql != "") {
             $sql = "DELETE FROM $this->tables $whereSql";
 
-            $query = $this->dataRep->prepare($sql);
-            $query->execute();
+            try {
+                $query = $this->dataRep->prepare($sql);
+                $query->execute();
+                $okOperation=true;
+            } catch (Exception $exc) {
+                $error= new error($this->config);
+                $error->log($exc->getMessage());
+                $okOperation=false;
+            }            
+            
         }
+        return $okOperation;
     }
     
     /**
@@ -274,9 +338,18 @@ class modelBase {
         if ($setSql != "") {
             $sql = "UPDATE $this->tables SET $setSql $whereSql";
 
-            $query = $this->dataRep->prepare($sql);
-            $query->execute();
+            try {
+                $query = $this->dataRep->prepare($sql);
+                $query->execute();
+                $okOperation=true;
+            } catch (Exception $exc) {
+                $error = new error($this->config);
+                $error->log($exc->getMessage());
+                $okOperation=false;
+            }
         }
+        
+        return $okOperation;
     }
 
     /**
