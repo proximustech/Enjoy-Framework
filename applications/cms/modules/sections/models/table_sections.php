@@ -19,17 +19,6 @@ class table_sections {
                     //"widget" => "textarea",
                 ),
             ),
-            "portals_id" => array(
-                "definition" => array(
-                    "type" => "number",
-                    "options"=>array("required"),
-                    "default" => "",
-                    "label" => array(
-                        "es_es" => "Portal",
-                    ),
-                    //"widget" => "textarea",
-                ),
-            ),
             "section" => array(
                 "definition" => array(
                     "type" => "string",
@@ -37,6 +26,17 @@ class table_sections {
                     "default" => "",
                     "label" => array(
                         "es_es" => "Seccion",
+                    ),
+                    //"widget" => "textarea",
+                ),
+            ),
+            "portals_id" => array(
+                "definition" => array(
+                    "type" => "number",
+                    "options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Portal",
                     ),
                     //"widget" => "textarea",
                 ),

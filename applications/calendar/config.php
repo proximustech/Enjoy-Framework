@@ -29,6 +29,7 @@ $config=array(
             "Proyectos" => "index.php?app=calendar&mod=projects",
             "Tareas" => "index.php?app=calendar&mod=tasks",
             "Agendamientos" => "index.php?app=calendar&mod=schedule",
+            "Calendario" => "calendar.php?app=calendar&mod=schedule",
         ),
 
         

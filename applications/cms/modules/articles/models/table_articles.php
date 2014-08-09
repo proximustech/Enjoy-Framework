@@ -19,17 +19,6 @@ class table_articles {
                     //"widget" => "textarea",
                 ),
             ),
-            "topics_id" => array(
-                "definition" => array(
-                    "type" => "number",
-                    "options"=>array("required"),
-                    "default" => "",
-                    "label" => array(
-                        "es_es" => "Portal - Seccion - Tema",
-                    ),
-                    //"widget" => "textarea",
-                ),
-            ),            
             "title" => array(
                 "definition" => array(
                     "type" => "string",
@@ -41,6 +30,17 @@ class table_articles {
                     //"widget" => "textarea",
                 ),
             ),
+            "topics_id" => array(
+                "definition" => array(
+                    "type" => "number",
+                    "options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Portal - Seccion - Tema",
+                    ),
+                    //"widget" => "textarea",
+                ),
+            ),            
             "body" => array(
                 "definition" => array(
                     "type" => "string",

@@ -5,7 +5,7 @@
 
         <script src="assets/js/jquery/jquery-1.7.1.min.js"></script>
         <script src="assets/js/jquery/ui/jquery-ui.js"></script>
-        <link rel="stylesheet" href="assets/js/jquery/themes/hot-sneaks/jquery-ui.css" />
+        <link rel="stylesheet" href="assets/js/jquery/themes/redmond/jquery-ui.css" />
 
         <script src="assets/js/jquery/plugins/timepicker/jquery-ui-timepicker-addon.js"></script>
         <script src="assets/js/jquery/plugins/timepicker/jquery-ui-sliderAccess.js"></script>
@@ -25,6 +25,10 @@
         <script src="assets/js/jquery/plugins/bootstrap/bootstrap.min.js"></script>
 
         <style>
+            body td,th{
+                font-size: 15px;
+            }
+            
             .crudTable tr:hover  {
                 background-color: #00E7CA !important;
             }

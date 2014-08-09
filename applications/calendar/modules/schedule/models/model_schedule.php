@@ -55,4 +55,33 @@ class scheduleModel extends modelBase {
 
     }
     
+    function calendarList() {
+
+        $sql=" 
+            SELECT
+                id,
+                scheduling,
+                DATE_FORMAT(event,'%m/%d/%Y %H:%i'),
+                '01/01/1970 00:00',
+                0,
+                0,# All day
+                0,
+                10, # Color 0:12
+                1, # Always on
+                '-' AS location, #Location
+                '' AS last
+            FROM
+                schedule
+
+        ";
+
+        $this->dataRep->exec("SET CHARACTER SET UTF8");
+        $this->dataRep->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
+        $this->dataRep->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $query = $this->dataRep->prepare($sql);
+        $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_NUM);
+        return $results;
+    }
+    
 }

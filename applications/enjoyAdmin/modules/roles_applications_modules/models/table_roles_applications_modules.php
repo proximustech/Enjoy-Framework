@@ -44,6 +44,8 @@ class table_roles_applications_modules {
                         "LVA"=>"Listar,Ver,Agregar",
                         "LVC"=>"Listar,Ver,Cambiar",
                         "LV"=>"Listar,Ver",
+                        "LA"=>"Listar,Agregar",
+                        "LC"=>"Listar,Cambiar",
                         "L"=>"Listar",
                         "A"=>"Agregar",
                     ),
