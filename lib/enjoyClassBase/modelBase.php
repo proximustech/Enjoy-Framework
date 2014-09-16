@@ -272,12 +272,31 @@ class modelBase {
 
                 $linkedDataFieldVar=$_REQUEST[$subModel->tables.'_'.$linkedDataField];
 
+                $options['config']['dataFieldConversion']=false;
                 $options["where"][] = "{$subModel->tables}.$linkedField='{$_REQUEST[$this->tables.'_'.$linkerField]}'";
+                //Get actual relations
+                $subModelData=$subModel->fetch($options);
+                $subModelDataRelationsArray=array();
+                foreach ($subModelData['results'] AS $relation){
+                    $subModelDataRelationsArray[]=$relation[$linkedDataField];
+                }
+                unset($options['config']);
+                //Delete relations that are not going to be kept preserving those that where selected
+                if (is_array($linkedDataFieldVar)) {
+                    $options["where"][] = "{$subModel->tables}.$linkedDataField NOT IN (".  implode(',', $linkedDataFieldVar).")";
+                }
                 $okOperation=$subModel->delete($options);
+                
+                
+                //Remove from the actual selected relations the previously selected relations avoiding insert those that allready exists
+                if (is_array($linkedDataFieldVar)) {
+                    $linkedDataFieldVar=array_diff( $linkedDataFieldVar,$subModelDataRelationsArray );
+                }
                 
                 if ($okOperation) {
                     
                     if (is_array($linkedDataFieldVar)) {
+                        
                         foreach ($linkedDataFieldVar as $linkedDataFieldValue) {
                             $_REQUEST[$subModel->tables.'_'.$linkedDataField]=$linkedDataFieldValue;
                             $okOperation=$subModel->insertRecord();
