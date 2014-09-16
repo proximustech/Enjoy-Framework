@@ -156,7 +156,7 @@ class modelBase {
      * @return array with the results
      */
     
-    function fetchRecord() {
+    function fetchRecord($options=array()) {
 
         $primaryKeyValue = $_REQUEST[$this->tables.'_'.$this->primaryKey];
 
@@ -740,6 +740,7 @@ class modelBase {
             
             $options["fields"][] = "_$keyField AS relationId";
 
+            $options['config']['dataFieldConversion']=false;
             $resultData=$this->fetch($options);
             $resultData['label']=$this->fieldsConfig[$dataField]["definition"]["label"][$this->config["base"]["language"]];
             

@@ -139,7 +139,9 @@ class controllerBase {
                     exit;
                 }
             } elseif ($_REQUEST["crud"] == "editForm") {
-                $register = $model->fetchRecord();
+                $options=array();
+                $options['config']['dataFieldConversion']=false;
+                $register = $model->fetchRecord($options);
                 $this->resultData["output"]["label"] = $model->label[$lang]." - ".$this->baseAppTranslation['edit'];
                 $this->resultData["output"]["crud"] = $crud->getForm($register);
                 $showCrudList = false;
@@ -311,6 +313,7 @@ class controllerBase {
         }
 
         if ($showCrudList) {
+            $options['config']['dataFieldConversion']=true;
             if (key_exists("keyField", $_REQUEST)) {
                 $options['where'][]=$_REQUEST['keyField']."='{$_REQUEST['keyValue']}'";
                 $this->resultData["output"]["label"] = $model->label[$lang]." ".$this->baseAppTranslation['of']." ".$_REQUEST['keyLabel']." (".$_REQUEST['modelLabel'].")";

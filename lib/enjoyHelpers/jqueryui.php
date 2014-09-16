@@ -529,7 +529,8 @@ class crud implements crud_Interface {
                         foreach ($dataSourceArray as $dataSourceRow) {
 
                             $selected = '';
-                            if ($value == $dataSourceRow['relationId'] or $value == $dataSourceRow['relationField']) {
+//                            if ($value == $dataSourceRow['relationId'] or $value == $dataSourceRow['relationField']) {
+                            if ($value == $dataSourceRow['relationId']) {
                                 $selected = ' selected ';
                             }
                             $html.="<option $selected value='{$dataSourceRow['relationId']}'>{$dataSourceRow['relationField']}</option>";
