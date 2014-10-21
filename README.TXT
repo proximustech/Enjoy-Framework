@@ -9,7 +9,7 @@ root
 |		|__ modules : Directory containing the modules of the application
 |			|__ home : a module for the example
 |				|__ controller_home.php : main controller for the module
-|				|__ modules : Directory containing the models for the module
+|				|__ models : Directory containing the models for the module
 |				|__ views : Directory containing the views for the module
 |__	assets: various useful files and libraries like images,css,java script etc.
 |__	dataRep: data Repositories for the application server
