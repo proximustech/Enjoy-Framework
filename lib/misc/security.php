@@ -9,7 +9,7 @@ class security {
      */
     function filter($valueToFilter, $sqlI = false) {
         
-        if (is_array($valueToFilter)) {
+        if (is_array($valueToFilter) ) {
     
             foreach ($valueToFilter as $key => $value) {
                 if (is_array($value)) {
@@ -18,6 +18,18 @@ class security {
                     $value = $this->filterValue($value,$sqlI);
                 }
                 $valueToFilter[$key] = $value;
+            }
+        }
+        elseif (is_object($valueToFilter)) {
+    
+            $properties=get_object_vars($valueToFilter);
+            foreach ($properties as $key => $value) {
+                if (is_array($value) or is_object($value)) {
+                    $value=$this->filter($value, $sqlI);
+                } else {
+                    $value = $this->filterValue($value,$sqlI);
+                }
+                $valueToFilter->$key = $value;
             }
         }
         else $valueToFilter=$this->filterValue($valueToFilter,$sqlI);
