@@ -5,11 +5,17 @@
 class homeModel {
 
 
-    function getSalutations() {
+    function getPersons() {
     
         return array(
-          'en_us'=>'Hello',  
-          'es_es'=>'Hola',  
+          0=>array(
+            'name'=>'Jhon',  
+            'phone'=>'1234',  
+          ),
+          1=>array(
+            'name'=>'Peter',  
+            'phone'=>'5678',  
+          ),
             
         );
         

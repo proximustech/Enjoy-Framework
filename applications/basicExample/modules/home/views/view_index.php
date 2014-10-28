@@ -1,8 +1,8 @@
 <ul>
     
-<?php foreach ($salutations as $salutation):?>
+<?php foreach ($persons as $person):?>
     
-    <li><?php echo $salutation   ?></li>
+    <li><?php echo $person['name'].' - '.$person['phone'] ?></li>
     
 <?php endforeach; ?>
     

@@ -8,9 +8,8 @@ class modController extends controllerBase {
 
     function indexAction() {
         $model = new homeModel();
-        $this->resultData["output"]["salutations"]=$model->getSalutations();
-    }
-    
+        $this->resultData["output"]["persons"]=$model->getPersons();
+    }  
 
 }
 
