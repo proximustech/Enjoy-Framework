@@ -14,3 +14,15 @@ root
 |__	assets: various useful files and libraries like images,css,java script etc.
 |__	dataRep: data Repositories for the application server
 |__	lib: php libraries for the common use within the application server and Its applications
+
+
+HOW TO CALL THE basicExample APPLICATION
+===================
+
+index.php?app=basicExample&mod=home&act=index
+
+Above, app means application, mod module and act action wich is the method inside the module controller.
+
+HOW TO USE THE CRUD FUNCTIONALITIES
+===================
+Visit http://www.enjoyframework.com and watch the videos
