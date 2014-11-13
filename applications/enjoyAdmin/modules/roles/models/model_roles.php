@@ -5,15 +5,12 @@
 require_once 'lib/enjoyClassBase/modelBase.php';
 require_once "applications/enjoyAdmin/modules/roles/models/table_roles.php";
 
-require_once "applications/enjoyAdmin/modules/roles_applications/models/model_roles_applications.php";
-
-
 class rolesModel extends modelBase {
 
     var $tables="roles";
 
     function __construct($dataRep, $config,&$incomingModels=array()) {
-        parent::__construct($dataRep, $config);
+        parent::__construct($dataRep, $config,$incomingModels);
         $table=new table_roles();
         $this->fieldsConfig=$table->fieldsConfig;
         $this->primaryKey=$table->primaryKey;
@@ -22,16 +19,8 @@ class rolesModel extends modelBase {
             "es_es"=>"Roles",
         );
         
-        if (key_exists('roles_applications', $incomingModels)) { // Technique to avoid circular calls
-            $roles_applicationsModel=&$incomingModels['roles_applications'];
-        }
-        else{
-            $outgoingModels = array(
-                'roles' => $this,
-            );
-            $roles_applicationsModel=new roles_applicationsModel($dataRep,$config,$outgoingModels);
-        }
-            
+        $roles_applicationsModel=$this->getModuleModelInstance("roles_applications");
+        
         $this->subModels=array(
 
             0=>array(

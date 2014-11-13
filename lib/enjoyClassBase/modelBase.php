@@ -14,16 +14,19 @@ class modelBase {
     var $primaryKey;
     var $result = array();
     var $label=array();
+    var $incomingModels=array();
 
     /**
      * Base class for the Models
      * @param PDO $dataRep
      * @param array $config with the General Config
+     * @param array $incomingModels with allready instanced Models
      */
     
-    function __construct($dataRep, $config) {
+    function __construct($dataRep, $config,&$incomingModels=array()) {
         $this->dataRep = $dataRep;
         $this->config = &$config;
+        $this->incomingModels = &$incomingModels;
     }
 
     /**
@@ -746,6 +749,33 @@ class modelBase {
             
             return $resultData;
         }
+    }
+    
+    /**
+     * Returns the instance of a model helping width:
+     * -requiring the apropiate model file
+     * -avoiding infinite loops whith models that instances each other
+     * @param String $calledModelName is the model than wants to be instanciated
+     * @param String $callingModelName is the model that calls this method; if is the same than $this->tables, can be ommited
+     */
+    
+    function getModuleModelInstance($calledModelName,$callingModelName="") {
+      
+        if ($callingModelName=="") {
+            $callingModelName=$this->tables;
+        }
+        
+        if (key_exists($calledModelName, $this->incomingModels)) { // Technique to avoid circular calls
+            $instancedModel=&$this->incomingModels[$calledModelName];
+        }
+        else{
+            $outgoingModels = array(
+                $callingModelName => $this,
+            );
+            require_once "applications/enjoyAdmin/modules/{$calledModelName}/models/model_{$calledModelName}.php";
+            eval("\$instancedModel= new {$calledModelName}Model(\$this->dataRep,\$this->config,\$outgoingModels);");
+        }          
+        return $instancedModel;
     }
     
 }

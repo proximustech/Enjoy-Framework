@@ -71,20 +71,17 @@ function createModel($fileName,$app,$module) {
 require_once "lib/enjoyClassBase/modelBase.php";
 require_once "applications/'.$app.'/modules/'.$module.'/models/table_'.$module.'.php";
 
-//require_once "applications/'.$app.'/modules/---/models/model_---.php";
-
-
 class '.$module.'Model extends modelBase {
 
     var $tables="'.$module.'";
 
-    function __construct($dataRep, $config) {
-        parent::__construct($dataRep, $config);
+    function __construct($dataRep, $config,&$incomingModels=array()) {
+        parent::__construct($dataRep, $config,$incomingModels);
         $table=new table_'.$module.'();
         $this->fieldsConfig=$table->fieldsConfig;
         $this->primaryKey=$table->primaryKey;
         
-        //$---Model=new ---Model($dataRep,$config);
+        //$---Model=$this->getModuleModelInstance("---");
                 
         $this->label=array(
             "es_es"=>"You Should set the label of the Module.",
