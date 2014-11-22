@@ -772,7 +772,7 @@ class modelBase {
             $outgoingModels = array(
                 $callingModelName => $this,
             );
-            require_once "applications/enjoyAdmin/modules/{$calledModelName}/models/model_{$calledModelName}.php";
+            require_once "applications/{$this->config['flow']['app']}/modules/{$calledModelName}/models/model_{$calledModelName}.php";
             eval("\$instancedModel= new {$calledModelName}Model(\$this->dataRep,\$this->config,\$outgoingModels);");
         }          
         return $instancedModel;
