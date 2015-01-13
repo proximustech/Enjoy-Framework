@@ -1,6 +1,6 @@
 <?php
 
-require_once 'lib/enjoyHelpers/interfaces.php';
+require_once 'lib/crudHelpers/interfaces.php';
 require_once 'lib/misc/security.php';
 require_once 'lib/misc/encryption.php';
 

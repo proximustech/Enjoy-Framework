@@ -148,6 +148,7 @@ $config["flow"]["act"]=$act;
 $config["client"]=$client;
 
 $language=$config["base"]["language"];
+$enjoyHelper=$config['base']['enjoyHelper'];
 
 
 $modelsDir="applications/$app/modules/$mod/models/";

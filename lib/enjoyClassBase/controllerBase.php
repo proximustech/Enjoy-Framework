@@ -1,8 +1,7 @@
 <?php
 
-$enjoyHelper=$config['base']['enjoyHelper'];
 require_once "lib/languages/$language.php"; //Exposes base_lenguage() for this file and for the helper file
-require_once "lib/enjoyHelpers/$enjoyHelper.php"; //Brings crud() among other helpers
+require_once "lib/crudHelpers/$enjoyHelper.php"; //Brings crud() among other helpers
 require_once 'lib/misc/encryption.php';
 
 

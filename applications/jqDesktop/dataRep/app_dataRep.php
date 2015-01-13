@@ -12,8 +12,8 @@ class jqDesktopDataRep {
         
         $this->host	= 'localhost';
         $this->dbname 	= 'enjoy_admin';
-        $this->username = '';
-        $this->password = '';        
+        $this->username = 'root';
+        $this->password = 'samsung';        
         
     }
 
