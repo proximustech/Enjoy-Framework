@@ -115,6 +115,103 @@ class helper {
 
 }
 
+class labelControl extends helper {
+   
+    
+    public function __construct($incomingConfigArray) {
+        
+        //Particular properties definition
+        
+        //$this->defaultConfigArray["tag"]["varName"]="unset";
+        //$this->defaultConfigArray["script"]["active"]="false";
+        
+        parent::__construct($incomingConfigArray);
+        
+    }      
+    
+    public function getStartCode() {
+        return "<label {$this->tagProperties}>";
+    }    
+
+    public function getInnerCode($value) {
+        return $this->configArray["control"]["value"];
+    }
+
+    public function getEndCode() {
+        return "</label>";
+    }
+}
+
+class textBoxControl extends helper {
+
+    public function __construct($incomingConfigArray) {
+        
+        //Particular properties definition
+        
+        //$this->defaultConfigArray["tag"]["varName"]="unset";
+        //$this->defaultConfigArray["script"]["expandMode"]="multiple";
+        
+        parent::__construct($incomingConfigArray);
+        
+    }  
+    
+    public function getStartCode() {
+        
+        $code="         
+        <div>
+        ";
+
+        return $code;
+    }    
+
+    public function getInnerCode($value) {
+        
+        $code="
+            <label class='euiLabel'>{$this->configArray["control"]['caption']}</label>&nbsp;&nbsp;&nbsp;&nbsp;</span><input class='euiTextBox' type='text' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
+        ";
+        
+        return $code;
+    }
+
+    public function getEndCode() {
+        return "</div>";
+    }
+}
+
+class containerControl extends helper {
+
+    public function __construct($incomingConfigArray) {
+        
+        //Particular properties definition
+        
+        //$this->defaultConfigArray["tag"]["varName"]="unset";
+        //$this->defaultConfigArray["script"]["active"]="false";
+        
+        parent::__construct($incomingConfigArray);
+        
+    }  
+    
+    public function getStartCode() {
+       
+        $code="         
+        <div id='{$this->configArray["control"]['name']}' {$this->tagProperties}>
+        ";
+
+        return $code;
+    }    
+
+    public function getInnerCode($value) {
+        
+        $code=" $value ";
+        return $code;
+    }
+
+    public function getEndCode() {
+        return "</div>";
+    }
+}
+
+
 //Exposing the selected helper controls
 require_once "lib/genericHelpers/{$enjoyHelper}.php";
 
