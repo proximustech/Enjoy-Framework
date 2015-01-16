@@ -115,41 +115,13 @@ class helper {
 
 }
 
-class labelControl extends helper {
-   
-    
-    public function __construct($incomingConfigArray) {
-        
-        //Particular properties definition
-        
-        //$this->defaultConfigArray["tag"]["varName"]="unset";
-        //$this->defaultConfigArray["script"]["active"]="false";
-        
-        parent::__construct($incomingConfigArray);
-        
-    }      
-    
-    public function getStartCode() {
-        return "<label {$this->tagProperties}>";
-    }    
-
-    public function getInnerCode($value) {
-        return $this->configArray["control"]["value"];
-    }
-
-    public function getEndCode() {
-        return "</label>";
-    }
-}
-
 class textBoxControl extends helper {
 
     public function __construct($incomingConfigArray) {
         
         //Particular properties definition
         
-        //$this->defaultConfigArray["tag"]["varName"]="unset";
-        //$this->defaultConfigArray["script"]["expandMode"]="multiple";
+        $this->defaultConfigArray["control"]['captionWidth']="100px";
         
         parent::__construct($incomingConfigArray);
         
@@ -158,7 +130,7 @@ class textBoxControl extends helper {
     public function getStartCode() {
         
         $code="         
-        <div>
+        <table>
         ";
 
         return $code;
@@ -167,34 +139,44 @@ class textBoxControl extends helper {
     public function getInnerCode($value) {
         
         $code="
-            <label class='euiLabel'>{$this->configArray["control"]['caption']}</label>&nbsp;&nbsp;&nbsp;&nbsp;</span><input class='euiTextBox' type='text' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
+            <tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
+            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            </td>
+            <td>
+            <input class='eui_textBox' type='text' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
+            </td></tr>
         ";
         
         return $code;
     }
 
     public function getEndCode() {
-        return "</div>";
+        return "</table>";
     }
 }
 
-class containerControl extends helper {
+class xControl extends helper {
 
     public function __construct($incomingConfigArray) {
         
         //Particular properties definition
-        
-        //$this->defaultConfigArray["tag"]["varName"]="unset";
-        //$this->defaultConfigArray["script"]["active"]="false";
+        $this->defaultConfigArray["control"]["tag"]="div";
         
         parent::__construct($incomingConfigArray);
         
     }  
     
     public function getStartCode() {
-       
+        $idString="";
+        $nameString="";
+        
+        if (isset($this->configArray["control"]['name'])) {
+            $idString=" id='".$this->configArray["control"]['name']."' ";
+            $nameString=" name='".$this->configArray["control"]['name']."' ";
+        }
+        
         $code="         
-        <div id='{$this->configArray["control"]['name']}' {$this->tagProperties}>
+        <{$this->configArray["control"]['tag']} $idString $nameString class='eui_{$this->configArray["control"]['tag']}' {$this->tagProperties}>
         ";
 
         return $code;
@@ -207,7 +189,7 @@ class containerControl extends helper {
     }
 
     public function getEndCode() {
-        return "</div>";
+        return "</{$this->configArray["control"]['tag']}>";
     }
 }
 
@@ -252,6 +234,11 @@ class uiGenerator {
         
         $finalCode="";
         foreach ($elementCode as $key => $data) {
+            
+            if (substr($key,1,1)=="_") {
+                $key=substr($key,2);//Removing the numeric index and underscore of repeated controls in the same level
+            }
+            
             if (class_exists($key)){  //checks if $configVar is not an element property but an element control.
                 
                 $elementControlName=$key;
