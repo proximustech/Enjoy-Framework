@@ -26,7 +26,7 @@ class error {
         fclose($handle);
     }
     
-    function show($message,$exception) {
+    function show($message,$exception="") {
         $log=false;
         $debug=false;
         
@@ -52,10 +52,16 @@ class error {
             }
         }        
         
-        if ($log) {
-            $logMessage=$message.','.$exception->getMessage();
+        if ($log and is_object($exception)) {
+            $exceptionMessage=$exception->getMessage();
+            $tracePoints=explode('#', $exception->getTraceAsString());
+            $logMessage=$message.','.$exceptionMessage;
             $this->log($logMessage);
-        }        
+        }
+        elseif ($exception=="") {
+            $exceptionMessage="Programmer required debug Info";
+            $tracePoints=array();        
+        }
         
         if ($debug) {
             session_start();
@@ -94,12 +100,12 @@ class error {
                     <tr >
                         <td class='auto-style' style='background-color: #eef6fa;border-collapse: collapse; vertical-align: middle; text-align: left; border-width: 0px 1px 0px 0px; border-style: solid; border-color: rgb(45, 91, 0); padding: 10px; font-size: 13px; font-family: Georgia; font-weight: normal; color: rgb(0, 0, 0);'>
                             Exception:</td>
-                        <td class='auto-style' style='border-collapse: collapse; vertical-align: middle; text-align: left; border: 0px solid rgb(45, 91, 0); padding: 10px; font-size: 13px; font-family: Georgia; font-weight: normal; color: rgb(0, 0, 0);'>
-                            <pre>{$exception->getMessage()}</pre></td>
+                        <td class='auto-style' style='border-collapse: collapse; vertical-align: middle; text-align: left; border: 0px solid rgb(45, 91, 0); padding: 10px; font-size: 20px; font-family: Georgia; font-weight: bold; color: rgb(0, 0, 0);'>
+                            <pre>$exceptionMessage</pre></td>
                     </tr>
                 ";
                             
-            $tracePoints=explode('#', $exception->getTraceAsString());
+            
             foreach ($tracePoints as $tracePoint) {
                 
                 if ($tracePoint=='') {
