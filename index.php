@@ -1,7 +1,7 @@
 <?php
 
 ini_set('display_errors', '0');error_reporting(~E_ALL);
-
+//throw new Exception("hola");
 
 /*
  * General Application Server Controller
@@ -271,5 +271,14 @@ elseif (file_exists($viewFile)) {
     require_once $viewFile; #just show the view
 }
 
+
+if (isset($_REQUEST['debug'])) {
+    if (isset($config['base']['debug'])) {
+        if ($config['base']['debug']) {
+        }
+    }
+}
+//            $error = new error($config);
+//            $error->show("Debug Requested");
 
 ?>

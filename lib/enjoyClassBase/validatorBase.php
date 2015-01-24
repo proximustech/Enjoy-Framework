@@ -29,6 +29,10 @@ class validatorBase {
 
     function validateField($field, $value) {
 
+        if (is_array($value)) {
+            return true; # Happends with submodels data
+        }
+        
         $options = $this->fieldsConfig[$field]["definition"]["options"];
         $type = $this->fieldsConfig[$field]["definition"]["type"];
         $label = $this->fieldsConfig[$field]["definition"]["label"][$this->appLang];
@@ -38,6 +42,7 @@ class validatorBase {
             $validationMessage=$label." ".$this->baseAppTranslation["required"];
             return $validationMessage;
         }
+        
         
         switch ($type) {
             case "file":
@@ -77,15 +82,16 @@ class validatorBase {
 
     
     /**
-     * Validates each field of a register
+     * Validates each field of a register unless it is a fresh field ( fesh fields are used in subModels validations)
      * @param array $register
      * @return boolean
      */
-    function validateFields($register) {
+    
+    function validateFields($register,$freshFields=array()) {
 
-        foreach ($this->fieldsConfig as $field => $config) {
+        foreach ($this->fieldsConfig as $field => $config ) {
             
-            if (substr($field, 0,5)!="enjoy" and $field != $this->primaryKey) {
+            if (substr($field, 0,5)!="enjoy" and $field != $this->primaryKey and !in_array($field,$freshFields)) {
     
                 $validationResult = $this->validateField($field, $register[$field]);
 

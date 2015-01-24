@@ -70,6 +70,34 @@ class modelBase {
 //            exit($validationResult);
         }
         
+        foreach ($this->subModels as $subModelEnry => $subModelConfig) {
+            $subModel=&$subModelConfig['model'];
+            $subModelValidator= new validatorBase($subModel->config, $subModel->fieldsConfig,$subModel->primaryKey);
+            $freshFields=array();
+            
+            foreach ($subModel->fieldsConfig as $field => $configSection) {
+                $freshField=true;#"roles_applications_id_app"
+                if (isset($subModel->fieldsConfig[$field]["definition"]["options"])) {
+                    $subModelFieldsOptions = $subModel->fieldsConfig[$field]["definition"]["options"];
+                    if (in_array("required", $subModelFieldsOptions) ) {
+                        $freshField=false;
+                    }            
+                }
+                if ($freshField) {
+                    $freshFields[]=$field;
+                }                
+                if (key_exists($subModel->tables.'_'.$field, $_REQUEST)) {
+                    $subModelRegister[$field]=$_REQUEST[$subModel->tables.'_'.$field];
+                }
+            }        
+
+            $subModelValidationResult=$subModelValidator->validateFields($subModelRegister,$freshFields);
+
+            if ($subModelValidationResult!== true) {
+                throw new Exception($subModelValidationResult);
+            }
+        }
+        
         $okOperation=$this->insert($options);
         
         if ($okOperation) {
@@ -107,7 +135,7 @@ class modelBase {
                     $okOperation=$subModel->insertRecord();
                     
                     if (!$okOperation) {
-                        break 2;
+                        break;
                     }                    
                     
                 }
@@ -255,7 +283,36 @@ class modelBase {
 //            exit($validationResult);
             throw new Exception($validationResult);
         }
-                
+
+        
+        foreach ($this->subModels as $subModelEnry => $subModelConfig) {
+            $subModel=&$subModelConfig['model'];
+            $subModelValidator= new validatorBase($subModel->config, $subModel->fieldsConfig,$subModel->primaryKey);
+            $freshFields=array();
+            
+            foreach ($subModel->fieldsConfig as $field => $configSection) {
+                $freshField=true;#"roles_applications_id_app"
+                if (isset($subModel->fieldsConfig[$field]["definition"]["options"])) {
+                    $subModelFieldsOptions = $subModel->fieldsConfig[$field]["definition"]["options"];
+                    if (in_array("required", $subModelFieldsOptions) ) {
+                        $freshField=false;
+                    }            
+                }
+                if ($freshField) {
+                    $freshFields[]=$field;
+                }                
+                if (key_exists($subModel->tables.'_'.$field, $_REQUEST)) {
+                    $subModelRegister[$field]=$_REQUEST[$subModel->tables.'_'.$field];
+                }
+            }        
+
+            $subModelValidationResult=$subModelValidator->validateFields($subModelRegister,$freshFields);
+
+            if ($subModelValidationResult!== true) {
+                throw new Exception($subModelValidationResult);
+            }
+        }        
+        
 
         $options["where"][] = "$this->primaryKey='".$_REQUEST[$this->tables.'_'.$this->primaryKey]."'";
         $okOperation=$this->update($options);
