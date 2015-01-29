@@ -70,6 +70,9 @@ class security {
             }
             $value = implode(' ', $newValueArray);
         }
+        
+        $value=str_replace("'", '"', $value); #this is to avoid sql errors
+        
         return $value;
     }
     

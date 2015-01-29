@@ -2,9 +2,16 @@
 	font-size: medium;
 }
 .eui_textBox {
+	padding: 1px;
 	font-size: medium !important;
 	background-color: #cad4e6;
 	border-radius: 8px;
 	width: 190px;
 	height: 31px;
+}
+.eui_button {
+	padding: 5px;
+	font-size: medium !important;
+	font-weight: bold;
+	border-radius: 8px;
 }

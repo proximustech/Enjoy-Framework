@@ -7,14 +7,16 @@ class helper {
 
     var $defaultConfigArray=[];
     var $incomingConfigArray;
+    var $incomingDataArray;
     var $configArray=[]; //The final config used to generate the control
     
     var $tagProperties; //string form
     var $scriptProperties; //string form
 
     
-    function __construct($incomingConfigArray) {
+    function __construct($incomingConfigArray,$incomingDataArray) {
         $this->incomingConfigArray=$incomingConfigArray;
+        $this->incomingDataArray=$incomingDataArray;
         $this->parseProperties();
         $this->confirmProperties();
         $this->parseScriptProperties();
@@ -64,7 +66,12 @@ class helper {
     public function parseTagProperties() {
         foreach ($this->configArray["tag"] as $key => $value) {
             if ($key != "value") {
-                $this->tagProperties.=" $key='$value' ";
+                if ($value=="") {
+                    $this->tagProperties.=" $key ";
+                }
+                else{
+                    $this->tagProperties.=" $key=\"$value\" ";
+                }
             }
         }
     }
@@ -117,52 +124,102 @@ class helper {
 
 class textBoxControl extends helper {
 
-    public function __construct($incomingConfigArray) {
+    public function __construct($incomingConfigArray,$incomingDataArray) {
         
         //Particular properties definition
         
+        $this->defaultConfigArray["control"]['name']="";
+        $this->defaultConfigArray["control"]['caption']="";
         $this->defaultConfigArray["control"]['captionWidth']="100px";
         
-        parent::__construct($incomingConfigArray);
+        parent::__construct($incomingConfigArray,$incomingDataArray);
         
     }  
     
-    public function getStartCode() {
-        
-        $code="         
-        <table>
-        ";
-
-        return $code;
-    }    
-
     public function getInnerCode($value) {
         
         $code="
-            <tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
+            <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
             <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
             <input class='eui_textBox' type='text' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
-            </td></tr>
+            </td></tr></table>
         ";
         
         return $code;
     }
 
-    public function getEndCode() {
-        return "</table>";
+}
+
+class checkBoxControl extends helper {
+
+    public function __construct($incomingConfigArray,$incomingDataArray) {
+        
+        //Particular properties definition
+        
+        $this->defaultConfigArray["control"]['name']="";
+        $this->defaultConfigArray["control"]['caption']="";
+        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        
+        parent::__construct($incomingConfigArray,$incomingDataArray);
+        
+    }  
+    
+    public function getInnerCode($value) {
+        
+        $code="
+            <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
+            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            </td>
+            <td>
+            <input type='checkbox' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
+            </td></tr></table>
+        ";
+        
+        return $code;
     }
+
+}
+
+class radioControl extends helper {
+
+    public function __construct($incomingConfigArray,$incomingDataArray) {
+        
+        //Particular properties definition
+        
+        $this->defaultConfigArray["control"]['name']="";
+        $this->defaultConfigArray["control"]['caption']="";
+        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        
+        parent::__construct($incomingConfigArray,$incomingDataArray);
+        
+    }  
+    
+    public function getInnerCode($value) {
+        
+        $code="
+            <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
+            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            </td>
+            <td>
+            <input type='radio' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
+            </td></tr></table>
+        ";
+        
+        return $code;
+    }
+
 }
 
 class xControl extends helper {
 
-    public function __construct($incomingConfigArray) {
+    public function __construct($incomingConfigArray,$incomingDataArray) {
         
         //Particular properties definition
         $this->defaultConfigArray["control"]["tag"]="div";
         
-        parent::__construct($incomingConfigArray);
+        parent::__construct($incomingConfigArray,$incomingDataArray);
         
     }  
     
@@ -199,8 +256,9 @@ require_once "lib/genericHelpers/{$enjoyHelper}.php";
 
 class uiGenerator {
 
-    function getCode($json) {
-        $code=json_decode($json,true);
+    
+    function getCode($uiJson,$dataArray) {
+        $code=json_decode($uiJson,true);
         switch (json_last_error()) {
             case JSON_ERROR_DEPTH:
                 echo ' - JSON:Maximum stack depth exceeded';
@@ -221,7 +279,7 @@ class uiGenerator {
 
             break;
         }
-        return $this->getElementCode($code);
+        return $this->getElementCode($code,$dataArray);
     }
     
     /**
@@ -230,24 +288,30 @@ class uiGenerator {
      * @return String
      */
     
-    function getElementCode($elementCode) {
+    function getElementCode($elementCode,$dataArray) {
         
         $finalCode="";
         foreach ($elementCode as $key => $data) {
             
-            if (substr($key,1,1)=="_") {
-                $key=substr($key,2);//Removing the numeric index and underscore of repeated controls in the same level
+            $keyArray=explode("_", $key);
+            if (count($keyArray) > 1) {
+                $key=$keyArray[1];//Removing the numeric index and underscore of repeated controls in the same level
             }
             
             if (class_exists($key)){  //checks if $configVar is not an element property but an element control.
                 
                 $elementControlName=$key;
-                $elementControl= new $elementControlName($data);
+                if (isset($dataArray[$key])) {
+                    $controlDataArray=$dataArray[$key];
+                }
+                else $controlDataArray = array();
+                
+                $elementControl= new $elementControlName($data,$controlDataArray);
                 
                 $finalCode.=$elementControl->getStartCode();
                 
                 if (is_array($data["value"])) { //means that the property value has elements inside
-                    $value=$this->getElementCode($data["value"]);
+                    $value=$this->getElementCode($data["value"],$controlDataArray);
                 }
                 else{
                     $value=&$data["value"];

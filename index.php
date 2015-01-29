@@ -272,13 +272,7 @@ elseif (file_exists($viewFile)) {
 }
 
 
-if (isset($_REQUEST['debug'])) {
-    if (isset($config['base']['debug'])) {
-        if ($config['base']['debug']) {
-        }
-    }
-}
-//            $error = new error($config);
-//            $error->show("Debug Requested");
+//$error = new error($config);
+//$error->show("Debug Requested");
 
 ?>
