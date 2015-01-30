@@ -12,7 +12,7 @@ class modController extends controllerBase {
         $e_user = new e_user($e_dbIdentifier, $this->config["appServerConfig"]);
         
         
-        if ($_REQUEST["crud"] == "remove") {
+        if ($_REQUEST["crud"] == "remove" or $_REQUEST["crud"] == "change") {
             $options['fields'][]='user_name';
             
             if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
@@ -22,7 +22,16 @@ class modController extends controllerBase {
             } else $userId=$_REQUEST['users_id'];
             
             $options['where'][]='users.id='.$userId;
-            $userInfo=$this->baseModel->fetch($options);    
+            $userInfo=$this->baseModel->fetch($options);
+            $oldUserName=$userInfo['results'][0]['user_name'];
+            
+            $userNameChanged=false;
+            if ($_REQUEST["crud"] == "change") {
+                if ($oldUserName != $_REQUEST['users_user_name']) {
+                    $userNameChanged=true;
+                }
+            }
+            
         }
         
         if ($_REQUEST['users_password']=='') {
@@ -52,13 +61,16 @@ class modController extends controllerBase {
                 $info=array();
                 $info['modifiedStamp']=time();
                 $e_user->saveInfo($info);
-
-            }
-            elseif($_REQUEST["crud"] == "remove") {
                 
-                $_REQUEST['user']=$userInfo['results'][0]['user_name'];
-                $e_user->profile($_REQUEST);            
-                $e_user->removeControlFile();
+            }
+            if($_REQUEST["crud"] == "remove" or $_REQUEST["crud"] == "change") {
+                
+                if ($_REQUEST["crud"] == "remove" or $userNameChanged) {
+                    $_REQUEST['user']=$oldUserName;
+                    $e_user->profile($_REQUEST);            
+                    $e_user->removeControlFile();
+                }
+                
             }
         }
         
