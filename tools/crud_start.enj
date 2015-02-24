@@ -88,7 +88,7 @@ class '.$module.'Model extends modelBase {
         );
         
 //        $this->foreignKeys = array (
-//            "---_id" => array(
+//            "id_---" => array(
 //                "model"=>&$---Model,
 //                "keyField"=>"theOthertableName.idPossibly",
 //                "dataField"=>"another Field of the foreign table with data",
