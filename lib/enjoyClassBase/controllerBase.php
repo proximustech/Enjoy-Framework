@@ -327,6 +327,7 @@ class controllerBase {
     }
     
     function crudAdd($model) {
+        $messenger = new messages();
         list($filesPath,$fileFields)=$this->crudGetFileFields($model);
         
         if (count($fileFields)) {
@@ -338,7 +339,7 @@ class controllerBase {
             $okOperation = $model->insertRecord();
         } catch (Exception $exc) {
             $this->resultData["output"]["crud"] = $messenger->errorMessage($exc->getMessage());
-            return;
+            return "validation";
         }
 
         if (count($fileFields)) {
@@ -382,7 +383,7 @@ class controllerBase {
             $okOperation = $model->updateRecord();
         } catch (Exception $exc) {
             $this->resultData["output"]["crud"] = $messenger->errorMessage($exc->getMessage());
-            return;
+            return "validation";
         }
 
         $this->crudFieldFileCreation($model);
@@ -436,6 +437,10 @@ class controllerBase {
             }
         }
 
+        if ($okOperation === "validation") {
+            return;
+        }
+        
         if ($showCrudList) {
             $this->crudShowList($model,$showOperationStatus,$okOperation);
         }

@@ -52,11 +52,15 @@ class error {
             }
         }        
         
-        if ($log and is_object($exception)) {
+        if (is_object($exception)) {
             $exceptionMessage=$exception->getMessage();
             $tracePoints=explode('#', $exception->getTraceAsString());
-            $logMessage=$message.','.$exceptionMessage;
-            $this->log($logMessage);
+            
+            if ($log) {
+                $logMessage=$message.','.$exceptionMessage;
+                $this->log($logMessage);
+            }
+            
         }
         elseif ($exception=="") {
             $exceptionMessage="Programmer required debug Info";
