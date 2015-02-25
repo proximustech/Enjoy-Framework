@@ -93,7 +93,7 @@ class controllerBase {
         $lang=$this->config["base"]["language"];
         $options['config']['dataFieldConversion']=true;
         if (key_exists("keyField", $_REQUEST)) {
-            $options['where'][]=$_REQUEST['keyField']."='{$_REQUEST['keyValue']}'";
+            $options['where'][]=$model->tables.'.'.$_REQUEST['keyField']."='{$_REQUEST['keyValue']}'";
             $this->resultData["output"]["label"] = $model->label[$lang]." ".$this->baseAppTranslation['of']." ".$_REQUEST['keyLabel']." (".$_REQUEST['modelLabel'].")";
             $resultData = $model->fethLimited($options);
         }
