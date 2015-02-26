@@ -715,10 +715,17 @@ class crud implements crud_Interface {
                         $tempArray=explode(':',$cookieAdditionalFkParameters);
                         $label=$tempArray[0];
                         $link=$tempArray[1];
+                        
+                        $linkParametersArray=explode('&', $link);
+                        foreach ($linkParametersArray as $linkParameter) {
+                            if (substr($linkParameter,0,8)=='keyLabel') {
+                                $keyLabel=substr($linkParameter,9);
+                            }
+                        }
 
                         $toolBar.="    
                             <li>
-                                <a class='btn btn-info' href='$link'><span class='glyphicon glyphicon-share-alt'></span> $label </a>
+                                <a class='btn btn-info' href='$link'><span class='glyphicon glyphicon-share-alt'></span> $label ".$this->baseAppTranslation["of"]." $keyLabel </a>
                             </li>";
 
                     }
