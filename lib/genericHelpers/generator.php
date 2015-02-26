@@ -64,6 +64,7 @@ class helper {
      */
     
     public function parseTagProperties() {
+        $this->tagProperties='';
         foreach ($this->configArray["tag"] as $key => $value) {
             if ($key != "value") {
                 if ($value=="") {
@@ -82,9 +83,11 @@ class helper {
      */
     
     function parseScriptProperties() {
-        
+        $this->scriptProperties='';
         foreach ($this->configArray["script"] as $key => $value) {
-            if ($value != "true" and $value != "false" and !is_numeric($value)) {
+            
+            #if $value starts with "s_" means that it is javascript code and not just a javascript value
+            if ($value != "true" and $value != "false" and !is_numeric($value) and substr($value,0,2) != 's_') {
                 $value="'$value'";
             }
             
@@ -174,6 +177,36 @@ class checkBoxControl extends helper {
             </td>
             <td>
             <input type='checkbox' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
+            </td></tr></table>
+        ";
+        
+        return $code;
+    }
+
+}
+
+class fileControl extends helper {
+
+    public function __construct($incomingConfigArray,$incomingDataArray) {
+        
+        //Particular properties definition
+        
+        $this->defaultConfigArray["control"]['name']="";
+        $this->defaultConfigArray["control"]['caption']="";
+        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        
+        parent::__construct($incomingConfigArray,$incomingDataArray);
+        
+    }  
+    
+    public function getInnerCode($value) {
+        
+        $code="
+            <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
+            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            </td>
+            <td>
+            <input type='file' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' {$this->tagProperties}>
             </td></tr></table>
         ";
         

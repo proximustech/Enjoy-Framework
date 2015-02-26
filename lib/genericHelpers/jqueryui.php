@@ -173,6 +173,9 @@ class selectControl extends helper {
         $this->defaultConfigArray["control"]['caption']="";
         $this->defaultConfigArray["control"]['captionWidth']="100px";
         $this->defaultConfigArray["control"]['autoComplete']="true";
+        $this->defaultConfigArray["control"]['multiple']="false";
+        
+        $this->defaultConfigArray["tag"]['style']="width:200px";
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
         
@@ -180,27 +183,39 @@ class selectControl extends helper {
     
     public function getStartCode() {
         
-        if ($this->configArray["control"]['autoComplete']=="true") {
-            $control="combobox";
+        if ($this->configArray["control"]['multiple']=="true") {
+            $control="multiselect";
+            if (!isset($this->configArray['tag']['multiple'])) {
+                $this->configArray['tag']['multiple']='multiple';
+                $this->configArray['tag']['class']='multiselect';
+                unset($this->configArray['tag']['style']);
+                $this->parseTagProperties();
+                $additionalNameText='[]';
+            }            
         }
         else{
-            $control="selectmenu";
+
+            $additionalNameText='';
+            if ($this->configArray["control"]['autoComplete']=="true") {
+                $control="combobox";
+            }
+            else{
+                $control="selectmenu";
+            }            
         }
         
         $code="
-            
             <script>
                 $(function() {
                     $('#{$this->configArray["control"]['name']}').$control();
                 });
             </script>
-
             <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
             <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
             <div class='ui-widget'>
-            <select  id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' {$this->tagProperties}>
+            <select  id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}$additionalNameText' {$this->tagProperties}>
             
         ";
 

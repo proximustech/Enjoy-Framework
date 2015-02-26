@@ -161,6 +161,9 @@ class selectControl extends helper {
         $this->defaultConfigArray["control"]['caption']="";
         $this->defaultConfigArray["control"]['captionWidth']="100px";
         $this->defaultConfigArray["control"]['autoComplete']="true";
+        $this->defaultConfigArray["control"]['multiple']="false";
+        
+        $this->defaultConfigArray["tag"]['style']="width:200px";
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
         
@@ -168,18 +171,43 @@ class selectControl extends helper {
     
     public function getStartCode() {
         
-        if ($this->configArray["control"]['autoComplete']=="true") {
-            $control="kendoComboBox";
+        
+        if ($this->configArray["control"]['multiple']=="true") {
+            
+            $additionalNameText='[]';
+            $control="kendoMultiSelect";
+            $additionalDefinition=".data('kendoMultiSelect')";
+            
+            if (!isset($this->configArray['tag']['multiple'])) {
+                $this->configArray['tag']['multiple']='multiple';
+                $this->parseTagProperties();
+            }
+            if (!isset($this->configArray['script']['filter'])) {
+                $this->configArray['script']['filter']='contains';
+                $this->parseScriptProperties();
+            }
+        
         }
         else{
-            $control="kendoDropDownList";
-        }        
+            $additionalNameText='';
+            if ($this->configArray["control"]['autoComplete']=="true") {
+                $control="kendoComboBox";
+                if (!isset($this->configArray['script']['filter'])) {
+                    $this->configArray['script']['filter']='contains';
+                    $this->parseScriptProperties();
+                }
+            }
+            else{
+                $control="kendoDropDownList";
+            }
+            $additionalDefinition="";
+        }
         
         $code="
             
             <script>
                 $(function() {
-                    $('#{$this->configArray["control"]['name']}').$control();
+                    $('#{$this->configArray["control"]['name']}').$control({{$this->scriptProperties}})$additionalDefinition;
                 });
             </script>
 
@@ -187,7 +215,7 @@ class selectControl extends helper {
             <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
-            <select  id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' {$this->tagProperties}>
+            <select  id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}$additionalNameText' {$this->tagProperties}>
             
         ";
 
