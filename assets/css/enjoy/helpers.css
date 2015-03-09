@@ -1,17 +1,21 @@
 .eui_label {
-	font-size: medium;
+    font-size: medium;
 }
 .eui_textBox {
-	padding: 1px;
-	font-size: medium !important;
-	background-color: #cad4e6;
-	border-radius: 8px;
-	width: 190px;
-	height: 31px;
+    padding: 1px;
+    font-size: medium !important;
+    background-color: #cad4e6;
+    border-radius: 8px;
+    width: 190px;
+    height: 31px;
 }
 .eui_button {
-	padding: 5px;
-	font-size: medium !important;
-	font-weight: bold;
-	border-radius: 8px;
+    padding: 5px;
+    font-size: medium !important;
+    font-weight: bold;
+    border-radius: 8px;
+}
+.multiselect {
+    width: 460px;
+    height: 200px;
 }
