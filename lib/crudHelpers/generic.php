@@ -570,23 +570,23 @@ class crud implements crud_Interface {
 //                        $html.="<script>jQuery( function( ) { $( '#{$this->model->tables}_$field' ).datepicker({showOn: 'button',buttonImage: 'assets/images/icons/calendar.png',showOtherMonths : true ,selectOtherMonths : true ,showButtonPanel : true ,changeMonth : true ,changeYear : true ,dateFormat : 'yy-mm-dd' ,changeMonth: true, }); });</script>";
 //                        $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value' readonly ></td></tr>";
                         
-                        $html.=$uig->getCode('{"dateControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'"}}');
+                        $html.=$uig->getCode('{"dateControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'"'.$requiredUigText.'}}');
                     }                                        
                     elseif ($type=='dateTime') {
 //                        $html.="<script>jQuery( function( ) { $( '#{$this->model->tables}_$field' ).datetimepicker({showOn: 'button',buttonImage: 'assets/images/icons/calendar.png',showOtherMonths : true ,selectOtherMonths : true ,showButtonPanel : true ,changeMonth: true,changeYear: true,dateFormat : 'yy-mm-dd',timeFormat : 'HH:mm:ss', }); });</script>";
 //                        $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value' readonly ></td></tr>";
                         
-                        $html.=$uig->getCode('{"dateTimeControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'"}}');                        
+                        $html.=$uig->getCode('{"dateTimeControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'"'.$requiredUigText.'}}');                        
                     }                                        
                     elseif ($type=='file') {
                         //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='file' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</td></tr>";
-                        $html.=$uig->getCode('{"fileControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'"}}');
+                        $html.=$uig->getCode('{"fileControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'"'.$requiredUigText.'}}');
                     }                                        
                     elseif ($type=='string' or $type=="number") {
                         if ( $widget=='textarea') {
     
                             //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<textarea rows='20' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</textarea></td></tr>";
-                            $html.=$uig->getCode('{"textAreaControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'","value":"'.$value.'","t_rows":"4","t_cols":"20"}}');
+                            $html.=$uig->getCode('{"textAreaControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'","value":"'.$value.'","t_rows":"4","t_cols":"20"'.$requiredUigText.'}}');
                         }
                         else{
                             
@@ -599,7 +599,7 @@ class crud implements crud_Interface {
                             }
                             
 //                            $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value'></td></tr>";
-                            $html.=$uig->getCode('{"textBoxControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'","value":"'.$value.'","password":"'.$passWordParameter.'"}}');
+                            $html.=$uig->getCode('{"textBoxControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'","value":"'.$value.'","password":"'.$passWordParameter.'"'.$requiredUigText.'}}');
                         }
                     }                    
                     

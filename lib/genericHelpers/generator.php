@@ -134,6 +134,7 @@ class textBoxControl extends helper {
         $this->defaultConfigArray["control"]['name']="";
         $this->defaultConfigArray["control"]['caption']="";
         $this->defaultConfigArray["control"]['captionWidth']="100px";
+        $this->defaultConfigArray["control"]['password']="false";
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
         
@@ -141,12 +142,20 @@ class textBoxControl extends helper {
     
     public function getInnerCode($value) {
         
+        if ($this->configArray["control"]['password']=="true") {
+            $type="password";
+        }
+        else{
+            $type="text";
+        }
+        
+        
         $code="
             <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
             <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
-            <input class='eui_textBox' type='text' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
+            <input class='eui_textBox' type='$type' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
             </td></tr></table>
         ";
         
@@ -207,6 +216,36 @@ class fileControl extends helper {
             </td>
             <td>
             <input type='file' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' {$this->tagProperties}>
+            </td></tr></table>
+        ";
+        
+        return $code;
+    }
+
+}
+
+class textAreaControl extends helper {
+
+    public function __construct($incomingConfigArray,$incomingDataArray) {
+        
+        //Particular properties definition
+        
+        $this->defaultConfigArray["control"]['name']="";
+        $this->defaultConfigArray["control"]['caption']="";
+        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        
+        parent::__construct($incomingConfigArray,$incomingDataArray);
+        
+    }  
+    
+    public function getInnerCode($value) {
+        
+        $code="
+            <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
+            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            </td>
+            <td>
+            <textarea id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' {$this->tagProperties}>$value</textarea>
             </td></tr></table>
         ";
         
@@ -326,6 +365,7 @@ class uiGenerator {
         $finalCode="";
         foreach ($elementCode as $key => $data) {
             
+            $originalKey=$key;
             $keyArray=explode("_", $key);
             if (count($keyArray) > 1) {
                 $key=$keyArray[1];//Removing the numeric index and underscore of repeated controls in the same level
@@ -334,7 +374,7 @@ class uiGenerator {
             if (class_exists($key)){  //checks if $configVar is not an element property but an element control.
                 
                 $elementControlName=$key;
-                if (isset($dataArray[$key])) {
+                if (isset($dataArray[$originalKey])) {
                     $controlDataArray=$dataArray[$key];
                 }
                 else $controlDataArray = array();

@@ -149,6 +149,7 @@ $config["client"]=$client;
 
 $language=$config["base"]["language"];
 $enjoyHelper=$config['base']['enjoyHelper'];
+$crudHelper=$config['base']['crudHelper'];
 
 
 $modelsDir="applications/$app/modules/$mod/models/";
