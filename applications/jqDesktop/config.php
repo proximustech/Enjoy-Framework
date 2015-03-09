@@ -4,7 +4,8 @@
 
 $config=array(
     "base"=>array(
-        "enjoyHelper"=>"jqueryui",
+        "crudHelper"=>"generic",
+        "enjoyHelper"=>"kendoui",
         "language"=>"es_es",
         "defaultModule"=>"home",
         "defaultAction"=>"login",
