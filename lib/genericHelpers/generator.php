@@ -387,7 +387,12 @@ class uiGenerator {
                     $value=$this->getElementCode($data["value"],$controlDataArray);
                 }
                 else{
-                    $value=&$data["value"];
+                    if (isset($controlDataArray["value"])) {
+                        $value=&$controlDataArray["value"];
+                    }
+                    else{
+                        $value=&$data["value"];
+                    }
                 }
                 
                 $finalCode.=$elementControl->getInnerCode($value);
