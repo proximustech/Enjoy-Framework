@@ -20,6 +20,7 @@ class table_modules {
             "id_app" => array(
                 "definition" => array(
                     "type" => "number",
+                    "options"=>array("required"),
                     "default" => "",
                     "label" => array(
                         "es_es" => "Aplicacion",
