@@ -562,7 +562,7 @@ class crud implements crud_Interface {
                     
 //                    $html.="</select></td></tr>";
                     $uiArray["selectControl"]["value"]=$selectOptions;
-                    $html.=$uig->getCode('{"selectControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'","autoComplete":"true"'.$requiredUigText.'}}',$uiArray);
+                    $html.=$uig->getCode('{"selectControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'","autoComplete":"false"'.$requiredUigText.'}}',$uiArray);
                 }
                 else{
                     
