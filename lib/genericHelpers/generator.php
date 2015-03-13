@@ -66,14 +66,7 @@ class helper {
     public function parseTagProperties() {
         $this->tagProperties='';
         foreach ($this->configArray["tag"] as $key => $value) {
-            if ($key != "value") {
-                if ($value=="") {
-                    $this->tagProperties.=" $key ";
-                }
-                else{
-                    $this->tagProperties.=" $key=\"$value\" ";
-                }
-            }
+            $this->tagProperties.=" $key=\"$value\" ";
         }
     }
     
@@ -133,7 +126,7 @@ class textBoxControl extends helper {
         
         $this->defaultConfigArray["control"]['name']="";
         $this->defaultConfigArray["control"]['caption']="";
-        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        $this->defaultConfigArray["control"]['captionWidth']="150px";
         $this->defaultConfigArray["control"]['password']="false";
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
@@ -172,7 +165,7 @@ class checkBoxControl extends helper {
         
         $this->defaultConfigArray["control"]['name']="";
         $this->defaultConfigArray["control"]['caption']="";
-        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        $this->defaultConfigArray["control"]['captionWidth']="150px";
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
         
@@ -202,7 +195,7 @@ class fileControl extends helper {
         
         $this->defaultConfigArray["control"]['name']="";
         $this->defaultConfigArray["control"]['caption']="";
-        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        $this->defaultConfigArray["control"]['captionWidth']="150px";
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
         
@@ -232,7 +225,7 @@ class textAreaControl extends helper {
         
         $this->defaultConfigArray["control"]['name']="";
         $this->defaultConfigArray["control"]['caption']="";
-        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        $this->defaultConfigArray["control"]['captionWidth']="150px";
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
         
@@ -245,7 +238,7 @@ class textAreaControl extends helper {
             <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
-            <textarea id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' {$this->tagProperties}>$value</textarea>
+            <textarea id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' class='eui_textArea' {$this->tagProperties}>$value</textarea>
             </td></tr></table>
         ";
         
@@ -262,7 +255,7 @@ class radioControl extends helper {
         
         $this->defaultConfigArray["control"]['name']="";
         $this->defaultConfigArray["control"]['caption']="";
-        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        $this->defaultConfigArray["control"]['captionWidth']="150px";
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
         

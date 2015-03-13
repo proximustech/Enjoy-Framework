@@ -171,7 +171,7 @@ class selectControl extends helper {
         
         $this->defaultConfigArray["control"]['name']="";
         $this->defaultConfigArray["control"]['caption']="";
-        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        $this->defaultConfigArray["control"]['captionWidth']="150px";
         $this->defaultConfigArray["control"]['autoComplete']="true";
         $this->defaultConfigArray["control"]['multiple']="false";
         

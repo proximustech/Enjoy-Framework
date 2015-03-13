@@ -68,7 +68,7 @@ class dateTimeControl extends helper {
         
         $this->defaultConfigArray["control"]["name"]="";
         $this->defaultConfigArray["control"]["caption"]="";
-        $this->defaultConfigArray["control"]["captionWidth"]="100px";
+        $this->defaultConfigArray["control"]["captionWidth"]="150px";
         
         $this->defaultConfigArray["script"]["format"]="yyyy-MM-dd HH:mm";        
         
@@ -113,7 +113,7 @@ class dateControl extends helper {
         
         $this->defaultConfigArray["control"]["name"]="";
         $this->defaultConfigArray["control"]["caption"]="";
-        $this->defaultConfigArray["control"]["captionWidth"]="100px";
+        $this->defaultConfigArray["control"]["captionWidth"]="150px";
         
         $this->defaultConfigArray["script"]["format"]="yyyy-MM-dd";        
         
@@ -159,11 +159,17 @@ class selectControl extends helper {
         
         $this->defaultConfigArray["control"]['name']="";
         $this->defaultConfigArray["control"]['caption']="";
-        $this->defaultConfigArray["control"]['captionWidth']="100px";
+        $this->defaultConfigArray["control"]['captionWidth']="150px";
         $this->defaultConfigArray["control"]['autoComplete']="true";
         $this->defaultConfigArray["control"]['multiple']="false";
         
-        $this->defaultConfigArray["tag"]['style']="width:200px";
+        $this->defaultConfigArray["tag"]['style']="width:auto;min-width:293px";
+        
+        $optionsArray=explode("<option", $incomingDataArray["value"]);
+        if (count($optionsArray) < 7) {
+            $this->defaultConfigArray["control"]['autoComplete']="false";
+            $this->defaultConfigArray["tag"]['style']="width:auto;min-width:325px";
+        }
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
         
@@ -192,10 +198,29 @@ class selectControl extends helper {
             $additionalNameText='';
             if ($this->configArray["control"]['autoComplete']=="true") {
                 $control="kendoComboBox";
+                
+                #Erasing textBox when the first element is selected (as the select widget behaviour) in case of typing error in autocomplete. onblur Check
+                
+                if (!isset($this->configArray["tag"]['onblur'])) {
+                    $this->configArray["tag"]['onblur']="if(this.selectedIndex==0){ $('#{$this->configArray["control"]['name']}').data('kendoComboBox').text(''); }";
+                    $this->parseTagProperties();
+                }
+                
+                #Defining filter before other script options
                 if (!isset($this->configArray['script']['filter'])) {
                     $this->configArray['script']['filter']='contains';
                     $this->parseScriptProperties();
                 }
+                
+                #Erasing textBox in case of typing error in autocomplete. onchange Check
+                #typing error in autocomplete is necesary becouse integrity reasons
+                
+                $this->scriptProperties.="change : function (e) {
+                                            if (this.value() && this.selectedIndex == -1) {                    
+                                                this.text('');        
+                                            }
+                                        }   
+                ";                
             }
             else{
                 $control="kendoDropDownList";
@@ -230,6 +255,15 @@ class selectControl extends helper {
     public function getEndCode() {
      
         $code="</select></td></tr></table>";
+        
+        if ($this->configArray["control"]['autoComplete']=="true") {
+            $code.="
+                <script>
+                    $(document).ready(function(){
+                        $('#{$this->configArray["control"]['name']}').data('kendoComboBox').list.width('auto');
+                    });
+                </script>";
+        }
         return $code;
         
     }

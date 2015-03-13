@@ -534,7 +534,7 @@ class crud implements crud_Interface {
                 if (is_array($dataSourceArray)) {
     
 //                    $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<select id='{$this->model->tables}_$field' name='{$this->model->tables}_$field'>";
-                    $selectOptions="";             
+                    $selectOptions="<option value=''></option>";             
                     if (is_array($dataSourceArray[0])) {
                         foreach ($dataSourceArray as $dataSourceRow) {
 
@@ -562,7 +562,7 @@ class crud implements crud_Interface {
                     
 //                    $html.="</select></td></tr>";
                     $uiArray["selectControl"]["value"]=$selectOptions;
-                    $html.=$uig->getCode('{"selectControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'","autoComplete":"false"'.$requiredUigText.'}}',$uiArray);
+                    $html.=$uig->getCode('{"selectControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"}}',$uiArray);
                 }
                 else{
                     
@@ -571,26 +571,26 @@ class crud implements crud_Interface {
 //                        $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value' readonly ></td></tr>";
                         
                         $uiArray["dateControl"]["value"]=$value;
-                        $html.=$uig->getCode('{"dateControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'"'.$requiredUigText.'}}',$uiArray);
+                        $html.=$uig->getCode('{"dateControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$requiredUigText.'}}',$uiArray);
                     }                                        
                     elseif ($type=='dateTime') {
 //                        $html.="<script>jQuery( function( ) { $( '#{$this->model->tables}_$field' ).datetimepicker({showOn: 'button',buttonImage: 'assets/images/icons/calendar.png',showOtherMonths : true ,selectOtherMonths : true ,showButtonPanel : true ,changeMonth: true,changeYear: true,dateFormat : 'yy-mm-dd',timeFormat : 'HH:mm:ss', }); });</script>";
 //                        $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value' readonly ></td></tr>";
                         
                         $uiArray["dateTimeControl"]["value"]=$value;
-                        $html.=$uig->getCode('{"dateTimeControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'"'.$requiredUigText.'}}',$uiArray);                        
+                        $html.=$uig->getCode('{"dateTimeControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$requiredUigText.'}}',$uiArray);                        
                     }                                        
                     elseif ($type=='file') {
                         //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='file' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</td></tr>";
                         $uiArray["fileControl"]["value"]=$value;
-                        $html.=$uig->getCode('{"fileControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'"'.$requiredUigText.'}}',$uiArray);
+                        $html.=$uig->getCode('{"fileControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$requiredUigText.'}}',$uiArray);
                     }                                        
                     elseif ($type=='string' or $type=="number") {
                         if ( $widget=='textarea') {
     
                             //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<textarea rows='20' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</textarea></td></tr>";
                             $uiArray["textAreaControl"]["value"]=$value;
-                            $html.=$uig->getCode('{"textAreaControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'","t_rows":"4","t_cols":"20"'.$requiredUigText.'}}',$uiArray);
+                            $html.=$uig->getCode('{"textAreaControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$requiredUigText.'}}',$uiArray);
                         }
                         else{
                             
@@ -604,7 +604,7 @@ class crud implements crud_Interface {
                             
 //                            $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value'></td></tr>";
                             $uiArray["textBoxControl"]["value"]=$value;
-                            $html.=$uig->getCode('{"textBoxControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.'","password":"'.$passWordParameter.'"'.$requiredUigText.'}}',$uiArray);
+                            $html.=$uig->getCode('{"textBoxControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':","password":"'.$passWordParameter.'"'.$requiredUigText.'}}',$uiArray);
                         }
                     }                    
                     
@@ -675,7 +675,19 @@ class crud implements crud_Interface {
 
         $submitButton="";
         if ($changePermission and $editing or ( $addPermission and !$editing ) or $this->config['permission']['isAdmin'] ) {
-            $submitButton="<button class='btn btn-info' onclick=\"document.getElementById('crudForm').submit();\" ><span class='glyphicon glyphicon-floppy-disk'></span> " . $this->baseAppTranslation["save"] . "</button>";
+
+            /*
+             var $myForm = $('#myForm')
+            if (!$myForm[0].checkValidity()) {
+              // If the form is invalid, submit it. The form won't actually submit;
+              // this will just cause the browser to display the native HTML5 error messages.
+              $myForm.find(':submit').click()
+            }
+            //$submitButton="<button type='submit' class='btn btn-info' onclick=\"document.getElementById('crudForm').submit();\" ><span class='glyphicon glyphicon-floppy-disk'></span> " . $this->baseAppTranslation["save"] . "</button>";
+
+             */ 
+
+            $submitButton="<button type='submit' class='btn btn-info' ><span class='glyphicon glyphicon-floppy-disk'></span> " . $this->baseAppTranslation["save"] . "</button>";
         }
 
         $html.="<tr><td colspan='2'><br/><a class='btn btn-warning' href='javascript:history.back();' ><span class='glyphicon glyphicon-arrow-left'></span> " . $this->baseAppTranslation["cancel"] . "</a>&nbsp;&nbsp;$submitButton</td></tr>";
