@@ -19,6 +19,7 @@ class table_roles_applications_modules {
             ),
             "id_role_app" => array(
                 "definition" => array(
+                    "options"=>array("required"),
                     "type" => "number",
                     "default" => "",
                     "label" => array(
@@ -28,6 +29,7 @@ class table_roles_applications_modules {
             ),
             "id_module" => array(
                 "definition" => array(
+                    "options"=>array("required"),
                     "type" => "number",
                     "default" => "",
                     "label" => array(

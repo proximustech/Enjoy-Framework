@@ -19,6 +19,7 @@ class table_components {
             ),
             "id_app" => array(
                 "definition" => array(
+                    "options"=>array("required"),
                     "type" => "number",
                     "default" => "",
                     "label" => array(
