@@ -6,8 +6,16 @@
     font-size: medium !important;
     background-color: #cad4e6;
     border-radius: 8px;
-    width: 190px;
+    width: 327px !important;
     height: 31px;
+}
+.eui_textArea {
+    padding: 1px;
+    font-size: medium !important;
+    background-color: #cad4e6;
+    border-radius: 8px;
+    width: 327px;
+    height: 150px;
 }
 .eui_button {
     padding: 5px;
