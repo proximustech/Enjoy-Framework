@@ -298,7 +298,7 @@ class xControl extends helper {
         }
         
         $code="         
-        <{$this->configArray["control"]['tag']} $idString $nameString class='eui_{$this->configArray["control"]['tag']}' {$this->tagProperties}>
+        <{$this->configArray["control"]['tag']} $idString $nameString {$this->tagProperties}>
         ";
 
         return $code;
