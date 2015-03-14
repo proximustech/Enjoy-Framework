@@ -228,6 +228,11 @@ class selectControl extends helper {
             $additionalDefinition="";
         }
         
+        if (isset($this->configArray["tag"]['required'])) {
+            unset($this->configArray["tag"]['required']);
+            $this->parseTagProperties();
+        }        
+        
         $code="
             
             <script>

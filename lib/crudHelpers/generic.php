@@ -400,6 +400,14 @@ class crud implements crud_Interface {
         $encryption= new encryption();
         $register=$security->filter($register);
 
+        
+        //Makes a detailed verification of the permissions becouse some times the $this->config['permission'] refers to a different module
+        if (key_exists($moduleName, $_SESSION['userInfo']['privileges'][$this->config['flow']['app']])) {
+            $modulePermissions=$_SESSION['userInfo']['privileges'][$this->config['flow']['app']][$moduleName];
+            $addPermission=$security->checkCrudPermission('A', $modulePermissions);
+            $changePermission=$security->checkCrudPermission('C', $modulePermissions);
+        }        
+        
         $html = "<br/><form id='crudForm' action='index.php' method='POST' enctype='multipart/form-data'><table>";
 //        $html.="<input type='hidden' name='MAX_FILE_SIZE' value='100000000000000000000000000' />";
 
@@ -436,6 +444,8 @@ class crud implements crud_Interface {
 
         foreach ($this->fieldsConfig as $field => $configSection) {
 
+            $aditionalEuiOptionsArray=array();
+            $aditionalEuiOptions="";
             if ($field != $this->model->primaryKey and substr($field, 0,5)!="enjoy") {
 
                 if (!$editing) {
@@ -447,6 +457,9 @@ class crud implements crud_Interface {
                     
                 } else {
                     $value = $register[$field];
+                    if (!$changePermission and !$this->config['permission']['isAdmin']){
+                        $aditionalEuiOptionsArray[]='"t_disabled":""';
+                    }                    
                 }
 
                 $widget = $this->fieldsConfig[$field]["definition"]["widget"];
@@ -455,11 +468,10 @@ class crud implements crud_Interface {
                 $label = $this->fieldsConfig[$field]["definition"]["label"][$this->appLang];
                 
                 if (in_array("required", $options)) {
-                    $requiredUigText=',"t_required":""';
+                    $aditionalEuiOptionsArray[]='"t_required":""';
                 }
-                else{
-                    $requiredUigText='';
-                }
+
+
                 
                 
                 $dataSourceArray=null;
@@ -531,6 +543,11 @@ class crud implements crud_Interface {
                     );
                 }                  
                 
+                if (count($aditionalEuiOptionsArray)) {
+                    $aditionalEuiOptions=",".implode(",", $aditionalEuiOptionsArray);
+                }
+                
+                
                 if (is_array($dataSourceArray)) {
     
 //                    $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<select id='{$this->model->tables}_$field' name='{$this->model->tables}_$field'>";
@@ -562,7 +579,7 @@ class crud implements crud_Interface {
                     
 //                    $html.="</select></td></tr>";
                     $uiArray["selectControl"]["value"]=$selectOptions;
-                    $html.=$uig->getCode('{"selectControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"}}',$uiArray);
+                    $html.=$uig->getCode('{"selectControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$aditionalEuiOptions.'}}',$uiArray);
                 }
                 else{
                     
@@ -571,26 +588,26 @@ class crud implements crud_Interface {
 //                        $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value' readonly ></td></tr>";
                         
                         $uiArray["dateControl"]["value"]=$value;
-                        $html.=$uig->getCode('{"dateControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$requiredUigText.'}}',$uiArray);
+                        $html.=$uig->getCode('{"dateControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$aditionalEuiOptions.'}}',$uiArray);
                     }                                        
                     elseif ($type=='dateTime') {
 //                        $html.="<script>jQuery( function( ) { $( '#{$this->model->tables}_$field' ).datetimepicker({showOn: 'button',buttonImage: 'assets/images/icons/calendar.png',showOtherMonths : true ,selectOtherMonths : true ,showButtonPanel : true ,changeMonth: true,changeYear: true,dateFormat : 'yy-mm-dd',timeFormat : 'HH:mm:ss', }); });</script>";
 //                        $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value' readonly ></td></tr>";
                         
                         $uiArray["dateTimeControl"]["value"]=$value;
-                        $html.=$uig->getCode('{"dateTimeControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$requiredUigText.'}}',$uiArray);                        
+                        $html.=$uig->getCode('{"dateTimeControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$aditionalEuiOptions.'}}',$uiArray);                        
                     }                                        
                     elseif ($type=='file') {
                         //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='file' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</td></tr>";
                         $uiArray["fileControl"]["value"]=$value;
-                        $html.=$uig->getCode('{"fileControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$requiredUigText.'}}',$uiArray);
+                        $html.=$uig->getCode('{"fileControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$aditionalEuiOptions.'}}',$uiArray);
                     }                                        
                     elseif ($type=='string' or $type=="number") {
                         if ( $widget=='textarea') {
     
                             //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<textarea rows='20' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</textarea></td></tr>";
                             $uiArray["textAreaControl"]["value"]=$value;
-                            $html.=$uig->getCode('{"textAreaControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$requiredUigText.'}}',$uiArray);
+                            $html.=$uig->getCode('{"textAreaControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$aditionalEuiOptions.'}}',$uiArray);
                         }
                         else{
                             
@@ -604,7 +621,7 @@ class crud implements crud_Interface {
                             
 //                            $html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='$inputType' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' value='$value'></td></tr>";
                             $uiArray["textBoxControl"]["value"]=$value;
-                            $html.=$uig->getCode('{"textBoxControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':","password":"'.$passWordParameter.'"'.$requiredUigText.'}}',$uiArray);
+                            $html.=$uig->getCode('{"textBoxControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':","password":"'.$passWordParameter.'"'.$aditionalEuiOptions.'}}',$uiArray);
                         }
                     }                    
                     
@@ -665,13 +682,6 @@ class crud implements crud_Interface {
         }
         
         $moduleName=$this->model->tables;
-
-        //Makes a detailed verification of the permissions becouse some times the $this->config['permission'] refers to a different module
-        if (key_exists($moduleName, $_SESSION['userInfo']['privileges'][$this->config['flow']['app']])) {
-            $modulePermissions=$_SESSION['userInfo']['privileges'][$this->config['flow']['app']][$moduleName];
-            $addPermission=$security->checkCrudPermission('A', $modulePermissions);
-            $changePermission=$security->checkCrudPermission('C', $modulePermissions);
-        }
 
         $submitButton="";
         if ($changePermission and $editing or ( $addPermission and !$editing ) or $this->config['permission']['isAdmin'] ) {
