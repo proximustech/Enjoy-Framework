@@ -90,15 +90,16 @@ class controllerBase {
         $messenger = new messages();
         $crud = new crud($model);        
         
+        $options['config']['subModelRelations']=false;
         $lang=$this->config["base"]["language"];
-        $options['config']['dataFieldConversion']=true;
         if (key_exists("keyField", $_REQUEST)) {
+            $options['config']['dataFieldConversion']=true;
             $options['where'][]=$model->tables.'.'.$_REQUEST['keyField']."='{$_REQUEST['keyValue']}'";
             $this->resultData["output"]["label"] = $model->label[$lang]." ".$this->baseAppTranslation['of']." ".$_REQUEST['keyLabel']." (".$_REQUEST['modelLabel'].")";
             $resultData = $model->fethLimited($options);
         }
         else {
-            $resultData = $model->fethLimited();
+            $resultData = $model->fethLimited($options);
             $this->resultData["output"]["label"] = $model->label[$lang];
         }
         $this->resultData["output"]["crud"] = $crud->listData($resultData, $resultData["totalRegisters"]);

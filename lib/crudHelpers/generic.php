@@ -665,6 +665,10 @@ class crud implements crud_Interface {
             $dataSourceArray=$dataSource['results'];
             $label=$dataSource['label'];
             
+            if ($label==NULL) {
+                $label=$subModel->fieldsConfig[$linkedDataField]["definition"]["label"][$this->appLang];
+            }
+            
             $selectOptions="";
             //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<select id='{$subModel->tables}_$linkedDataField' name='{$subModel->tables}_$linkedDataField$fieldNameLastPart' $multiple>";
             foreach ($dataSourceArray as $dataSourceRow) {
@@ -678,7 +682,7 @@ class crud implements crud_Interface {
             }               
             //$html.="</select></td></tr>";
             $uiArray["selectControl"]["value"]=$selectOptions;
-            $html.=$uig->getCode('{"selectControl":{"name":"'."{$subModel->tables}_$linkedDataField".'","caption":"'.$label.'","multiple":"'.$multiple.'"}}',$uiArray);            
+            $html.=$uig->getCode('{"selectControl":{"name":"'."{$subModel->tables}_$linkedDataField".'","caption":"'.$label.':","multiple":"'.$multiple.'"}}',$uiArray);            
         }
         
         $moduleName=$this->model->tables;

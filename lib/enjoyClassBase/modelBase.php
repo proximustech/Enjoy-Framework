@@ -563,8 +563,16 @@ class modelBase {
                 }
             }
 
-            if ($getTotal) {
-                if (key_exists('where', $options)) {
+            if ($getTotal and key_exists('where', $options )) {
+                
+                $makeSubModelRelations=true;
+                if (isset($options['config']['subModelRelations'])) {
+                    if ($options['config']['subModelRelations']==false) {
+                        $makeSubModelRelations=false;
+                    }
+                }
+                
+                if ($makeSubModelRelations) {
                     foreach ($this->subModels as $subModelEnry => $subModelConfig) {
 
                         $subModel=&$subModelConfig['model'];
@@ -575,7 +583,7 @@ class modelBase {
                         $relatedOptions['where'][]=$this->tables.'.'.$linkerField.'='.$subModel->tables.'.'.$linkedField;
 
                     }   
-                }                  
+                }
             }
         }
 
@@ -609,6 +617,7 @@ class modelBase {
         
         
         $sql = "SELECT $fields FROM $tables $whereSql $additionalSql";
+//        echo $sql;
 
         try {
             if (key_exists('set', $options['config'])) {
