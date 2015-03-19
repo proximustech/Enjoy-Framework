@@ -7,7 +7,8 @@ $config=array(
         "defaultModule"=>"home",
         "defaultAction"=>"index",
         "language"=>"es_es",
-        "enjoyHelper"=>"jqueryui",
+        "crudHelper"=>"generic",
+        "enjoyHelper"=>"kendoui",
     ),
 )
 

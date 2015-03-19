@@ -1,7 +1,7 @@
 <html>
     <head>
         
-        <?php require "assets/headTemplate.htm"; ?>
+        <?php require "assets/headTemplate.php"; ?>
 
         <style>
             .crudTable tr:hover  {
