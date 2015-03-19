@@ -28,7 +28,7 @@ class table_roles_applications {
             ),
             "id_app" => array(
                 "definition" => array(
-                    "options"=>array("required"),
+//                    "options"=>array("required"),
                     "type" => "number",
                     "default" => "",
                     "label" => array(
