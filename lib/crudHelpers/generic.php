@@ -179,6 +179,12 @@ class table implements table_Interface {
 //                }              
                 
                 
+                if (key_exists('options', $this->fieldsConfig[$field]["definition"])){
+                    if (in_array('currency', $this->fieldsConfig[$field]["definition"]["options"])){
+                        $resultValue='$'.number_format($resultValue);
+                    }
+                }
+                
                 if (key_exists('dataSourceArray', $this->fieldsConfig[$field]["definition"])){
                     $dataSourceArray=$this->fieldsConfig[$field]["definition"]['dataSourceArray'];
                     $resultValue=$dataSourceArray[$resultValue];
