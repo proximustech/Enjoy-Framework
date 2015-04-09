@@ -490,6 +490,7 @@ class crud implements crud_Interface {
                     
                 }
                 
+                $cascadeMode=false;
                 if (key_exists($field, $this->model->foreignKeys)){
                     $keyField=$this->model->foreignKeys[$field]['keyField'];
                     $dataField=$this->model->foreignKeys[$field]['dataField'];
@@ -501,6 +502,7 @@ class crud implements crud_Interface {
                             
                             if (!$editing) { //To allow changing the foreign key when editing
                                 $fkOptions['where'][]= $fkModel->tables.".{$fkModel->primaryKey}={$_REQUEST['keyValue']}";
+                                $cascadeMode=true;
                             }
                             
                             $html.="<input type='hidden' id='keyField' name='keyField' value='{$_REQUEST['keyField']}'>";
@@ -563,7 +565,7 @@ class crud implements crud_Interface {
 
                             $selected = '';
 //                            if ($value == $dataSourceRow['relationId'] or $value == $dataSourceRow['relationField']) {
-                            if ($value == $dataSourceRow['relationId']) {
+                            if ($value == $dataSourceRow['relationId'] or $cascadeMode) {
                                 $selected = ' selected ';
                             }
 //                            $html.="<option $selected value='{$dataSourceRow['relationId']}'>{$dataSourceRow['relationField']}</option>";
