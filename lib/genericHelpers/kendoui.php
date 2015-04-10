@@ -199,10 +199,10 @@ class selectControl extends helper {
             if ($this->configArray["control"]['autoComplete']=="true") {
                 $control="kendoComboBox";
                 
-                #Erasing textBox when the first element is selected (as the select widget behaviour) in case of typing error in autocomplete. onblur Check
+                #Erasing textBox if the typed text is not in the list. onblur Check (value and text of the option has always to be different)
                 
                 if (!isset($this->configArray["tag"]['onblur'])) {
-                    $this->configArray["tag"]['onblur']="if(this.selectedIndex==0){ $('#{$this->configArray["control"]['name']}').data('kendoComboBox').text(''); }";
+                    $this->configArray["tag"]['onblur']="if(this.options[this.selectedIndex].value==this.options[this.selectedIndex].text){ $('#{$this->configArray["control"]['name']}').data('kendoComboBox').text(''); }";
                     $this->parseTagProperties();
                 }
                 
@@ -237,6 +237,13 @@ class selectControl extends helper {
             
             <script>
                 $(function() {
+                
+                    //this ensures that numeric values and it's texts will always be different even if the texts al numbers.
+                    $('#{$this->configArray["control"]['name']} option').each(function(){
+                        if($(this).text()!=''){
+                            $(this).text($(this).text()+'.');
+                        }
+                    });
                     $('#{$this->configArray["control"]['name']}').$control({{$this->scriptProperties}})$additionalDefinition;
                 });
             </script>
