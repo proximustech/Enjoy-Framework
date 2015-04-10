@@ -238,7 +238,7 @@ class selectControl extends helper {
             <script>
                 $(function() {
                 
-                    //this ensures that numeric values and it's texts will always be different even if the texts al numbers.
+                    //this ensures that numeric values and it's texts will always be different even if the texts are numbers.
                     $('#{$this->configArray["control"]['name']} option').each(function(){
                         if($(this).text()!=''){
                             $(this).text($(this).text()+'.');
