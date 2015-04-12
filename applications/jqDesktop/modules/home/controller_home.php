@@ -3,7 +3,7 @@
 //Module Controller Class
 
 $enjoyHelper=$config['base']['enjoyHelper'];
-require_once "lib/crudHelpers/$enjoyHelper.php"; //Brings crud() among other helpers
+require_once "lib/crudHelpers/$crudHelper.php"; //Brings crud() among other helpers
 require_once 'lib/enjoyClassBase/controllerBase.php';
 require_once 'lib/enjoyClassBase/identification.php';
 
