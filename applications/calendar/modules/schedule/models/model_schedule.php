@@ -75,10 +75,10 @@ class scheduleModel extends modelBase {
 
         ";
 
-        $this->dataRep->exec("SET CHARACTER SET UTF8");
-        $this->dataRep->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
-        $this->dataRep->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-        $query = $this->dataRep->prepare($sql);
+        $this->dataRep->pdo->exec("SET CHARACTER SET UTF8");
+        $this->dataRep->pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
+        $this->dataRep->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
         $results = $query->fetchAll(PDO::FETCH_NUM);
         return $results;

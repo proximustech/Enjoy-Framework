@@ -136,7 +136,7 @@ class e_dbIdentifier {
                     AND u.active=1
         ";
 
-        $query = $this->dataRep->prepare($sql);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
         $results = $query->fetchAll(PDO::FETCH_ASSOC);
     

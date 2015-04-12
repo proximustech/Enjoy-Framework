@@ -35,8 +35,8 @@ class controllerBase {
         $dataRepName=$this->config['flow']['app'].'DataRep';
         
         if (class_exists($dataRepName)) {
-            $dataRepObject = new $dataRepName();        
-            $this->dataRep=$dataRepObject->getInstance();
+            $this->dataRep = new $dataRepName();        
+            $this->dataRep->getInstance();
             $baseModelClass=$this->config['flow']['mod'].'Model';
             if (class_exists($baseModelClass)) {
                 $this->baseModel = new $baseModelClass($this->dataRep, $this->config);

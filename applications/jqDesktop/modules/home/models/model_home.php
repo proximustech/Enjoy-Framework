@@ -25,7 +25,7 @@ class homeModel extends modelBase {
                 u.user_name='$user'
 
         ";
-        $query = $this->dataRep->prepare($sql);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
         $modulesPrivileges = $query->fetchAll(PDO::FETCH_ASSOC);
         
@@ -46,7 +46,7 @@ class homeModel extends modelBase {
                 u.user_name='$user'
 
         ";
-        $query = $this->dataRep->prepare($sql);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
         $componentsPrivileges = $query->fetchAll(PDO::FETCH_ASSOC);
         

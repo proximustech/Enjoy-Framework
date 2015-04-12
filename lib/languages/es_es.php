@@ -28,6 +28,11 @@ class base_language {
         "fieldValidation" => " debe ser ",
         "numericTypeValidation" => "numerico",
         "dateTypeValidation" => "una fecha valida: A-M-D",
+        
+        //Data Base
+        
+        "uniqueError" => "Se ha impedido generar datos duplicados para el campo ",
+        
     );
 }
 

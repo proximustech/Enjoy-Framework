@@ -101,7 +101,7 @@ class modelBase {
         $okOperation=$this->insert($options);
         
         if ($okOperation) {
-            $newPrimaryKey=$this->getLastInsertId();
+            $newPrimaryKey=$this->dataRep->getLastInsertId();
 
             foreach ($this->subModels as $subModelEnry => $subModelConfig) {
 
@@ -148,16 +148,6 @@ class modelBase {
         
     }
     
-    function getLastInsertId() {
-        
-        $sql = "SELECT LAST_INSERT_ID() AS lastId";
-
-        $query = $this->dataRep->prepare($sql);
-        $query->execute();
-        $results = $query->fetchAll(PDO::FETCH_ASSOC);
-        return $results[0]["lastId"];    
-    }
-    
     /**
      * Generic insert tool
      * @param array $options with the fields and values
@@ -169,13 +159,28 @@ class modelBase {
         $sql = "INSERT INTO $this->tables $fieldsSql VALUES $valuesSql";
 
             try {
-                $query = $this->dataRep->prepare($sql);
+                $query = $this->dataRep->pdo->prepare($sql);
                 $query->execute();
                 $okOperation=true;
             } catch (Exception $exc) {
                 $error= new error($this->config);
-                $error->log($exc->getMessage());
-                $okOperation=false;
+                
+                $errorMessage=$exc->getMessage();
+                $errorCode=$exc->getCode();
+                if ($errorCode==$this->dataRep->uniqueErrorCode) {
+                    
+                    $baseAppTranslations = new base_language();
+                    $baseAppTranslation = $baseAppTranslations->lang;                     
+                    
+                    $duplicatedField=$this->dataRep->getFieldFromErrorMessage($errorCode,$errorMessage);
+                    $duplicatedFieldLabel=$this->fieldsConfig[$duplicatedField]["definition"]["label"][$this->config["base"]["language"]];
+                    throw new Exception($baseAppTranslation["uniqueError"].$duplicatedFieldLabel);
+                }
+                else{
+                    $error->log($errorMessage);
+                    $okOperation=false;
+                }
+                
             }
             
             return $okOperation;
@@ -389,7 +394,7 @@ class modelBase {
             $sql = "DELETE FROM $this->tables $whereSql";
 
             try {
-                $query = $this->dataRep->prepare($sql);
+                $query = $this->dataRep->pdo->prepare($sql);
                 $query->execute();
                 $okOperation=true;
             } catch (Exception $exc) {
@@ -418,13 +423,27 @@ class modelBase {
             $sql = "UPDATE $this->tables SET $setSql $whereSql";
 
             try {
-                $query = $this->dataRep->prepare($sql);
+                $query = $this->dataRep->pdo->prepare($sql);
                 $query->execute();
                 $okOperation=true;
             } catch (Exception $exc) {
-                $error = new error($this->config);
-                $error->log($exc->getMessage());
-                $okOperation=false;
+                $error= new error($this->config);
+                
+                $errorMessage=$exc->getMessage();
+                $errorCode=$exc->getCode();
+                if ($errorCode==$this->dataRep->uniqueErrorCode) {
+                    
+                    $baseAppTranslations = new base_language();
+                    $baseAppTranslation = $baseAppTranslations->lang;                     
+                    
+                    $duplicatedField=$this->dataRep->getFieldFromErrorMessage($errorCode,$errorMessage);
+                    $duplicatedFieldLabel=$this->fieldsConfig[$duplicatedField]["definition"]["label"][$this->config["base"]["language"]];
+                    throw new Exception($baseAppTranslation["uniqueError"].$duplicatedFieldLabel);
+                }
+                else{
+                    $error->log($errorMessage);
+                    $okOperation=false;
+                }
             }
         }
         
@@ -604,7 +623,7 @@ class modelBase {
             $sql = "SELECT count(*) AS total FROM $tables $whereSql $additionalSql";
 
             try {
-                $query = $this->dataRep->prepare($sql);
+                $query = $this->dataRep->pdo->prepare($sql);
                 $query->execute();
                 $results = $query->fetchAll(PDO::FETCH_ASSOC);
                 $resultArray["totalRegisters"] = $results[0]["total"];
@@ -621,10 +640,10 @@ class modelBase {
 
         try {
             if (key_exists('set', $options['config'])) {
-                $this->dataRep->exec("SET CHARACTER SET {$options['config']['set']}");
+                $this->dataRep->pdo->exec("SET CHARACTER SET {$options['config']['set']}");
             }
             
-            $query = $this->dataRep->prepare($sql);
+            $query = $this->dataRep->pdo->prepare($sql);
             $query->execute();
             $results = $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $exc) {
