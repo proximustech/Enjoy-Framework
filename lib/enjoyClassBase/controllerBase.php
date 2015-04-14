@@ -228,12 +228,15 @@ class controllerBase {
             $register = $model->fetchRecord();
             foreach ($fileFields as $fileField) {
 
-                if ($_FILES[$model->tables . '_' . $fileField]['name'] != "" and $register[$fileField] != "") {
-                    $fileLocation = $filesPath . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_' . $register[$fileField];
-                    unlink($fileLocation);
-                    $_REQUEST[$model->tables . '_' . $fileField] = $_FILES[$model->tables . '_' . $fileField]['name'];
-                } elseif ($register[$fileField] != "") {
+                //If no new file attached, mantein the previous one
+                if ($_FILES[$model->tables . '_' . $fileField]['name'] == "" ) {
                     $_REQUEST[$model->tables . '_' . $fileField] = $register[$fileField];
+                } else { //Save the attached file
+                    if ($register[$fileField] != "") {//Erase the old file
+                        $fileLocation = $filesPath . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_' . $register[$fileField];
+                        unlink($fileLocation);  
+                    }
+                    $_REQUEST[$model->tables . '_' . $fileField] = $_FILES[$model->tables . '_' . $fileField]['name'];
                 }
             }
         }
@@ -349,7 +352,7 @@ class controllerBase {
                 mkdir($filesPath, 0770, TRUE);
             }
 
-            $newId = $model->getLastInsertId();
+            $newId = $this->dataRep->getLastInsertId();
             foreach ($fileFields as $fileField) {
                 $newFileLocation = $filesPath . $this->ds . $newId . '_' . $_FILES[$model->tables . '_' . $fileField]['name'];
                 move_uploaded_file($_FILES[$model->tables . '_' . $fileField]['tmp_name'], $newFileLocation);

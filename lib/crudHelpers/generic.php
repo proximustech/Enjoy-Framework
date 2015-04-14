@@ -239,7 +239,7 @@ class table implements table_Interface {
                 if ($showUnlinkedData) {
                     
                     $downloadCode="";
-                    if ($this->fieldsConfig[$field]["definition"]["type"]=='file') {
+                    if ($this->fieldsConfig[$field]["definition"]["type"]=='file' and $resultValue!='') {
 
                         $parameters[]="fileField=$field";
                         $parameters[]="crud=downloadFile";
@@ -405,6 +405,7 @@ class crud implements crud_Interface {
         $security= new security();
         $encryption= new encryption();
         $register=$security->filter($register);
+        $navigator = new navigator($this->config);
 
         
         //Makes a detailed verification of the permissions becouse some times the $this->config['permission'] refers to a different module
@@ -473,7 +474,7 @@ class crud implements crud_Interface {
                 $options = $this->fieldsConfig[$field]["definition"]["options"];
                 $label = $this->fieldsConfig[$field]["definition"]["label"][$this->appLang];
                 
-                if (in_array("required", $options)) {
+                if (in_array("required", $options) and $type!='file') {
                     $aditionalEuiOptionsArray[]='"t_required":""';
                 }
 
@@ -608,7 +609,22 @@ class crud implements crud_Interface {
                     elseif ($type=='file') {
                         //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='file' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</td></tr>";
                         $uiArray["fileControl"]["value"]=$value;
-                        $html.=$uig->getCode('{"fileControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$aditionalEuiOptions.'}}',$uiArray);
+                        $fileFieldCode=$uig->getCode('{"fileControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$aditionalEuiOptions.'}}',$uiArray);
+
+                        if ($editing and $value!="") {
+                            //$downloadButtonCode=$uig->getCode('{"xControl":{"tag":"input","t_type":"button","t_title":"'.$value.'"}}');
+
+                            $parameters[]="fileField=$field";
+                            $parameters[]="crud=downloadFile";
+                            $parameters[] = "{$this->model->tables}_{$this->model->primaryKey}=".$primaryKeyValue;
+                            
+                            $downloadCode= $navigator->action($this->config['flow']['act'], "glyphicon-download", $parameters);                          
+                            
+                            $html.="$value<table><tr><td>".$fileFieldCode."</td><td>".$downloadCode."</td></tr></table>";
+                        }
+                        else{
+                            $html.=$fileFieldCode;
+                        }
                     }                                        
                     elseif ($type=='string' or $type=="number") {
                         if ( $widget=='textarea') {
