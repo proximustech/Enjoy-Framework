@@ -90,6 +90,15 @@ class controllerBase {
         $messenger = new messages();
         $crud = new crud($model);        
         
+        foreach ($this->baseModel->fieldsConfig as $field => $configSection) {
+            if (isset($configSection['viewsPresence'])) {
+                if (in_array('list', $configSection['viewsPresence']) or $field == $this->baseModel->primaryKey) {
+                    $options['fields'][]=$field;
+                }
+            }            
+            else $options['fields'][]=$field;
+        }
+        
         $options['config']['subModelRelations']=false;
         $lang=$this->config["base"]["language"];
         if (key_exists("keyField", $_REQUEST)) {

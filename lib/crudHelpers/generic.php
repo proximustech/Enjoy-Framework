@@ -169,6 +169,11 @@ class table implements table_Interface {
 //                    $primaryKeyValue = $resultValue;
 //                }
 
+                if (isset($this->fieldsConfig[$field]['viewsPresence'])) {
+                    if (!in_array('list', $this->fieldsConfig[$field]['viewsPresence'])) {
+                        continue;
+                    }
+                }                
                 
                 //Link automatico a edicion del elemento
 //                if (key_exists('dataSourceArray', $this->fieldsConfig[$field]["definition"])){
@@ -462,6 +467,13 @@ class crud implements crud_Interface {
 
         foreach ($this->fieldsConfig as $field => $configSection) {
 
+            //If configured to be omited, so be it.
+            if (isset($configSection['viewsPresence'])) {
+                if (!in_array($_REQUEST["crud"], $configSection['viewsPresence'])) {
+                    continue;
+                }
+            }
+            
             $aditionalEuiOptionsArray=array();
             $aditionalEuiOptions="";
             if ($field != $this->model->primaryKey and substr($field, 0,5)!="enjoy") {
@@ -873,6 +885,13 @@ class crud implements crud_Interface {
         $headersLabes = array();
 
         foreach ($headers as $header) {
+            
+            if (isset($this->fieldsConfig[$header]['viewsPresence'])) {
+                if (!in_array('list', $this->fieldsConfig[$header]['viewsPresence'])) {
+                    continue;
+                }
+            }            
+            
             $label = $this->fieldsConfig[$header]["definition"]["label"][$this->appLang];
             $headersLabes[] = $label;
         }

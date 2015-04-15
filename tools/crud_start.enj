@@ -146,6 +146,7 @@ class table_'.$module.' {
                     ),
                     //"widget" => "textarea",
                 ),
+                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
             ),
         );
     }        
