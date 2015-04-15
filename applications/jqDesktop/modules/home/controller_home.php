@@ -13,7 +13,6 @@ class modController extends controllerBase {
     var $config;
     //var $directories=array();
 
-    
     function run($act) {
         
         session_start();
