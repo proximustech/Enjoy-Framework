@@ -69,7 +69,8 @@ class navigator implements navigator_Interface {
         $secFilter= new security();
         
         $parametersArray=$secFilter->filter($parametersArray);        
-        $label=$secFilter->filter($label);        
+        $label=$secFilter->filter($label);
+        $title=$label;
         
         $parameters = implode("&", $parametersArray);
         $parametersArray = array();
@@ -83,6 +84,7 @@ class navigator implements navigator_Interface {
         $glyphicon="";
         
         if ($label==$this->baseAppTranslation["delete"]) {
+            $label="";
             $class="btn btn-danger";
             $glyphicon="<span class='glyphicon glyphicon-remove'></span>";
         }
@@ -90,6 +92,7 @@ class navigator implements navigator_Interface {
             $glyphicon="<span class='glyphicon glyphicon-plus-sign'></span>";
         }
         elseif ($label==$this->baseAppTranslation["edit"]) {
+            $label="";
             $glyphicon="<span class='glyphicon glyphicon-pencil'></span>";
         }
         elseif (substr($label,0,9)=='glyphicon') {
@@ -105,10 +108,10 @@ class navigator implements navigator_Interface {
         }
         
         if ($act!=null) {
-            return "<a class='$class' href='index.php?app=$app&mod=$mod&act=$act&$parameters'>$glyphicon $label </a>";
+            return "<a class='$class' title='$title' href='index.php?app=$app&mod=$mod&act=$act&$parameters'>$glyphicon $label </a>";
         }
         else{
-            return "<a class='$class' href='index.php?$parameters'>$glyphicon $label </a>";
+            return "<a class='$class' title='$title' href='index.php?$parameters'>$glyphicon $label </a>";
         }
         
     }
@@ -143,6 +146,9 @@ class table implements table_Interface {
         $results=$security->filter($results);        
         
         $navigator = new navigator($this->config);
+        
+        $baseAppTranslations = new base_language();
+        $this->baseAppTranslation = $baseAppTranslations->lang;        
 
         $html = "<table class='crudTable'>";
         $html.="<thead><tr>";
@@ -339,7 +345,12 @@ class table implements table_Interface {
                 $primaryKeyValue=$resultRow[$this->model->primaryKey];
                 if ($this->config["helpers"]['crud_encryptPrimaryKeys'])
                     $primaryKeyValue=$encryption->encode($primaryKeyValue, $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
-                $buttonsCode="<button class='btn btn-danger' onclick=\"{$buttonInfo['jsFunction']}('{$primaryKeyValue}');\"><span class='glyphicon glyphicon-remove'></span>".$buttonInfo['label']."</button>";
+                
+                $title=$buttonInfo['label'];
+                if($buttonInfo['label']==$this->baseAppTranslation["delete"])
+                    $buttonInfo['label']="";
+                
+                $buttonsCode="<button class='btn btn-danger' title='$title' onclick=\"{$buttonInfo['jsFunction']}('{$primaryKeyValue}');\"><span class='glyphicon glyphicon-remove'></span>".$buttonInfo['label']."</button>";
             }
 
             $additionalFieldExtraCode = "";
