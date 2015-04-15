@@ -80,7 +80,7 @@ class navigator implements navigator_Interface {
             $mod = $this->config["flow"]["mod"];
         }
         
-        $class="btn btn-info";
+        $class="btn btn-default";//default,primary,success
         $glyphicon="";
         
         if ($label==$this->baseAppTranslation["delete"]) {
@@ -93,6 +93,7 @@ class navigator implements navigator_Interface {
         }
         elseif ($label==$this->baseAppTranslation["edit"]) {
             $label="";
+            $class="btn btn-sm btn-info";
             $glyphicon="<span class='glyphicon glyphicon-pencil'></span>";
         }
         elseif (substr($label,0,9)=='glyphicon') {
