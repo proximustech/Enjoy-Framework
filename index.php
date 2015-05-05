@@ -118,7 +118,7 @@ if (!in_array($app, $config["appServerConfig"]['apps'])) {
 }
 
 require_once "applications/$app/config.php"; //Expose variable $config
-$config["appServerConfig"]=$appServerConfig; //Asigned becouse a new $config exists.
+$config["appServerConfig"]=$appServerConfig; //Re-Asigned becouse a new $config exists.
 
 $mod=$config["base"]["defaultModule"];
 $act=$config["base"]["defaultAction"];
@@ -160,6 +160,8 @@ $applicationsServerDataRepDir="dataRep/";
 $applicationDataRepDir="applications/$app/dataRep/";
 $moduleDataRepDir="applications/$app/modules/$mod/dataRep/";
 
+$config['viewsDir']=$viewsDir;
+        
 
 /*
  * Permissions set
