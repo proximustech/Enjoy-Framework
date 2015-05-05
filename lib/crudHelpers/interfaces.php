@@ -6,7 +6,7 @@ interface navigator_Interface
      * Creates Application navigators
      * @param type $config general Config
      */
-    function __construct($config);
+    function __construct(&$config);
     /**
      * Creates links
      * @param string $act Action
@@ -42,7 +42,7 @@ interface crud_Interface
      * Generates crud views
      * @param model $model
      */
-    function __construct($model);
+    function __construct(&$model);
     /**
      * Displays a form
      * @param array $register

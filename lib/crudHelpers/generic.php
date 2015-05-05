@@ -52,7 +52,7 @@ class navigator implements navigator_Interface {
      * @param type $config general Config
      */    
     
-    function __construct($config) {
+    function __construct(&$config) {
 
         $this->config = &$config;
         $baseAppTranslations = new base_language();
@@ -347,16 +347,20 @@ class table implements table_Interface {
             }
             
             $buttonsCode="";
-            foreach ($additionalFiledsConfig["buttons"] as $buttonInfo) {
+            foreach ($additionalFiledsConfig["buttons"] as $buttonType=>$buttonInfo) {
                 $primaryKeyValue=$resultRow[$this->model->primaryKey];
                 if ($this->config["helpers"]['crud_encryptPrimaryKeys'])
                     $primaryKeyValue=$encryption->encode($primaryKeyValue, $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
                 
                 $title=$buttonInfo['label'];
-                if($buttonInfo['label']==$this->baseAppTranslation["delete"])
+                $buttonClass='btn btn-info';
+                $spanClass='glyphicon glyphicon-record';
+                if($buttonInfo['label']==$this->baseAppTranslation["delete"]){
                     $buttonInfo['label']="";
-                
-                $buttonsCode="<button class='btn btn-danger' title='$title' onclick=\"{$buttonInfo['jsFunction']}('{$primaryKeyValue}');\"><span class='glyphicon glyphicon-remove'></span>".$buttonInfo['label']."</button>";
+                    $buttonClass='btn btn-danger';
+                    $spanClass='glyphicon glyphicon-remove';
+                }
+                $buttonsCode.="<button class='$buttonClass' title='$title' onclick=\"{$buttonInfo['jsFunction']}('{$primaryKeyValue}');\"><span class='$spanClass'></span></button>";
             }
 
             $additionalFieldExtraCode = "";
@@ -375,7 +379,7 @@ class table implements table_Interface {
                 }
             }
 
-            if ($additionalFieldActionsCode != "") {
+            if ($additionalFieldActionsCode != "" or $buttonsCode != "") {
                 $html.="<td>$dependents" . $additionalFieldActionsCode . " ".$buttonsCode. "</td>";
             }
 
@@ -404,8 +408,8 @@ class crud implements crud_Interface {
      * Generates crud views
      * @param model $model
      */
-    function __construct($model) {
-        $this->model=$model;
+    function __construct(&$model) {
+        $this->model=&$model;
         $this->config = &$model->config;
         $baseAppTranslations = new base_language();
         $this->baseAppTranslation = $baseAppTranslations->lang;
@@ -432,7 +436,8 @@ class crud implements crud_Interface {
             $changePermission=$security->checkCrudPermission('C', $modulePermissions);
         }        
         
-        $html = "<br/><form id='crudForm' action='index.php' method='POST' enctype='multipart/form-data'><table>";
+        $html="<table style='width:100%'><tr>";
+        $html .= "<td style='width:50%;padding: 15px'><br/><form id='crudForm' action='index.php' method='POST' enctype='multipart/form-data'>";
 //        $html.="<input type='hidden' name='MAX_FILE_SIZE' value='100000000000000000000000000' />";
 
         if ($register != null) {
@@ -752,13 +757,21 @@ class crud implements crud_Interface {
             $submitButton="<button type='submit' class='btn btn-info' ><span class='glyphicon glyphicon-floppy-disk'></span> " . $this->baseAppTranslation["save"] . "</button>";
         }
 
-        $html.="<tr><td colspan='2'><br/><a class='btn btn-warning' href='javascript:history.back();' ><span class='glyphicon glyphicon-arrow-left'></span> " . $this->baseAppTranslation["cancel"] . "</a>&nbsp;&nbsp;$submitButton</td></tr>";
+        $html.="<br/><a class='btn btn-warning' href='javascript:history.back();' ><span class='glyphicon glyphicon-arrow-left'></span> " . $this->baseAppTranslation["cancel"] . "</a>&nbsp;&nbsp;$submitButton";
         
         $html.="<input type='hidden' id='app' name='app' value='$app'>";
         $html.="<input type='hidden' id='mod' name='mod' value='$mod'>";
         $html.="<input type='hidden' id='act' name='act' value='$act'>";
         $html.="<input type='hidden' id='crud' name='crud' value='$crudOperation'>";
-        $html.="<table></form>";
+        $html.="</form></td>";
+
+        if ($this->config['bpmData'] != null and $editing) {
+            $html.="<td  style='vertical-align: top;width:50%;padding: 15px'><br>";
+            $html.=$uig->getCode('{"xControl":{"tag":"div","t_class":"eui_note blue","t_style":"width:300px","value":"'.'<b>'.$this->baseAppTranslation["registeringAction"].'</b><br>'.$this->config['bpmData']['stateConfig']['actions'][$this->config['flow']['act']]['label'][$this->appLang].'"}}');
+            $html.="</td>";
+        }
+
+        $html.="</tr></table>";
         return $html;
     }
     /**
@@ -899,23 +912,29 @@ class crud implements crud_Interface {
 
         
 
-        if ($this->config['permission']['change'] or $this->config['permission']['view']) {            
-            $additionalFiledsConfig["actions"][0]["label"] = $this->baseAppTranslation["edit"];
-            $additionalFiledsConfig["actions"][0]["mod"] = $this->config["flow"]["mod"];
-            $additionalFiledsConfig["actions"][0]["act"] = $this->config["flow"]["act"];
-            $additionalFiledsConfig["actions"][0]["fieldParameters"][] = $this->model->primaryKey;
-            $additionalFiledsConfig["actions"][0]["parameters"][] = "crud=editForm";
+        if ($this->config['permission']['change'] or $this->config['permission']['view']) {
             
-            if (key_exists("keyField", $_REQUEST)) {
-                $additionalFiledsConfig["actions"][0]["parameters"][] = "keyField={$_REQUEST['keyField']}";
-                $additionalFiledsConfig["actions"][0]["parameters"][] = "keyValue=$keyValue";
-                $additionalFiledsConfig["actions"][0]["parameters"][] = "keyLabel={$_REQUEST['keyLabel']}";
-            }               
-            
+            if ($this->config['permission']['change'] and $this->config['bpmData']!=null) {
+                $additionalFiledsConfig["buttons"]["bpmStates"]["label"] = $this->baseAppTranslation["edit"];
+                $additionalFiledsConfig["buttons"]["bpmStates"]["jsFunction"] = "showBpmActions";                
+            }
+            else{
+                $additionalFiledsConfig["actions"][0]["label"] = $this->baseAppTranslation["edit"];
+                $additionalFiledsConfig["actions"][0]["mod"] = $this->config["flow"]["mod"];
+                $additionalFiledsConfig["actions"][0]["act"] = $this->config["flow"]["act"];
+                $additionalFiledsConfig["actions"][0]["fieldParameters"][] = $this->model->primaryKey;
+                $additionalFiledsConfig["actions"][0]["parameters"][] = "crud=editForm";
+
+                if (key_exists("keyField", $_REQUEST)) {
+                    $additionalFiledsConfig["actions"][0]["parameters"][] = "keyField={$_REQUEST['keyField']}";
+                    $additionalFiledsConfig["actions"][0]["parameters"][] = "keyValue=$keyValue";
+                    $additionalFiledsConfig["actions"][0]["parameters"][] = "keyLabel={$_REQUEST['keyLabel']}";
+                }               
+            }
             
         }
         
-        if ($this->config['permission']['remove']) {
+        if ($this->config['permission']['remove'] and $this->config['bpmData']==null) {
             
 //            $additionalFiledsConfig["actions"][1]["label"] = $this->baseAppTranslation["delete"];
 //            $additionalFiledsConfig["actions"][1]["mod"] = $this->config["flow"]["mod"];
@@ -923,11 +942,11 @@ class crud implements crud_Interface {
 //            $additionalFiledsConfig["actions"][1]["fieldParameters"][] = $this->model->primaryKey;
 //            $additionalFiledsConfig["actions"][1]["parameters"][] = "crud=remove";
             
-            $additionalFiledsConfig["buttons"][0]["label"] = $this->baseAppTranslation["delete"];
-            $additionalFiledsConfig["buttons"][0]["jsFunction"] = "showDelete";
+            $additionalFiledsConfig["buttons"]["delete"]["label"] = $this->baseAppTranslation["delete"];
+            $additionalFiledsConfig["buttons"]["delete"]["jsFunction"] = "showDelete";
         }
         
-        if (isset($additionalFiledsConfig["actions"])) {
+        if (isset($additionalFiledsConfig["actions"]) or isset($additionalFiledsConfig["buttons"])) {
             $additionalFiledsConfig["headers"][] = $this->baseAppTranslation["operations"];
         }
         
@@ -963,6 +982,39 @@ class crud implements crud_Interface {
             </script>
 
         ";
+                
+        if ($this->config['bpmData']!=null) {
+
+            $html.="
+
+                <div class='modal fade' id='bpm' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+                  <div class='modal-dialog'>
+                    <div class='modal-content'>
+                      <div class='modal-header'>
+                        <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                        <h4 class='modal-title' id='myModalLabel'>".strtoupper($this->baseAppTranslation["availableActionsFor"])."</h4>
+                      </div>
+                      <div id='bpm-modal-body' class='modal-body'>
+                      </div>
+                      <div id='bpm-modal-footer' class='modal-footer'>
+                      </div>
+                    </div><!-- /.modal-content -->
+                  </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+
+                <script>
+                    function showBpmActions(id){
+                        $('#bpm-modal-body').html('');
+                        loadAjaxContent('index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act=getBpmActions&{$this->model->tables}_{$this->model->primaryKey}='+id,'bpm-modal-body');
+                        $('#bpm').modal('show');
+                    }
+                    //window.history.replaceState( {} , 'List', 'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}&$additionalFkParameters' );
+                </script>
+
+            ";            
+            
+            
+        }
         
         return $html;
     }

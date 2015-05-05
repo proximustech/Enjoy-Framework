@@ -75,7 +75,7 @@ class '.$module.'Model extends modelBase {
 
     var $tables="'.$module.'";
 
-    function __construct($dataRep, $config,&$incomingModels=array()) {
+    function __construct($dataRep, &$config,&$incomingModels=array()) {
         parent::__construct($dataRep, $config,$incomingModels);
         $table=new table_'.$module.'();
         $this->fieldsConfig=$table->fieldsConfig;

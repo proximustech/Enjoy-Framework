@@ -15,7 +15,9 @@ class modelBase {
     var $result = array();
     var $label=array();
     var $incomingModels=array();
-
+    
+    var $bpmModel=null;
+    
     /**
      * Base class for the Models
      * @param PDO $dataRep
@@ -23,10 +25,16 @@ class modelBase {
      * @param array $incomingModels with allready instanced Models
      */
     
-    function __construct($dataRep, $config,&$incomingModels=array()) {
+    function __construct($dataRep, &$config,&$incomingModels=array()) {
         $this->dataRep = $dataRep;
         $this->config = &$config;
         $this->incomingModels = &$incomingModels;
+        $this->dataRep->getInstance();
+
+        if ($this->bpmModel==null) {
+            require_once 'lib/commonModules/bpm/models/model_bpm.php';
+            $this->bpmModel = new bpmModel($this->dataRep,$this->config,$this->tables);
+        }        
     }
 
     /**
@@ -198,8 +206,8 @@ class modelBase {
 
         $options["where"][] = "$this->tables.$this->primaryKey='$primaryKeyValue'";
         $resultArray = $this->fetch($options);
-        $register = $resultArray["results"][0];
-        return $register;
+        $record = $resultArray["results"][0];
+        return $record;
     }
     
      /**
@@ -318,7 +326,39 @@ class modelBase {
             }
         }        
         
-
+        if ($this->config['bpmData']!=null){
+            
+            $newStateError=True;
+            if (!isset($this->config['bpmData']['newState'])) {
+                if (is_array($this->config['bpmData']['stateConfig']['actions'][$this->config['flow']['act']]['results'])) {
+                    if (count($this->config['bpmData']['stateConfig']['actions'][$this->config['flow']['act']]['results'])==1) {
+                        $this->config['bpmData']['newState']=$this->config['bpmData']['stateConfig']['actions'][$this->config['flow']['act']]['results'][0];
+                        $newStateError=False;
+                    };
+                }
+            }
+            else{
+                if (in_array($this->config['bpmData']['newState'], $this->config['bpmData']['stateConfig']['actions'][$this->config['flow']['act']]['results'])) {
+                    $newStateError=False;
+                }
+            }
+            
+            if ($newStateError) {
+                throw new Exception('BPM: new state error');
+            }            
+            
+            $_REQUEST[$this->bpmModel->tables.'_user']=$_SESSION["user"];
+            $_REQUEST[$this->bpmModel->tables.'_id_process']=$_REQUEST[$this->tables.'_'.$this->primaryKey];
+            $_REQUEST[$this->bpmModel->tables.'_state']=$this->config['bpmData']['newState'];
+            $_REQUEST[$this->bpmModel->tables.'_date']=date('Y-m-d H:i:s');
+            $_REQUEST[$this->bpmModel->tables.'_info']=$_REQUEST['bpm_info'];                
+            $okOperation=$this->bpmModel->insertRecord();
+            if (!$okOperation) {
+                throw new Exception("BPM: Insert Error");
+            }
+        }
+        
+        
         $options["where"][] = "$this->primaryKey='".$_REQUEST[$this->tables.'_'.$this->primaryKey]."'";
         $okOperation=$this->update($options);
         
@@ -377,7 +417,6 @@ class modelBase {
                     }
                 }
                 else break;
-                
 
             }        
             

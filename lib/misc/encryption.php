@@ -7,7 +7,18 @@ class encryption {
      * http://www.myphpscripts.net/tutorial.php?id=9
      */
 
-    function encode($string,$key) {
+    var $key;
+    
+    function __construct($key="") {
+        $this->key=$key;
+    }
+    
+    
+    function encode($string,$key="") {
+        if ($key=="") {
+            $key=$this->key;
+        }
+        
         $key = sha1($key);
         $stringLen = strlen($string);
         $keyLen = strlen($key);
@@ -21,7 +32,11 @@ class encryption {
         return $encoded;
     }
 
-    function decode($string,$key) {
+    function decode($string,$key="") {
+        if ($key=="") {
+            $key=$this->key;
+        }
+        
         $key = sha1($key);
         $stringLen = strlen($string);
         $keyLen = strlen($key);

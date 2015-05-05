@@ -33,6 +33,10 @@ class base_language {
         
         "uniqueError" => "Se ha impedido generar datos duplicados para el campo ",
         
+        //BPM
+        "availableActionsFor" => "Acciones disponibles para:",
+        "registeringAction" => "Aplicar Acci&oacute;n:",
+        
     );
 }
 

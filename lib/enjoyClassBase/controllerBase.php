@@ -24,22 +24,32 @@ class controllerBase {
     var $ds; // directory separator
     //var $directories=array();
 
+    var $bpmFlow=array();
+    var $bpmModel=null;    
+    
+    var $encripter;   
+    
     /**
      * Controller constructor
      * @param array $config General Config
      */
     
-    function __construct($config) {
+    function __construct(&$config) {
         $this->config=&$config;
-        
+        $this->encripter=new encryption($this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+
         $dataRepName=$this->config['flow']['app'].'DataRep';
         
         if (class_exists($dataRepName)) {
-            $this->dataRep = new $dataRepName();        
-            $this->dataRep->getInstance();
             $baseModelClass=$this->config['flow']['mod'].'Model';
             if (class_exists($baseModelClass)) {
-                $this->baseModel = new $baseModelClass($this->dataRep, $this->config);
+                $this->baseModel = new $baseModelClass(new $dataRepName(), $this->config);
+                $this->decodeKeys($this->baseModel);
+                if (count($this->bpmFlow)) {
+                    $this->config['bpmFlow']=$this->bpmFlow;
+                    $this->setBpmInfo();
+                }
+                
             }
         }
         
@@ -54,6 +64,94 @@ class controllerBase {
     
     function __destruct() {
         $this->dataRep= null;
+    }
+    
+    function bpmCallAction() {
+        if (isset($_REQUEST['new_bpm_state'])) {
+            $this->changeBpmStateProcess($bpmInfo);
+            $this->resultData["output"]=json_encode($this->config['bpmData']);
+        }
+        else {
+            $this->resultData["output"]["bpmResult"]=$this->config['bpmData'];
+            $this->resultData["useLayout"]=false;
+        }
+        
+    }
+    
+    function getBpmActionsAction() {
+        
+        $this->resultData["useLayout"]=false;
+        $this->resultData["viewFile"]="lib/commonModules/bpm/views/view_getBpmActions.php";
+        
+        $recordArray=$this->baseModel->fetchRecord();
+        foreach ($recordArray as $field => $value) {
+            if ($field == $this->baseModel->primaryKey) {
+                continue;
+            }
+            $this->resultData["output"]["firstFieldData"]=$value;
+            $this->resultData["output"]["firstFieldLabel"]=$this->baseModel->fieldsConfig[$field]["definition"]["label"][$this->config["base"]["language"]];
+            break;
+        }
+
+        $this->resultData["output"]["bpmFlow"]=$this->bpmFlow;
+        $this->resultData["output"]["bpmData"]=$this->config['bpmData'];
+        
+        if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+            $primaryKey=$this->encripter->encode($_REQUEST[$this->baseModel->tables.'_'.$this->baseModel->primaryKey]);
+        }
+        else{
+            $primaryKey=$_REQUEST[$this->baseModel->tables.'_'.$this->baseModel->primaryKey];
+        }
+        
+        $this->resultData["output"]["primaryKeyParameter"]=$this->baseModel->tables.'_'.$this->baseModel->primaryKey.'='.$primaryKey;
+        
+    }
+    
+    
+    function setBpmInfo() {
+        
+        $bpmResult=array();
+        
+        if (!isset($_REQUEST[$this->baseModel->tables.'_'.$this->baseModel->primaryKey])) {
+            $dataArray=null;
+            $state=null;
+            $stateConfig=null;
+        }
+        else{
+            $dataArray=$this->baseModel->bpmModel->getData($_REQUEST[$this->baseModel->tables.'_'.$this->baseModel->primaryKey]);
+            $state=$dataArray['state'];
+            $stateConfig=$this->bpmFlow['states'][$state];
+        }
+        
+        $this->config['bpmData']=array();
+        $this->config['bpmData']['state']=$state;
+        $this->config['bpmData']['data']=$dataArray;
+        $this->config['bpmData']['stateConfig']=$stateConfig;
+
+    }
+    
+    
+    function registerNewBpmState() {
+        $_REQUEST[$this->baseModel->bpmModel->tables.'_user']=$_SESSION["user"];
+        $_REQUEST[$this->baseModel->bpmModel->tables.'_id_process']=$_REQUEST[$this->baseModel->tables.'_'.$_REQUEST[$this->baseModel->primaryKey]];
+        $_REQUEST[$this->baseModel->bpmModel->tables.'_state']=$_REQUEST['new_bpm_state'];
+        $_REQUEST[$this->baseModel->bpmModel->tables.'_date']=date('Y-m-d H:i');
+        $_REQUEST[$this->baseModel->bpmModel->tables.'_info']=$_REQUEST['bpm_info'];
+        $this->baseModel->bpmModel->insertRecord();        
+    }
+    
+    function changeBpmStateProcess($bpmInfo) {
+        if (in_array($_REQUEST['new_bpm_state'], $bpmInfo['stateConfig']['actions'][$_REQUEST['act']]['results'])) {
+            $this->registerNewBpmState();
+            $this->config['bpmData']["operation"]='new_bpm_state';
+            $this->config['bpmData']["result"]='ok';
+            $this->config['bpmData']["new_bpm_state"]=$_REQUEST['new_bpm_state'];
+        }
+        else{
+            $this->config['bpmData']["operation"]=$_REQUEST['new_bpm_state'];
+            $this->config['bpmData']["result"]='error';
+            $this->config['bpmData']["info"]='Unrecognized new state '.$_REQUEST['new_bpm_state'];
+        }
     }
     
     /**
@@ -134,16 +232,16 @@ class controllerBase {
      * @param object $model
      */
     
-    function crudDecodeKeys($model) {
+    function decodeKeys($model) {
 
         if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
             session_start();
-            $encryption = new encryption();
+
             if (key_exists($model->tables . '_' . $model->primaryKey, $_REQUEST)) {
-                $_REQUEST[$model->tables . '_' . $model->primaryKey] = $encryption->decode($_REQUEST[$model->tables . '_' . $model->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+                $_REQUEST[$model->tables . '_' . $model->primaryKey] = $this->encripter->decode($_REQUEST[$model->tables . '_' . $model->primaryKey]);
             }
             if (key_exists('keyValue', $_REQUEST)) {
-                $_REQUEST['keyValue'] = $encryption->decode($_REQUEST['keyValue'], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+                $_REQUEST['keyValue'] = $this->encripter->decode($_REQUEST['keyValue']);
             }
         }        
         
@@ -275,11 +373,11 @@ class controllerBase {
     
     
     function crudFkChange($model) {
-        $encryption = new encryption();
+
         $fkModel = $model->foreignKeys[$_REQUEST['fkField']]['model'];
 
         if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
-            $_REQUEST[$fkModel->tables . '_' . $fkModel->primaryKey] = $encryption->decode($_REQUEST[$fkModel->tables . '_' . $fkModel->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
+            $_REQUEST[$fkModel->tables . '_' . $fkModel->primaryKey] = $this->encripter->decode($_REQUEST[$fkModel->tables . '_' . $fkModel->primaryKey]);
         }
 
         //Foreign Permission validation
@@ -361,7 +459,7 @@ class controllerBase {
                 mkdir($filesPath, 0770, TRUE);
             }
 
-            $newId = $this->dataRep->getLastInsertId();
+            $newId = $this->baseModel->dataRep->getLastInsertId();
             foreach ($fileFields as $fileField) {
                 $newFileLocation = $filesPath . $this->ds . $newId . '_' . $_FILES[$model->tables . '_' . $fileField]['name'];
                 move_uploaded_file($_FILES[$model->tables . '_' . $fileField]['tmp_name'], $newFileLocation);
@@ -412,15 +510,17 @@ class controllerBase {
      * @return string html of the crud result
      */
     
-    function crud($model,$dataRep) {
+    function crud($model,$dataRep=null) {
 
+        //Setting the view to the index in the case of an bpm action with out view
+        if (!file_exists($this->config['viewsDir'].'view_'.$this->config['flow']['act'].'.php') and $this->config['bpmData']!=null) {
+            $this->resultData['viewFile']=$this->config['viewsDir'].'view_index.php';
+        }
+        
         $baseAppTranslations = new base_language();
         $this->baseAppTranslation = $baseAppTranslations->lang;
-        $this->dataRep = $dataRep;
         $showCrudList = true;
         $showOperationStatus = false;
-        
-        $this->crudDecodeKeys($model);
         
         if (key_exists("crud", $_REQUEST)) {
            
