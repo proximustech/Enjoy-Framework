@@ -190,6 +190,10 @@ class table implements table_Interface {
 //                    
 //                }              
                 
+                if ($field == "bpm_state") {
+                    $resultValue=$this->config['bpmFlow']['states'][$resultValue]['label'][$this->config["base"]["language"]];
+                }
+                
                 
                 if (key_exists('options', $this->fieldsConfig[$field]["definition"])){
                     if (in_array('currency', $this->fieldsConfig[$field]["definition"]["options"])){
@@ -909,8 +913,11 @@ class crud implements crud_Interface {
             $label = $this->fieldsConfig[$header]["definition"]["label"][$this->appLang];
             $headersLabes[] = $label;
         }
-
         
+        if (count($this->config['bpmFlow'])) {
+            $headersLabes[count($headersLabes)-1]=$this->baseAppTranslation["bpmState"];
+        }
+
 
         if ($this->config['permission']['change'] or $this->config['permission']['view']) {
             

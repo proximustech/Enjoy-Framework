@@ -605,6 +605,9 @@ class modelBase {
                    $optionField = substr($optionField, 1);
                    $relatedFields[] = "$optionField";
                }
+               elseif (!key_exists ($optionField,$this->fieldsConfig)) {//It is a subquery or something
+                   $relatedFields[] = "$optionField";
+               }
     
             }
              

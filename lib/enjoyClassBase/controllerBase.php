@@ -197,6 +197,10 @@ class controllerBase {
             else $options['fields'][]=$field;
         }
         
+        if (count($this->bpmFlow)) {
+            $options['fields'][]="(SELECT {$this->baseModel->tables}_bpm.state FROM {$this->baseModel->tables}_bpm WHERE {$this->baseModel->tables}_bpm.id_process={$this->baseModel->tables}.{$this->baseModel->primaryKey} ORDER BY {$this->baseModel->tables}_bpm.id DESC LIMIT 1) AS bpm_state";
+        }
+        
         $options['config']['subModelRelations']=false;
         $lang=$this->config["base"]["language"];
         if (key_exists("keyField", $_REQUEST)) {

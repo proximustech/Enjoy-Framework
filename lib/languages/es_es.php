@@ -34,6 +34,7 @@ class base_language {
         "uniqueError" => "Se ha impedido generar datos duplicados para el campo ",
         
         //BPM
+        "bpmState" => "Estado del Proceso",
         "availableActionsFor" => "Acciones disponibles para:",
         "registeringAction" => "Aplicar Acci&oacute;n:",
         
