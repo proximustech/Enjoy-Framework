@@ -207,7 +207,7 @@ class enjoyAdminSetup {
 
         ";
         
-        $query = $this->dataRep->prepare($sql);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
         
         ###################Data
@@ -218,7 +218,7 @@ class enjoyAdminSetup {
         
         
         $sql="SELECT * FROM roles";
-        $query = $this->dataRep->prepare($sql);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
         $results = $query->fetchAll(PDO::FETCH_ASSOC);        
         
@@ -229,12 +229,12 @@ class enjoyAdminSetup {
                     VALUES ('Administrator');
             ";
 
-            $query = $this->dataRep->prepare($sql);
+            $query = $this->dataRep->pdo->prepare($sql);
             $query->execute();
             
             $sql = "SELECT LAST_INSERT_ID() AS lastId";
 
-            $query = $this->dataRep->prepare($sql);
+            $query = $this->dataRep->pdo->prepare($sql);
             $query->execute();
             $results = $query->fetchAll(PDO::FETCH_ASSOC);
             $roleId=$results[0]["lastId"];                
@@ -243,7 +243,7 @@ class enjoyAdminSetup {
         } else $roleId=$results[0]["id"];
         
         $sql="SELECT * FROM users WHERE user_name='{$this->appServerConfig['base']['adminUser']}'";
-        $query = $this->dataRep->prepare($sql);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
         $results = $query->fetchAll(PDO::FETCH_ASSOC);        
         
@@ -254,13 +254,13 @@ class enjoyAdminSetup {
                     VALUES ('{$this->appServerConfig['base']['adminUser']}', '$adminPassword', 1,$roleId);
             ";
 
-            $query = $this->dataRep->prepare($sql);
+            $query = $this->dataRep->pdo->prepare($sql);
             $query->execute();
             
         }
 
         $sql="SELECT * FROM applications WHERE name='enjoyAdmin'";
-        $query = $this->dataRep->prepare($sql);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
         $results = $query->fetchAll(PDO::FETCH_ASSOC);        
         
@@ -271,12 +271,12 @@ class enjoyAdminSetup {
                     VALUES ('enjoyAdmin');
             ";
 
-            $query = $this->dataRep->prepare($sql);
+            $query = $this->dataRep->pdo->prepare($sql);
             $query->execute();
             
             $sql = "SELECT LAST_INSERT_ID() AS lastId";
 
-            $query = $this->dataRep->prepare($sql);
+            $query = $this->dataRep->pdo->prepare($sql);
             $query->execute();
             $results = $query->fetchAll(PDO::FETCH_ASSOC);
             $appId=$results[0]["lastId"];  
@@ -295,7 +295,7 @@ class enjoyAdminSetup {
                     ($appId, 'roles_applications_modules')
             ";
 
-            $query = $this->dataRep->prepare($sql);
+            $query = $this->dataRep->pdo->prepare($sql);
             $query->execute();            
         
         }

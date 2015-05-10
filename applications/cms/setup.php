@@ -89,7 +89,7 @@ class cmsSetup {
 
         ";
         
-        $query = $this->dataRep->prepare($sql);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
     
     }
