@@ -8,7 +8,7 @@ class helper {
     var $defaultConfigArray=[];
     var $incomingConfigArray;
     var $incomingDataArray;
-    var $configArray=[]; //The final config used to generate the control
+    var $configArray=array(); //The final config used to generate the control
     
     var $tagProperties; //string form
     var $scriptProperties; //string form
