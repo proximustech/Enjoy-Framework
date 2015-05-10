@@ -14,6 +14,11 @@
         "crud=editForm",
         $primaryKeyParameter,
     );
+        
+    if (isset($keyFieldParameters)) {
+        $baseParameters=array_merge($baseParameters,$keyFieldParameters);
+    }
+        
     $baseParametersString= implode("&", $baseParameters);
     $uig=new uiGenerator();
 

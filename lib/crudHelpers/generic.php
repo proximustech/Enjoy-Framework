@@ -1012,10 +1012,10 @@ class crud implements crud_Interface {
                 <script>
                     function showBpmActions(id){
                         $('#bpm-modal-body').html('');
-                        loadAjaxContent('index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act=getBpmActions&{$this->model->tables}_{$this->model->primaryKey}='+id,'bpm-modal-body');
+                        loadAjaxContent('index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act=getBpmActions&{$this->model->tables}_{$this->model->primaryKey}='+id+'&$additionalFkParameters','bpm-modal-body');
                         $('#bpm').modal('show');
                     }
-                    //window.history.replaceState( {} , 'List', 'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}&$additionalFkParameters' );
+                    window.history.replaceState( {} , 'List', 'index.php?app={$this->config["flow"]["app"]}&mod={$this->config["flow"]["mod"]}&act={$this->config["flow"]["act"]}&$additionalFkParameters' );
                 </script>
 
             ";            

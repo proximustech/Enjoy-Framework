@@ -105,6 +105,21 @@ class controllerBase {
         
         $this->resultData["output"]["primaryKeyParameter"]=$this->baseModel->tables.'_'.$this->baseModel->primaryKey.'='.$primaryKey;
         
+        if (isset($_REQUEST['keyField'])) {
+            
+            if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                $_REQUEST['keyValue']=$this->encripter->encode($_REQUEST['keyValue']);
+            }            
+            
+            $keyFieldParameters=array();
+            $keyFieldParameters[]="keyField={$_REQUEST['keyField']}";
+            $keyFieldParameters[]="keyValue={$_REQUEST['keyValue']}";
+            $keyFieldParameters[]="keyLabel={$_REQUEST['keyLabel']}";
+            
+            $this->resultData["output"]["keyFieldParameters"]=$keyFieldParameters;
+        }        
+        
+        
     }
     
     
