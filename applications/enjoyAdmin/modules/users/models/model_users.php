@@ -36,7 +36,7 @@ class usersModel extends modelBase {
     function savePassword($userId,$encodedPassword) {
         
         $sql = "UPDATE $this->tables SET password='$encodedPassword' WHERE id=$userId";
-        $query = $this->dataRep->prepare($sql);
+        $query = $this->dataRep->pdo->prepare($sql);
         $query->execute();
     }
     

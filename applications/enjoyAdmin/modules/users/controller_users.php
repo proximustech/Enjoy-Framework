@@ -17,9 +17,9 @@ class modController extends controllerBase {
             
             if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
                 session_start();
-                $encryption = new encryption();
-                $userId=$encryption->decode($_REQUEST['users_id'], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
             } else $userId=$_REQUEST['users_id'];
+            
+            $userId=$_REQUEST['users_id'];
             
             $options['where'][]='users.id='.$userId;
             $userInfo=$this->baseModel->fetch($options);
@@ -44,7 +44,7 @@ class modController extends controllerBase {
             if ($_REQUEST["crud"] == "add" or $_REQUEST["crud"] == "change" ) {
 
                 if ($_REQUEST["crud"] == "add") {
-                    $userId=$this->baseModel->getLastInsertId();
+                    $userId=$this->baseModel->dataRep->getLastInsertId();
                 }
                 else{
                     $userId=$_REQUEST['users_id'];
