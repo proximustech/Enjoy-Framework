@@ -39,7 +39,7 @@ class modController extends controllerBase {
         
         $result='Error.';
         
-        $e_dbIdentifier=new e_dbIdentifier($this->dataRep,$this->config["appServerConfig"]);
+        $e_dbIdentifier=new e_dbIdentifier($this->baseModel->dataRep,$this->config["appServerConfig"]);
         $e_user= new e_user($e_dbIdentifier, $this->config["appServerConfig"]);
         $e_user->profile($_POST);
         $e_user->check();
