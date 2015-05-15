@@ -280,10 +280,10 @@ class '.$app.'Setup {
     
     function run() {
         
-        $dataRepObject = new '.$app.'DataRep();
+        $this->dataRep = new '.$app.'DataRep();
         
         try {
-            $this->dataRep = $dataRepObject->getInstance();
+            $this->dataRep->getInstance();
         } catch (Exception $exc) {
             return array(false,"Error accessing the Data Base {$dataRepObject->dbname} - ".$exc->getMessage());
         }

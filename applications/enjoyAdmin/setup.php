@@ -23,10 +23,10 @@ class enjoyAdminSetup {
             return array(false,$adminUserError);
         }
         
-        $dataRepObject = new enjoyAdminDataRep();
+        $this->dataRep = new enjoyAdminDataRep();
         
         try {
-            $this->dataRep = $dataRepObject->getInstance();
+            $this->dataRep->getInstance();
         } catch (Exception $exc) {
             return array(false,"Error accessing the Data Base {$dataRepObject->dbname} - ".$exc->getMessage());
         }

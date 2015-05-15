@@ -432,7 +432,7 @@ class crud implements crud_Interface {
         $register=$security->filter($register);
         $navigator = new navigator($this->config);
 
-        
+        $moduleName=$this->model->tables;        
         //Makes a detailed verification of the permissions becouse some times the $this->config['permission'] refers to a different module
         if (key_exists($moduleName, $_SESSION['userInfo']['privileges'][$this->config['flow']['app']])) {
             $modulePermissions=$_SESSION['userInfo']['privileges'][$this->config['flow']['app']][$moduleName];
@@ -742,8 +742,6 @@ class crud implements crud_Interface {
             $html.=$uig->getCode('{"selectControl":{"name":"'."{$subModel->tables}_$linkedDataField".'","caption":"'.$label.':","multiple":"'.$multiple.'"}}',$uiArray);            
         }
         
-        $moduleName=$this->model->tables;
-
         $submitButton="";
         if ($changePermission and $editing or ( $addPermission and !$editing ) or $this->config['permission']['isAdmin'] ) {
 
