@@ -5,7 +5,7 @@
  */
 class helper {
 
-    var $defaultConfigArray=[];
+    var $defaultConfigArray=array();
     var $incomingConfigArray;
     var $incomingDataArray;
     var $configArray=array(); //The final config used to generate the control
