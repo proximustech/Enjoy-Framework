@@ -59,7 +59,7 @@ class modController extends controllerBase {
                 $privileges[$privilege['app']][$privilege['module']]=$privilege['permission'];
             }
             foreach ($componentsPrivileges as $privilege) {
-                $privileges[$privilege['app']][$privilege['component']]=$privilege['permission'];
+                $privileges[$privilege['app']]['appComponents'][$privilege['component']]=(int)$privilege['permission'];
             }
 
             $userInfo['role']=$privilege['role'];

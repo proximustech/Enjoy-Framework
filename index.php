@@ -182,7 +182,7 @@ if (isset($config['base']['useAuthentication'])) {
             }
             else if (isset($_SESSION['userInfo']['privileges'][$app][$mod])) {
                 $modulePermissions=$_SESSION['userInfo']['privileges'][$app][$mod];
-                
+                $config['componentsData']=$_SESSION['userInfo']['privileges'][$app]['appComponents'];
                 $config['permission']['isAdmin']=false;
                 $config['permission']['list']=$security->checkCrudPermission('L', $modulePermissions);
                 $config['permission']['view']=$security->checkCrudPermission('V', $modulePermissions);
