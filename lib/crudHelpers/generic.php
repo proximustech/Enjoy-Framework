@@ -191,7 +191,13 @@ class table implements table_Interface {
 //                }              
                 
                 if ($field == "bpm_state") {
-                    $resultValue=$this->config['bpmFlow']['states'][$resultValue]['label'][$this->config["base"]["language"]];
+                    if ($resultValue=="") {
+                        $resultValue=$this->config['bpmFlow']['states'][$this->config['bpmFlow']['initialState']]['label'][$this->config["base"]["language"]];
+                    }
+                    else{
+                        $resultValue=$this->config['bpmFlow']['states'][$resultValue]['label'][$this->config["base"]["language"]];
+                    }
+                    
                 }
                 
                 
@@ -774,6 +780,16 @@ class crud implements crud_Interface {
         }
 
         $html.="</tr></table>";
+        
+        if ($this->config['bpmData'] != null and $editing) {        
+            $bpmResultArray=$this->model->bpmModel->fetch();
+            $bpmRecords=$bpmResultArray['results'];
+            
+            //$html.="<table class='crudTable'>";
+            
+        }
+        
+        
         return $html;
     }
     /**
