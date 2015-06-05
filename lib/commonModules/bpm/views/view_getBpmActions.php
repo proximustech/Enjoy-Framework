@@ -40,7 +40,7 @@
             }
         }
         
-        if ($hasActionPermission) {
+        if ($hasActionPermission or $config['permission']['isAdmin']) {
             $parametersString=$baseParametersString.'&'."act=$action";
 
             $uiJson='{
