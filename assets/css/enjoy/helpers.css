@@ -1,5 +1,15 @@
 .eui_label {
     font-size: medium;
+    width: 100%;
+}
+.eui_label.required_element {
+/*    background-color: rgba(240, 192, 192, 0.16);
+    border-radius: 8px;
+    padding: 4px;*/
+    background-image: url('../../../assets/images/eui/rightArrow.png');
+    background-repeat: no-repeat;
+    background-position: left center;
+    text-indent: 15px;
 }
 .eui_textBox {
     padding: 1px;

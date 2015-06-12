@@ -79,7 +79,10 @@ class dateTimeControl extends helper {
     
     public function getInnerCode($value) {
        
-       
+        $labelClass='eui_label';
+        if (key_exists("required", $this->configArray["tag"])) {
+            $labelClass.=' required_element';
+        }          
         
         $code="
             
@@ -94,7 +97,7 @@ class dateTimeControl extends helper {
         </script>
 
         <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
-        <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+        <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
         </td>
         <td>
         <input class='eui_textBox' type='text' name='{$this->configArray["control"]['name']}' id='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
@@ -124,7 +127,10 @@ class dateControl extends helper {
     
     public function getInnerCode($value) {
        
-       
+        $labelClass='eui_label';
+        if (key_exists("required", $this->configArray["tag"])) {
+            $labelClass.=' required_element';
+        }          
         
         $code="
             
@@ -139,7 +145,7 @@ class dateControl extends helper {
         </script>
 
         <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
-        <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+        <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
         </td>
         <td>
         <input class='eui_textBox' type='text' name='{$this->configArray["control"]['name']}' id='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
@@ -228,11 +234,13 @@ class selectControl extends helper {
             $additionalDefinition="";
         }
         
+        $labelClass='eui_label';
         if (isset($this->configArray["tag"]['required'])) {
+            $labelClass.=' required_element';
             unset($this->configArray["tag"]['required']);
             $this->parseTagProperties();
-        }        
-        
+        }
+                
         $code="
             
             <script>
@@ -249,7 +257,7 @@ class selectControl extends helper {
             </script>
 
             <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
-            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
             <select  id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}$additionalNameText' {$this->tagProperties}>

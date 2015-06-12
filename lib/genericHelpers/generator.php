@@ -142,10 +142,15 @@ class textBoxControl extends helper {
             $type="text";
         }
         
+        $labelClass='eui_label';
+        if (key_exists("required", $this->configArray["tag"])) {
+            $labelClass.=' required_element';
+        }        
+        
         
         $code="
             <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
-            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
             <input class='eui_textBox' type='$type' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
@@ -173,9 +178,15 @@ class checkBoxControl extends helper {
     
     public function getInnerCode($value) {
         
+        $labelClass='eui_label';
+        if (key_exists("required", $this->configArray["tag"])) {
+            $labelClass.=' required_element';
+        }           
+        
+        
         $code="
             <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
-            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
             <input type='checkbox' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
@@ -202,10 +213,16 @@ class fileControl extends helper {
     }  
     
     public function getInnerCode($value) {
+         
+        $labelClass='eui_label';
+        if (key_exists("required", $this->configArray["tag"])) {
+            $labelClass.=' required_element';
+        }           
+        
         
         $code="
             <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
-            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
             <input type='file' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' {$this->tagProperties}>
@@ -233,9 +250,15 @@ class textAreaControl extends helper {
     
     public function getInnerCode($value) {
         
+        
+        $labelClass='eui_label';
+        if (key_exists("required", $this->configArray["tag"])) {
+            $labelClass.=' required_element';
+        }           
+        
         $code="
             <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
-            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
             <textarea id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' class='eui_textArea' {$this->tagProperties}>$value</textarea>
@@ -263,9 +286,14 @@ class radioControl extends helper {
     
     public function getInnerCode($value) {
         
+        $labelClass='eui_label';
+        if (key_exists("required", $this->configArray["tag"])) {
+            $labelClass.=' required_element';
+        }           
+        
         $code="
             <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
-            <label class='eui_label'>{$this->configArray["control"]['caption']}</label>
+            <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
             <input type='radio' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
