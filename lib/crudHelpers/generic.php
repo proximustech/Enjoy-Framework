@@ -201,12 +201,6 @@ class table implements table_Interface {
                 }
                 
                 
-                if (key_exists('options', $this->fieldsConfig[$field]["definition"])){
-                    if (in_array('currency', $this->fieldsConfig[$field]["definition"]["options"])){
-                        $resultValue='$'.number_format($resultValue);
-                    }
-                }
-                
                 if (key_exists('dataSourceArray', $this->fieldsConfig[$field]["definition"])){
                     $dataSourceArray=$this->fieldsConfig[$field]["definition"]['dataSourceArray'];
                     $resultValue=$dataSourceArray[$resultValue];
@@ -260,6 +254,7 @@ class table implements table_Interface {
                 
                 if ($showUnlinkedData) {
                     
+                    $styleCode="";
                     $downloadCode="";
                     if ($this->fieldsConfig[$field]["definition"]["type"]=='file' and $resultValue!='') {
 
@@ -275,8 +270,18 @@ class table implements table_Interface {
                         $downloadCode= $navigator->action($this->config['flow']['act'], "glyphicon-download", $parameters);                
                     }
                     
+                    if ($this->fieldsConfig[$field]["definition"]["type"]=="number") {
+                        $resultValue=number_format($resultValue,2);
+                        $styleCode="style='text-align:right'";
+                        if (key_exists('options', $this->fieldsConfig[$field]["definition"])){
+                            if (in_array('currency', $this->fieldsConfig[$field]["definition"]["options"])){
+                                $resultValue='$'.$resultValue;
+                            }
+                        }
+                    }                    
                     
-                    $html.="<td>$downloadCode " . $resultValue . "</td>";
+                    
+                    $html.="<td $styleCode>$downloadCode " . $resultValue . "</td>";
                 }
                 
                 
@@ -591,6 +596,9 @@ class crud implements crud_Interface {
                     );
                 }                  
                 
+                if ($type=="number" and !is_array($dataSourceArray)) {
+                    $aditionalEuiOptionsArray[]='"number":"true"';
+                }
                 if (count($aditionalEuiOptionsArray)) {
                     $aditionalEuiOptions=",".implode(",", $aditionalEuiOptionsArray);
                 }

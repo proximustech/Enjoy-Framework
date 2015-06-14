@@ -145,15 +145,21 @@ class textBoxControl extends helper {
         $labelClass='eui_label';
         if (key_exists("required", $this->configArray["tag"])) {
             $labelClass.=' required_element';
-        }        
+        }
         
+        $inputClass='eui_textBox';
+        if (key_exists("number", $this->configArray["control"])) {
+            if ($this->configArray["control"]['number']=='true') {
+                $inputClass.=' number';
+            }
+        }        
         
         $code="
             <table><tr><td style='width:{$this->configArray["control"]['captionWidth']}'>
             <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
-            <input class='eui_textBox' type='$type' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
+            <input class='$inputClass' type='$type' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' value='$value' {$this->tagProperties}>
             </td></tr></table>
         ";
         

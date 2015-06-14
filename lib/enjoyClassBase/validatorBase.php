@@ -50,7 +50,7 @@ class validatorBase {
                 break;
             case "number":
                 $validationMessage.=$this->baseAppTranslation["numericTypeValidation"];
-                if (is_numeric($value)) {
+                if (!is_nan($value)) {
                     return true;
                 } else {
                     return $validationMessage;

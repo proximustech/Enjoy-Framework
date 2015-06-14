@@ -19,6 +19,9 @@
     width: 327px !important;
     height: 31px;
 }
+.eui_textBox.number {
+    font-weight: bolder;
+}
 .eui_textArea {
     padding: 1px;
     font-size: medium !important;

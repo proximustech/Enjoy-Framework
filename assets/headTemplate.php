@@ -3,7 +3,6 @@
         <!--<meta http-equiv="content-type" content="text/html; charset=UTF-8">-->
         <!--<meta charset="utf-8">-->  <!-- makes accents work bad-->
 
-        <script src="assets/js/enjoy/e_common.js"></script>
         <link href="assets/css/enjoy/helpers.css" rel="stylesheet">
 
         <script src="assets/js/jquery/jquery-1.7.1.min.js"></script>
@@ -42,6 +41,7 @@
         <script src="assets/js/jquery/plugins/kendoui/js/cultures/kendo.culture.<?php echo $kendoLanguage; ?>.min.js"></script>
         
         
+        <script src="assets/js/enjoy/e_common.js"></script>
         
         <script>
             $(document).ready(function() {
@@ -73,5 +73,27 @@
                 });
                 $("body").css({"visibility":"visible"}); //show body only when it is fully loaded
                 $("body").hide(0).delay(300).fadeIn(80); //Default Fade In
+                
+                $( "#crudForm" ).submit(
+                    function( event ) {
+
+                        $("#crudForm").each(
+                            function(){
+                                var elements=$(this).find('.eui_textBox.number');
+                                
+                                for (var i=0;i< elements.length;i++){
+//                                    var value=elements[i].value.replace(",","");
+                                    var value=elements[i].value.replace(/,/g, '');;
+                                    elements[i].value=value;
+                                }
+                               
+                            }
+                        );                    
+
+                        //event.preventDefault();
+                        //$( "#crudForm" ).submit();
+                    }
+                );                
+                
             });        
         </script>          
