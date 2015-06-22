@@ -76,24 +76,23 @@
                 
                 $( "#crudForm" ).submit(
                     function( event ) {
-
                         $("#crudForm").each(
                             function(){
                                 var elements=$(this).find('.eui_textBox.number');
                                 
                                 for (var i=0;i< elements.length;i++){
-//                                    var value=elements[i].value.replace(",","");
                                     var value=elements[i].value.replace(/,/g, '');;
                                     elements[i].value=value;
                                 }
                                
                             }
-                        );                    
+                        );
 
-                        //event.preventDefault();
-                        //$( "#crudForm" ).submit();
+                        if (typeof validateCrudSubmit == 'function') {
+                             if (!validateCrudSubmit()){event.preventDefault();};
+                        }
                     }
-                );                
+                );               
                 
             });        
         </script>          
