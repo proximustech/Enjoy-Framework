@@ -18,7 +18,7 @@ class tipo_etiquetasModel extends modelBase {
         //$---Model=$this->getModuleModelInstance("---");
                 
         $this->label=array(
-            "es_es"=>"You Should set the label of the Module.",
+            "es_es"=>"Tipo de Etiquetas",
         );
         
 //        $this->foreignKeys = array (
@@ -39,18 +39,18 @@ class tipo_etiquetasModel extends modelBase {
 //            ),
 //        );
 
-//        $this->dependents=array(
-//            "id"=>array(
-//                0=>array(
-//                  "mod"=>"someModule",
-//                    "act"=>"index",
-//                    "keyField"=>"field of the dependent table that references here",
-//                    "label"=>array(
-//                        "es_es" =>"DependentCaption",
-//                    ),
-//                ),              
-//            ),
-//        );
+        $this->dependents=array(
+            "id"=>array(
+                0=>array(
+                  "mod"=>"etiquetas",
+                    "act"=>"index",
+                    "keyField"=>"id_tipo_etiquetas",
+                    "label"=>array(
+                        "es_es" =>"Etiquetas",
+                    ),
+                ),              
+            ),
+        );
 
     }
     

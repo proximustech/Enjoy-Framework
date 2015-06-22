@@ -15,29 +15,37 @@ class proyectosModel extends modelBase {
         $this->fieldsConfig=$table->fieldsConfig;
         $this->primaryKey=$table->primaryKey;
         
-        //$---Model=$this->getModuleModelInstance("---");
+        $proyectos_etiquetasModel=$this->getModuleModelInstance("proyectos_etiquetas");
+        $usuarios_proyectosModel=$this->getModuleModelInstance("usuarios_proyectos");
                 
         $this->label=array(
             "es_es"=>"Proyectos",
         );
         
 //        $this->foreignKeys = array (
-//            "id_---" => array(
-//                "model"=>&$---Model,
+//            "id_proyectos_etiquetas" => array(
+//                "model"=>&$proyectos_etiquetasModel,
 //                "keyField"=>"theOthertableName.idPossibly",
 //                "dataField"=>"another Field of the foreign table with data",
 //             ),
 //        );
 
-//        $this->subModels=array( //For many to many relations for example
-//            0=>array(
-//                "model"=>&$---Model ,
-//                "linkerField"=>$this->primaryKey,
-//                "linkedField"=>"external field that references this primary key",
-//                "linkedDataField"=>"similar as a foreignKey dataField",
-//                "type"=>"multiple",
-//            ),
-//        );
+        $this->subModels=array( //For many to many relations for example
+            0=>array(
+                "model"=>&$proyectos_etiquetasModel ,
+                "linkerField"=>$this->primaryKey,
+                "linkedField"=>"id_proyectos",
+                "linkedDataField"=>"id_etiquetas",
+                "type"=>"multiple",
+            ),
+            1=>array(
+                "model"=>&$usuarios_proyectosModel ,
+                "linkerField"=>$this->primaryKey,
+                "linkedField"=>"id_proyectos",
+                "linkedDataField"=>"id_users",
+                "type"=>"multiple",
+            ),
+        );
 
         $this->dependents=array(
             "id"=>array(
@@ -49,7 +57,7 @@ class proyectosModel extends modelBase {
                         "es_es" =>"Tareas",
                     ),
                 ),              
-                0=>array(
+                1=>array(
                   "mod"=>"usuarios_proyectos",
                     "act"=>"index",
                     "keyField"=>"id_proyectos",

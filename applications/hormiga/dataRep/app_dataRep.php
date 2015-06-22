@@ -8,8 +8,8 @@ class hormigaDataRep extends dataRep {
         
         $this->host	= "localhost";
         $this->dbname 	= "hormiga";
-        $this->username = "";
-        $this->password = "";        
+        $this->username = "root";
+        $this->password = "samsung";        
         
     }
 

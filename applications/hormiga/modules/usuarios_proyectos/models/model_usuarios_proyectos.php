@@ -4,7 +4,8 @@
 
 require_once "lib/enjoyClassBase/modelBase.php";
 require_once "applications/hormiga/modules/usuarios_proyectos/models/table_usuarios_proyectos.php";
-
+require_once "applications/hormiga/modules/usuarios_proyectos/models/model_users.php";
+require_once "applications/enjoyAdmin/dataRep/app_dataRep.php";
 class usuarios_proyectosModel extends modelBase {
 
     var $tables="usuarios_proyectos";
@@ -16,22 +17,30 @@ class usuarios_proyectosModel extends modelBase {
         $this->primaryKey=$table->primaryKey;
         
         //$---Model=$this->getModuleModelInstance("---");
-                
+        $usersModel=new usersModel(new enjoyAdminDataRep(),$this->config);
+        $proyectosModel=$this->getModuleModelInstance("proyectos");
+        
+        
         $this->label=array(
-            "es_es"=>"You Should set the label of the Module.",
+            "es_es"=>"Usuarios de Proyecto",
         );
         
-//        $this->foreignKeys = array (
-//            "id_---" => array(
-//                "model"=>&$---Model,
-//                "keyField"=>"theOthertableName.idPossibly",
-//                "dataField"=>"another Field of the foreign table with data",
-//             ),
-//        );
+        $this->foreignKeys = array (
+            "id_users" => array(
+                "model"=>&$usersModel,
+                "keyField"=>"users.id",
+                "dataField"=>"user_name",
+             ),
+            "id_proyectos" => array(
+                "model"=>&$proyectosModel,
+                "keyField"=>"proyectos.id",
+                "dataField"=>"proyecto",
+             ),
+        );
 
 //        $this->subModels=array( //For many to many relations for example
 //            0=>array(
-//                "model"=>&$---Model ,
+//                "model"=>&$usuariosModel ,
 //                "linkerField"=>$this->primaryKey,
 //                "linkedField"=>"external field that references this primary key",
 //                "linkedDataField"=>"similar as a foreignKey dataField",
@@ -39,18 +48,18 @@ class usuarios_proyectosModel extends modelBase {
 //            ),
 //        );
 
-//        $this->dependents=array(
-//            "id"=>array(
-//                0=>array(
-//                  "mod"=>"someModule",
-//                    "act"=>"index",
-//                    "keyField"=>"field of the dependent table that references here",
-//                    "label"=>array(
-//                        "es_es" =>"DependentCaption",
-//                    ),
-//                ),              
-//            ),
-//        );
+        $this->dependents=array(
+            "id"=>array(
+                0=>array(
+                  "mod"=>"avances",
+                    "act"=>"index",
+                    "keyField"=>"id_usuarios_proyectos",
+                    "label"=>array(
+                        "es_es" =>"Avances",
+                    ),
+                ),              
+            ),
+        );
 
     }
     

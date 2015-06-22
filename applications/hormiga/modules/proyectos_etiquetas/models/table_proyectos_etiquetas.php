@@ -23,7 +23,7 @@ class table_proyectos_etiquetas {
             "id_proyectos" => array(
                 "definition" => array(
                     "type" => "number",
-                    "options"=>array("required"),
+                    //"options"=>array("required"),
                     "default" => "",
                     "label" => array(
                         "es_es" => "Proyecto",
@@ -35,7 +35,7 @@ class table_proyectos_etiquetas {
             "id_etiquetas" => array(
                 "definition" => array(
                     "type" => "number",
-                    "options"=>array("required"),
+                    //"options"=>array("required"),
                     "default" => "",
                     "label" => array(
                         "es_es" => "Etiqueta",

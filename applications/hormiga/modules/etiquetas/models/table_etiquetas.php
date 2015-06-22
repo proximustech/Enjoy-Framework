@@ -18,11 +18,11 @@ class table_etiquetas {
                     ),
                     //"widget" => "textarea",
                 ),
-                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
+                "viewsPresence"=>array("createForm","editForm","editFkForm"),
             ),
             "etiqueta" => array(
                 "definition" => array(
-                    "type" => "String",
+                    "type" => "string",
                     "options"=>array("required"),
                     "default" => "",
                     "label" => array(

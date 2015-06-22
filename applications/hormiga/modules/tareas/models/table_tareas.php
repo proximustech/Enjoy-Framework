@@ -32,6 +32,18 @@ class table_tareas {
                 ),
                 //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
             ),
+            "id_proyectos" => array(
+                "definition" => array(
+                    "type" => "number",
+                    //"options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Proyecto",
+                    ),
+                    //"widget" => "textarea",
+                ),
+                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
+            ),            
             "fecha_inicio" => array(
                 "definition" => array(
                     "type" => "dateTime",
@@ -62,21 +74,9 @@ class table_tareas {
                     //"options"=>array("required"),
                     "default" => "",
                     "label" => array(
-                        "es_es" => "Serial",
+                        "es_es" => "Comentarios",
                     ),
                     "widget" => "textarea",
-                ),
-                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
-            ),
-            "id_proyectos" => array(
-                "definition" => array(
-                    "type" => "number",
-                    //"options"=>array("required"),
-                    "default" => "",
-                    "label" => array(
-                        "es_es" => "Proyecto",
-                    ),
-                    //"widget" => "textarea",
                 ),
                 //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
             ),

@@ -15,23 +15,23 @@ class tareasModel extends modelBase {
         $this->fieldsConfig=$table->fieldsConfig;
         $this->primaryKey=$table->primaryKey;
         
-        //$---Model=$this->getModuleModelInstance("---");
+        $proyectosModel=$this->getModuleModelInstance("proyectos");
                 
         $this->label=array(
-            "es_es"=>"You Should set the label of the Module.",
+            "es_es"=>"Tareas",
         );
         
-//        $this->foreignKeys = array (
-//            "id_---" => array(
-//                "model"=>&$---Model,
-//                "keyField"=>"theOthertableName.idPossibly",
-//                "dataField"=>"another Field of the foreign table with data",
-//             ),
-//        );
+        $this->foreignKeys = array (
+            "id_proyectos" => array(
+                "model"=>&$proyectosModel,
+                "keyField"=>"proyectos.id",
+                "dataField"=>"proyecto",
+             ),
+        );
 
 //        $this->subModels=array( //For many to many relations for example
 //            0=>array(
-//                "model"=>&$---Model ,
+//                "model"=>&$proyectosModel ,
 //                "linkerField"=>$this->primaryKey,
 //                "linkedField"=>"external field that references this primary key",
 //                "linkedDataField"=>"similar as a foreignKey dataField",
@@ -39,18 +39,18 @@ class tareasModel extends modelBase {
 //            ),
 //        );
 
-//        $this->dependents=array(
-//            "id"=>array(
-//                0=>array(
-//                  "mod"=>"someModule",
-//                    "act"=>"index",
-//                    "keyField"=>"field of the dependent table that references here",
-//                    "label"=>array(
-//                        "es_es" =>"DependentCaption",
-//                    ),
-//                ),              
-//            ),
-//        );
+        $this->dependents=array(
+            "id"=>array(
+                0=>array(
+                  "mod"=>"avances",
+                    "act"=>"index",
+                    "keyField"=>"id_tareas",
+                    "label"=>array(
+                        "es_es" =>"Avances",
+                    ),
+                ),              
+            ),
+        );
 
     }
     

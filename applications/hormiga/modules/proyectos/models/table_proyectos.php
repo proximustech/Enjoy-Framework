@@ -20,6 +20,18 @@ class table_proyectos {
                 ),
                 "viewsPresence"=>array("createForm","editForm","editFkForm"),
             ),
+            "proyecto" => array(
+                "definition" => array(
+                    "type" => "string",
+                    "options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Proyecto",
+                    ),
+                    //"widget" => "textarea",
+                ),
+                //"viewsPresence"=>array("createForm","editForm","editFkForm"),
+            ),
             "fecha_registro" => array(
                 "definition" => array(
                     "type" => "date",
@@ -64,7 +76,7 @@ class table_proyectos {
                     "label" => array(
                         "es_es" => "Comentarios",
                     ),
-                    //"widget" => "textarea",
+                    "widget" => "textarea",
                 ),
                 //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
             ),

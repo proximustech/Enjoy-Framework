@@ -20,6 +20,42 @@ class table_avances {
                 ),
                 "viewsPresence"=>array("createForm","editForm","editFkForm"),
             ),
+            "avance" => array(
+                "definition" => array(
+                    "type" => "string",
+                    "options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Avance",
+                    ),
+                    "widget" => "textarea",
+                ),
+                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
+            ),
+            "id_usuarios_proyectos" => array(
+                "definition" => array(
+                    "type" => "number",
+                    "options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Usuario",
+                    ),
+                    //"widget" => "textarea",
+                ),
+                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
+            ),            
+            "id_tareas" => array(
+                "definition" => array(
+                    "type" => "number",
+                    //"options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Tarea",
+                    ),
+                    //"widget" => "textarea",
+                ),
+                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
+            ),            
             "fecha_inicio" => array(
                 "definition" => array(
                     "type" => "dateTime",
@@ -38,43 +74,7 @@ class table_avances {
                     //"options"=>array("required"),
                     "default" => "0",
                     "label" => array(
-                        "es_es" => "Duraci&oactue;n en Minutos",
-                    ),
-                    //"widget" => "textarea",
-                ),
-                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
-            ),
-            "comentarios" => array(
-                "definition" => array(
-                    "type" => "string",
-                    "options"=>array("required"),
-                    "default" => "",
-                    "label" => array(
-                        "es_es" => "Comentarios",
-                    ),
-                    "widget" => "textarea",
-                ),
-                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
-            ),
-            "id_tareas" => array(
-                "definition" => array(
-                    "type" => "number",
-                    //"options"=>array("required"),
-                    "default" => "",
-                    "label" => array(
-                        "es_es" => "Tarea",
-                    ),
-                    //"widget" => "textarea",
-                ),
-                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
-            ),
-            "id_usuarios" => array(
-                "definition" => array(
-                    "type" => "number",
-                    //"options"=>array("required"),
-                    "default" => "",
-                    "label" => array(
-                        "es_es" => "Usuario",
+                        "es_es" => "Duraci&oacute;n en Minutos",
                     ),
                     //"widget" => "textarea",
                 ),

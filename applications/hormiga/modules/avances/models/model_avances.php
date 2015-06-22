@@ -16,6 +16,7 @@ class avancesModel extends modelBase {
         $this->primaryKey=$table->primaryKey;
         
         $tareasModel=$this->getModuleModelInstance("tareas");
+        $usuarios_proyectosModel=$this->getModuleModelInstance("usuarios_proyectos");
                 
         $this->label=array(
             "es_es"=>"Avances",
@@ -26,6 +27,12 @@ class avancesModel extends modelBase {
                 "model"=>&$tareasModel,
                 "keyField"=>"tareas.id",
                 "dataField"=>"_CONCAT(proyectos.proyecto,'_',tareas.tarea)",
+             ),
+            "id_usuarios_proyectos" => array(
+                "model"=>&$usuarios_proyectosModel,
+                "keyField"=>"usuarios_proyectos.id",
+                "dataField"=>"_enjoy_admin.users.user_name",
+//                "dataField"=>"id_usuarios",
              ),
         );
 

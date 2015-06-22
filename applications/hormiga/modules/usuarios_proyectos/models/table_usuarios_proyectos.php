@@ -20,7 +20,7 @@ class table_usuarios_proyectos {
                 ),
                 "viewsPresence"=>array("createForm","editForm","editFkForm"),
             ),
-            "id_usuarios" => array(
+            "id_users" => array(
                 "definition" => array(
                     "type" => "number",
                     //"options"=>array("required"),

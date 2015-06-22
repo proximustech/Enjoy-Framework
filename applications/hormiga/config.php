@@ -5,15 +5,16 @@
 $config=array(
     "base"=>array(
         "appTitle"=>array(
-            "es_es"=>"Put a Title Here",
+            "es_es"=>"Hormiga",
         ),
-        "appIcon"=>"assets/images/icons/icon_32_computer.png",
-        "enjoyHelper"=>"jqueryui",
+        "appIcon"=>"assets/images/icons/hormiga.png",
+        "crudHelper"=>"generic",
+        "enjoyHelper"=>"kendoui",
         "language"=>"es_es",
         "defaultModule"=>"",
         "defaultAction"=>"index",
         "errorLog"=>false,
-        "debug"=>false,
+        "debug"=>true,
         "useAuthentication"=>true, //Defines if the application use permissions schema
         "publicActions"=>array( //In concordance with useAuthentication = true when some action modules does not require authentication
             //"module"=>array("action",),
@@ -29,7 +30,11 @@ $config=array(
         //language => menu// last item points to a url
         
         "es_es"=>array(
-            "Module Title" => "index.php?app=appName&mod=modName",
+            "Configuraci&oacute;n"=>array(
+                "Tipos de Etiquetas" => "index.php?app=hormiga&mod=tipo_etiquetas",
+                "Etiquetas" => "index.php?app=hormiga&mod=etiquetas",
+            ),
+            "Proyectos" => "index.php?app=hormiga&mod=proyectos",
         ),
     ),
 )
