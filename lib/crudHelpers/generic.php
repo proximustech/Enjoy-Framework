@@ -712,9 +712,9 @@ class crud implements crud_Interface {
             $linkedDataFieldRegisters=array();
             if ($editing) {
     
-                $options['fields'][]=$linkedDataField;
-                $options['where'][]="$linkedField='{$register[$linkerField]}'";
-                $linkedDataFieldFetch=$subModel->fetch($options);
+                $fetchOptions['fields'][]=$linkedDataField;
+                $fetchOptions['where'][]="$linkedField='{$register[$linkerField]}'";
+                $linkedDataFieldFetch=$subModel->fetch($fetchOptions);
                 $linkedDataFieldFetch=$security->filter($linkedDataFieldFetch);
                 $linkedDataFieldResultsArray=$linkedDataFieldFetch['results'];
                 foreach ($linkedDataFieldResultsArray as $linkedDataFieldRegister) {
@@ -722,7 +722,7 @@ class crud implements crud_Interface {
                 }
 
             }
-            
+            unset($fetchOptions);
             
             $multiple="false";
             //$fieldNameLastPart="";

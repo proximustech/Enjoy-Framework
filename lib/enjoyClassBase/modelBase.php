@@ -204,7 +204,7 @@ class modelBase {
 
         $primaryKeyValue = $_REQUEST[$this->tables.'_'.$this->primaryKey];
 
-        $options["where"][] = "$this->tables.$this->primaryKey='$primaryKeyValue'";
+        $options["where"][] = $this->dataRep->dbname.'.'."$this->tables.$this->primaryKey='$primaryKeyValue'";
         $resultArray = $this->fetch($options);
         $record = $resultArray["results"][0];
         return $record;
@@ -222,7 +222,7 @@ class modelBase {
         
         $options['config']['dataFieldConversion']=false;
         $options["fields"][] = $fkField;
-        $options["where"][] = "$this->tables.$this->primaryKey='$primaryKeyValue'";
+        $options["where"][] = $this->dataRep->dbname.'.'."$this->tables.$this->primaryKey='$primaryKeyValue'";
         
         $resultArray = $this->fetch($options);
         $register = $resultArray["results"][0];        
@@ -232,32 +232,34 @@ class modelBase {
 
 //        $options["fields"][] = '*';
         unset($options);
-        $options["where"][] = "$fkModel->tables.$fkModel->primaryKey='$fkValue'";
+        $options["where"][] = $fkModel->dataRep->dbname.'.'."$fkModel->tables.$fkModel->primaryKey='$fkValue'";
         $resultArray = $fkModel->fetch($options);
         $register = $resultArray["results"][0];
         return $register;
     }
 
     function deleteRecord() {
+        
+        $okOperation=true;
+        foreach ($this->subModels as $subModelEnry => $subModelConfig) {
 
-        $options["where"][] = "$this->primaryKey='".$_REQUEST[$this->tables.'_'.$this->primaryKey]."'";
-        $okOperation=$this->delete($options);
-        unset($options);
+            $subModel=&$subModelConfig['model'];
+            $linkerField=$subModelConfig['linkerField'];
+            $linkedField=$subModelConfig['linkedField'];
+
+            $options["where"][] = $subModel->dataRep->dbname.'.'."{$subModel->tables}.$linkedField='{$_REQUEST[$this->tables.'_'.$linkerField]}'";
+            $okOperation=$subModel->delete($options);
+            unset($options);
+            if (!$okOperation) {
+                break;
+            }
+
+        }
         
         if ($okOperation) {
-            foreach ($this->subModels as $subModelEnry => $subModelConfig) {
-
-                $subModel=&$subModelConfig['model'];
-                $linkerField=$subModelConfig['linkerField'];
-                $linkedField=$subModelConfig['linkedField'];
-
-                $options["where"][] = "{$subModel->tables}.$linkedField='{$_REQUEST[$this->tables.'_'.$linkerField]}'";
-                $okOperation=$subModel->delete($options);
-                if (!$okOperation) {
-                    break;
-                }
-
-            }
+            $options["where"][] = $this->dataRep->dbname.'.'.$this->tables.'.'."$this->primaryKey='".$_REQUEST[$this->tables.'_'.$this->primaryKey]."'";
+            $okOperation=$this->delete($options);
+            unset($options);
         }
         
         
@@ -359,7 +361,7 @@ class modelBase {
         }
         
         
-        $options["where"][] = "$this->primaryKey='".$_REQUEST[$this->tables.'_'.$this->primaryKey]."'";
+        $options["where"][] = $this->dataRep->dbname.'.'.$this->tables.'.'."$this->primaryKey='".$_REQUEST[$this->tables.'_'.$this->primaryKey]."'";
         $okOperation=$this->update($options);
         
         if ($okOperation) {
@@ -378,7 +380,7 @@ class modelBase {
                 $linkedDataFieldVar=$_REQUEST[$subModel->tables.'_'.$linkedDataField];
 
                 $options['config']['dataFieldConversion']=false;
-                $options["where"][] = "{$subModel->tables}.$linkedField='{$_REQUEST[$this->tables.'_'.$linkerField]}'";
+                $options["where"][] = $subModel->dataRep->dbname.'.'."{$subModel->tables}.$linkedField='{$_REQUEST[$this->tables.'_'.$linkerField]}'";
                 //Get actual relations
                 $subModelData=$subModel->fetch($options);
                 $subModelDataRelationsArray=array();
@@ -388,7 +390,7 @@ class modelBase {
                 unset($options['config']);
                 //Delete relations that are not going to be kept preserving those that where selected
                 if (is_array($linkedDataFieldVar)) {
-                    $options["where"][] = "{$subModel->tables}.$linkedDataField NOT IN (".  implode(',', $linkedDataFieldVar).")";
+                    $options["where"][] = $subModel->dataRep->dbname.'.'."{$subModel->tables}.$linkedDataField NOT IN (".  implode(',', $linkedDataFieldVar).")";
                 }
                 $okOperation=$subModel->delete($options);
                 
@@ -397,7 +399,7 @@ class modelBase {
                 if (is_array($linkedDataFieldVar)) {
                     $linkedDataFieldVar=array_diff( $linkedDataFieldVar,$subModelDataRelationsArray );
                 }
-                
+                unset($options);
                 if ($okOperation) {
                     
                     if (is_array($linkedDataFieldVar)) {
@@ -431,7 +433,7 @@ class modelBase {
 
         if ($whereSql != "") {
             $sql = "DELETE FROM $this->tables $whereSql";
-
+//            echo $sql;
             try {
                 $query = $this->dataRep->pdo->prepare($sql);
                 $query->execute();
@@ -510,7 +512,7 @@ class modelBase {
         $relatedTables=array();
         $relatedFields=array();
         $relatedOptions=array();
-        $relatedTables[]=$this->tables;
+        $relatedTables[]=$this->dataRep->dbname.'.'.$this->tables;
         
         foreach ($this->fieldsConfig as $field => $configSection) {
 
@@ -640,8 +642,8 @@ class modelBase {
                         $linkerField=$subModelConfig['linkerField'];
                         $linkedField=$subModelConfig['linkedField'];
 
-                        $relatedTables[]=$subModel->tables;
-                        $relatedOptions['where'][]=$this->tables.'.'.$linkerField.'='.$subModel->tables.'.'.$linkedField;
+                        $relatedTables[]=$subModel->dataRep->dbname.'.'.$subModel->tables;
+                        $relatedOptions['where'][]=$this->dataRep->dbname.'.'.$this->tables.'.'.$linkerField.'='.$subModel->dataRep->dbname.'.'.$subModel->tables.'.'.$linkedField;
 
                     }   
                 }
@@ -802,7 +804,7 @@ class modelBase {
 
     function getRelatedTables(&$fkModel) {
         $relatedTables=array();
-        $relatedTables[]=$fkModel->tables;
+        $relatedTables[]=$fkModel->dataRep->dbname.'.'.$fkModel->tables;
         
         foreach ($fkModel->foreignKeys as $foreignKey) {
             
