@@ -24,7 +24,7 @@ class modController extends controllerBase {
                         ),
                         "cancelar"=>array(
                             "label"=>array(
-                                "es_es"=>"Cancelar Proyecto",
+                                "es_es"=>"Cancelar Tarea",
                             ),
                             "results"=>array("cancelado"),//array of possible result states
                         ),
@@ -43,7 +43,7 @@ class modController extends controllerBase {
                         ),
                         "cancelar"=>array(
                             "label"=>array(
-                                "es_es"=>"Cancelar Proyecto",
+                                "es_es"=>"Cancelar Tarea",
                             ),
                             "results"=>array("cancelado"),//array of possible result states
                         ),
@@ -81,7 +81,7 @@ class modController extends controllerBase {
                         ),
                         "cancelar"=>array(
                             "label"=>array(
-                                "es_es"=>"Cancelar Proyecto",
+                                "es_es"=>"Cancelar Tarea",
                             ),
                             "results"=>array("cancelado"),//array of possible result states
                         ),                        
