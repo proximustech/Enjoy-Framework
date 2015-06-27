@@ -32,7 +32,7 @@ class avancesModel extends modelBase {
                 "model"=>&$usuarios_proyectosModel,
                 "keyField"=>"usuarios_proyectos.id",
                 "dataField"=>"_enjoy_admin.users.user_name",
-//                "dataField"=>"id_usuarios",
+                "commonParentModule"=>"proyectos",
              ),
         );
 
