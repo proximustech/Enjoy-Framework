@@ -107,7 +107,9 @@ class modController extends controllerBase {
         parent::__construct($config);
     }
 
-
+    /*
+     * Acciones BPM
+     */
     function indexAction() {
         $this->crud($this->baseModel,$this->dataRep);
     }
@@ -126,5 +128,15 @@ class modController extends controllerBase {
     function cancelarAction() {
         $this->indexAction();
     }
-
+    
+    
+    /*
+     * Otras acciones
+     */
+    
+    function listarAvancesXUsuarioAction() {
+        $estado=$_REQUEST['filtroEstadoBpm'];
+        $this->resultData['output']['avances']=$this->baseModel->avancesXUsuario($estado);
+    }
+    
 }
