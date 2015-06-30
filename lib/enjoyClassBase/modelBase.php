@@ -55,11 +55,29 @@ class modelBase {
         $register=array();
         
         foreach ($this->fieldsConfig as $field => $configSection) {
+            $addField=true;
             if ($field != $this->primaryKey and substr($field, 0,5)!="enjoy" ) {
                 if (key_exists($this->tables.'_'.$field, $_REQUEST)) {
-                    $register[$field]=$_REQUEST[$this->tables.'_'.$field];
-                    $options["fields"][]=$field;
-                    $options["values"][0][]="'".$_REQUEST[$this->tables.'_'.$field]."'";
+                    if ($_REQUEST[$this->tables.'_'.$field]=="") {
+                        if (isset($configSection["definition"]["options"])) {
+                            $fieldsOptions = $configSection["definition"]["options"];
+                            if (!in_array("required", $fieldsOptions) and $_REQUEST[$this->tables.'_'.$field]=="") {
+                                $addField=false; //avoid inserting data if not required and empty
+                            }                    
+                        }
+                        else{
+                            $addField=false; //avoid inserting data if not required and empty
+                        }
+                        
+                    }
+                    
+                    if ($addField) {
+                        $register[$field]=$_REQUEST[$this->tables.'_'.$field];
+                        $options["fields"][]=$field;
+                        $options["values"][0][]="'".$_REQUEST[$this->tables.'_'.$field]."'";
+                        
+                    }
+                    
                 }
             }
         }        
@@ -273,15 +291,29 @@ class modelBase {
         $register=array();        
 
         foreach ($this->fieldsConfig as $field => $configSection) {
+            $addField=true;
             if ($field != $this->primaryKey and substr($field, 0,5)!="enjoy") {
-                $value = $_REQUEST[$this->tables.'_'.$field];
                 
                 if (key_exists($this->tables.'_'.$field, $_REQUEST)) {
-                    $register[$field] = $value;
-                    $options["set"][] = "$field='$value'";
+                    $value = $_REQUEST[$this->tables.'_'.$field];
+                    
+                    if ($value == "" and $configSection["definition"]["type"]=='date' or $configSection["definition"]["type"]=="dateTime") {
+                        if (isset($this->fieldsConfig[$field]["definition"]["options"])) {
+                            $fieldsOptions = $this->fieldsConfig[$field]["definition"]["options"];
+                            if (!in_array("required", $fieldsOptions) and $_REQUEST[$this->tables . '_' . $field] == "") {
+                                $addField = false; //avoid inserting data if not required and empty
+                            }
+                        } else {
+                            $addField = false; //avoid inserting data if not required and empty
+                        }
+                    }
+
+                    if ($addField) {                    
+                        $register[$field] = $value;
+                        $options["set"][] = "$field='$value'";
+                    }
+                    
                 }
-                
-                
             }
         }
         

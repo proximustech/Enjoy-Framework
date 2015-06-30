@@ -67,7 +67,7 @@ class validatorBase {
                 $month=$dateArray[1];
                 $day=$dateArray[2];
                 
-                if (checkdate((int)$month,(int) $day,(int) $year)) {
+                if (checkdate((int)$month,(int) $day,(int) $year) or $value=="") {
                     return true;
                 } else {
 //                    return implode(',',$dateArray).$value;
