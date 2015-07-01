@@ -271,13 +271,14 @@ class table implements table_Interface {
                     }
                     
                     if ($this->fieldsConfig[$field]["definition"]["type"]=="number") {
-                        $resultValue=number_format($resultValue,2);
+                        $resultValueTemp=number_format($resultValue,0);
                         $styleCode="style='text-align:right'";
                         if (key_exists('options', $this->fieldsConfig[$field]["definition"])){
                             if (in_array('currency', $this->fieldsConfig[$field]["definition"]["options"])){
-                                $resultValue='$'.$resultValue;
+                                $resultValueTemp='$'.number_format($resultValue,2);;
                             }
                         }
+                        $resultValue=$resultValueTemp;
                     }                    
                     
                     
@@ -961,7 +962,7 @@ class crud implements crud_Interface {
                 $additionalFiledsConfig["buttons"]["bpmStates"]["label"] = $this->baseAppTranslation["edit"];
                 $additionalFiledsConfig["buttons"]["bpmStates"]["jsFunction"] = "showBpmActions";                
             }
-            else{
+            //else{
                 $additionalFiledsConfig["actions"][0]["label"] = $this->baseAppTranslation["edit"];
                 $additionalFiledsConfig["actions"][0]["mod"] = $this->config["flow"]["mod"];
                 $additionalFiledsConfig["actions"][0]["act"] = $this->config["flow"]["act"];
@@ -973,7 +974,7 @@ class crud implements crud_Interface {
                     $additionalFiledsConfig["actions"][0]["parameters"][] = "keyValue=$keyValue";
                     $additionalFiledsConfig["actions"][0]["parameters"][] = "keyLabel={$_REQUEST['keyLabel']}";
                 }               
-            }
+            //}
             
         }
         

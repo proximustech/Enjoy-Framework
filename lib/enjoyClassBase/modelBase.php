@@ -360,7 +360,7 @@ class modelBase {
             }
         }        
         
-        if ($this->config['bpmData']!=null){
+        if ($this->config['bpmData']!=null and $this->config['flow']['act'] != 'index'){
             
             $newStateError=True;
             if (!isset($this->config['bpmData']['newState'])) {
