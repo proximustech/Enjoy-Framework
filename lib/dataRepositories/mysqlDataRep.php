@@ -10,7 +10,7 @@ class dataRep implements dataRep_Interface {
     var $username;
     var $password;
     
-    var $uniqueErrorCode="23000";
+    var $uniqueErrorCode="1586";
     
     function __construct() {
         //The extender has to define in the __construct the connection parameters

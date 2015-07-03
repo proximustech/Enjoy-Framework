@@ -188,11 +188,10 @@ class modelBase {
                 $query = $this->dataRep->pdo->prepare($sql);
                 $query->execute();
                 $okOperation=true;
-            } catch (Exception $exc) {
+            } catch (PDOException $exc) {
                 $error= new error($this->config);
-                
                 $errorMessage=$exc->getMessage();
-                $errorCode=$exc->getCode();
+                $errorCode=$exc->errorInfo[1];
                 if ($errorCode==$this->dataRep->uniqueErrorCode) {
                     
                     $baseAppTranslations = new base_language();
