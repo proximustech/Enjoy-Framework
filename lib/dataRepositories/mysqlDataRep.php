@@ -10,7 +10,7 @@ class dataRep implements dataRep_Interface {
     var $username;
     var $password;
     
-    var $uniqueErrorCode="1586";
+    var $uniqueErrorCode="1062";
     
     function __construct() {
         //The extender has to define in the __construct the connection parameters
@@ -60,7 +60,8 @@ class dataRep implements dataRep_Interface {
         $messageArray=explode(" ", $errorMessage);
         $field="";
         if ($errorCode==$this->uniqueErrorCode) {
-            $field=trim($messageArray[count($messageArray)-1],"'");
+            $fieldData=trim($messageArray[count($messageArray)-1],"'");
+            $field=rtrim($fieldData,"_UNIQUE");
         }
         
         return $field;

@@ -184,33 +184,33 @@ class modelBase {
         
         $sql = "INSERT INTO $this->tables $fieldsSql VALUES $valuesSql";
 
-            try {
-                $query = $this->dataRep->pdo->prepare($sql);
-                $query->execute();
-                $okOperation=true;
-            } catch (PDOException $exc) {
-                $error= new error($this->config);
-                $errorMessage=$exc->getMessage();
-                $errorCode=$exc->errorInfo[1];
-                if ($errorCode==$this->dataRep->uniqueErrorCode) {
-                    
-                    $baseAppTranslations = new base_language();
-                    $baseAppTranslation = $baseAppTranslations->lang;                     
-                    
-                    $duplicatedField=$this->dataRep->getFieldFromErrorMessage($errorCode,$errorMessage);
-                    $duplicatedFieldLabel=$this->fieldsConfig[$duplicatedField]["definition"]["label"][$this->config["base"]["language"]];
-                    throw new Exception($baseAppTranslation["uniqueError"].$duplicatedFieldLabel);
-                }
-                else{
-                    $error->log($errorMessage);
-                    $okOperation=false;
-                }
-                
+        try {
+            $query = $this->dataRep->pdo->prepare($sql);
+            $query->execute();
+            $okOperation=true;
+        } catch (PDOException $exc) {
+            $error= new error($this->config);
+            $errorMessage=$exc->getMessage();
+            $errorCode=$exc->errorInfo[1];
+            if ($errorCode==$this->dataRep->uniqueErrorCode) {
+
+                $baseAppTranslations = new base_language();
+                $baseAppTranslation = $baseAppTranslations->lang;                     
+
+                $duplicatedField=$this->dataRep->getFieldFromErrorMessage($errorCode,$errorMessage);
+                $duplicatedFieldLabel=$this->fieldsConfig[$duplicatedField]["definition"]["label"][$this->config["base"]["language"]];
+                throw new Exception($baseAppTranslation["uniqueError"].$duplicatedFieldLabel);
             }
-            
-            return $okOperation;
-            
+            else{
+                $error->log($errorMessage);
+                $okOperation=false;
+            }
+
         }
+
+        return $okOperation;
+
+    }
 
     /**
      * Fetchs a record according to the model

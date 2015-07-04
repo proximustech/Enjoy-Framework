@@ -31,7 +31,7 @@ class base_language {
         
         //Data Base
         
-        "uniqueError" => "Se ha impedido generar datos duplicados para el campo ",
+        "uniqueError" => "Se ha impedido generar datos duplicados para el campo: ",
         
         //BPM
         "bpmState" => "Estado del Proceso",
