@@ -33,7 +33,6 @@ class modController extends controllerBase {
 
 */
     function indexAction() {
-        $_REQUEST["avances_user_name"]=$_SESSION['user'];
         $this->crud($this->baseModel,$this->dataRep);
     }
 

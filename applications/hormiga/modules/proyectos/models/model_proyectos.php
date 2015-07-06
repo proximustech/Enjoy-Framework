@@ -57,14 +57,14 @@ class proyectosModel extends modelBase {
                         "es_es" =>"Tareas",
                     ),
                 ),              
-                1=>array(
-                  "mod"=>"usuarios_proyectos",
-                    "act"=>"index",
-                    "keyField"=>"id_proyectos",
-                    "label"=>array(
-                        "es_es" =>"Usuarios",
-                    ),
-                ),              
+//                1=>array(
+//                  "mod"=>"usuarios_proyectos",
+//                    "act"=>"index",
+//                    "keyField"=>"id_proyectos",
+//                    "label"=>array(
+//                        "es_es" =>"Usuarios",
+//                    ),
+//                ),              
             ),
         );
 

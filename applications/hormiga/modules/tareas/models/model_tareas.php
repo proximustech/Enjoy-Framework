@@ -16,6 +16,9 @@ class tareasModel extends modelBase {
         $this->primaryKey=$table->primaryKey;
         
         $proyectosModel=$this->getModuleModelInstance("proyectos");
+        
+        $proyectos_etiquetas_tareasModel=$this->getModuleModelInstance("proyectos_etiquetas_tareas");
+        $usuarios_proyectos_tareasModel=$this->getModuleModelInstance("usuarios_proyectos_tareas");        
                 
         $this->label=array(
             "es_es"=>"Tareas",
@@ -29,15 +32,22 @@ class tareasModel extends modelBase {
              ),
         );
 
-//        $this->subModels=array( //For many to many relations for example
-//            0=>array(
-//                "model"=>&$proyectosModel ,
-//                "linkerField"=>$this->primaryKey,
-//                "linkedField"=>"external field that references this primary key",
-//                "linkedDataField"=>"similar as a foreignKey dataField",
-//                "type"=>"multiple",
-//            ),
-//        );
+        $this->subModels=array( //For many to many relations for example
+            0=>array(
+                "model"=>&$usuarios_proyectos_tareasModel ,
+                "linkerField"=>$this->primaryKey,
+                "linkedField"=>"id_tareas",
+                "linkedDataField"=>"id_usuarios_proyectos",
+                "type"=>"multiple",
+            ),
+            1=>array(
+                "model"=>&$proyectos_etiquetas_tareasModel ,
+                "linkerField"=>$this->primaryKey,
+                "linkedField"=>"id_tareas",
+                "linkedDataField"=>"id_proyectos_etiquetas",
+                "type"=>"multiple",
+            ),
+        );
 
         $this->dependents=array(
             "id"=>array(

@@ -3,15 +3,15 @@
 //Model Class
 
 require_once "lib/enjoyClassBase/modelBase.php";
-require_once "applications/hormiga/modules/avances/models/table_avances.php";
+require_once "applications/hormiga/modules/usuarios_proyectos_tareas/models/table_usuarios_proyectos_tareas.php";
 
-class avancesModel extends modelBase {
+class usuarios_proyectos_tareasModel extends modelBase {
 
-    var $tables="avances";
+    var $tables="usuarios_proyectos_tareas";
 
     function __construct($dataRep, &$config,&$incomingModels=array()) {
         parent::__construct($dataRep, $config,$incomingModels);
-        $table=new table_avances();
+        $table=new table_usuarios_proyectos_tareas();
         $this->fieldsConfig=$table->fieldsConfig;
         $this->primaryKey=$table->primaryKey;
         
@@ -19,14 +19,19 @@ class avancesModel extends modelBase {
         $usuarios_proyectosModel=$this->getModuleModelInstance("usuarios_proyectos");
                 
         $this->label=array(
-            "es_es"=>"Avances",
+            "es_es"=>"Usuarios de Tareas",
         );
         
         $this->foreignKeys = array (
             "id_tareas" => array(
                 "model"=>&$tareasModel,
                 "keyField"=>"tareas.id",
-                "dataField"=>"_CONCAT(proyectos.proyecto,'_',tareas.tarea)",
+                "dataField"=>"tarea",
+             ),
+            "id_usuarios_proyectos" => array(
+                "model"=>&$usuarios_proyectosModel,
+                "keyField"=>"usuarios_proyectos.id",
+                "dataField"=>"_enjoy_admin.users.user_name",
              ),
         );
 

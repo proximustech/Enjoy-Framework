@@ -32,9 +32,9 @@ class table_avances {
                 ),
                 //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
             ),
-            "id_usuarios_proyectos" => array(
+            "user_name" => array(
                 "definition" => array(
-                    "type" => "number",
+                    "type" => "string",
                     "options"=>array("required"),
                     "default" => "",
                     "label" => array(
@@ -42,7 +42,7 @@ class table_avances {
                     ),
                     //"widget" => "textarea",
                 ),
-                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
+                "viewsPresence"=>array("list"),
             ),            
             "id_tareas" => array(
                 "definition" => array(
