@@ -337,7 +337,7 @@ class modelBase {
             $freshFields=array();
             
             foreach ($subModel->fieldsConfig as $field => $configSection) {
-                $freshField=true;#"roles_applications_id_app"
+                $freshField=true;# Fields that should not be validated.   "roles_applications_id_app"
                 if (isset($subModel->fieldsConfig[$field]["definition"]["options"])) {
                     $subModelFieldsOptions = $subModel->fieldsConfig[$field]["definition"]["options"];
                     if (in_array("required", $subModelFieldsOptions) ) {
