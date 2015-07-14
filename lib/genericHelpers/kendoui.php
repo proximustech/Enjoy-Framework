@@ -38,7 +38,7 @@ class grouperControl extends helper {
         <ul id='{$this->configArray["control"]['name']}' {$this->tagProperties}>
         ";
 
-        return $code;
+        return parent::getStartCode().$code;
     }    
 
     public function getInnerCode($value) {
@@ -56,7 +56,7 @@ class grouperControl extends helper {
     }
 
     public function getEndCode() {
-        return "</ul>";
+        return "</ul>".parent::getEndCode();
     }
 }
 
@@ -264,7 +264,7 @@ class selectControl extends helper {
             
         ";
 
-        return $code;
+        return parent::getStartCode().$code;
             
     }
     
@@ -284,7 +284,7 @@ class selectControl extends helper {
                     });
                 </script>";
         }
-        return $code;
+        return $code.parent::getEndCode();
         
     }
 

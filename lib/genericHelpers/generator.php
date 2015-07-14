@@ -95,7 +95,14 @@ class helper {
      */
     
     public function getStartCode() {
-        return "";
+        $code="<span id='global_{$this->configArray["control"]['name']}'>";
+        if (isset($this->configArray["control"]['globalize'])) {
+            if ($this->configArray["control"]['globalize']=="false") {
+                $code="";
+            }
+        }
+        
+        return $code;
     }
 
     /**
@@ -111,7 +118,14 @@ class helper {
      * @return string
      */
     public function getEndCode() {
-        return "";
+
+        $code="</span>";
+        if (isset($this->configArray["control"]['globalize'])) {
+            if ($this->configArray["control"]['globalize']=="false") {
+                $code="";
+            }
+        }
+        return $code;
     }
 
 
@@ -317,6 +331,7 @@ class xControl extends helper {
         
         //Particular properties definition
         $this->defaultConfigArray["control"]["tag"]="div";
+        $this->defaultConfigArray["control"]["globalize"]="false";
         
         parent::__construct($incomingConfigArray,$incomingDataArray);
         
@@ -335,7 +350,7 @@ class xControl extends helper {
         <{$this->configArray["control"]['tag']} $idString $nameString {$this->tagProperties}>
         ";
 
-        return $code;
+        return parent::getStartCode().$code;
     }    
 
     public function getInnerCode($value) {
@@ -345,7 +360,7 @@ class xControl extends helper {
     }
 
     public function getEndCode() {
-        return "</{$this->configArray["control"]['tag']}>";
+        return parent::getEndCode()."</{$this->configArray["control"]['tag']}>";
     }
 }
 
