@@ -745,11 +745,27 @@ class crud implements crud_Interface {
                 $multiple="true";
                 //$fieldNameLastPart="[]";
             }
+//            var_dump($_REQUEST);
+            $subModelOptions=array();
+            if (key_exists("commonParentModule", $subModelConfig)) {
+                $parentModel=$this->model->foreignKeys[$_REQUEST['keyField']]['model'];
+                
+                $commonParentModuleModelOptions=array();
+                $commonParentModuleModel=$this->model->getModuleModelInstance($subModelConfig['commonParentModule']);
+                $commonParentModuleModelOptions['fields'][]='_'.$this->model->dataRep->dbname.".".$commonParentModuleModel->tables.".".$commonParentModuleModel->primaryKey." AS commonParentPk";
+                $commonParentModuleModelOptions['where'][]=$commonParentModuleModel->tables."."."$commonParentModuleModel->primaryKey={$_REQUEST['keyValue']}";
+                $commonParentModuleModelResult=$parentModel->fetch($commonParentModuleModelOptions);
+                $commonParentModuleModelPrimaryKeyVaule=$commonParentModuleModelResult['results'][0]['commonParentPk'];
+                $subModelOptions['where'][]=$this->model->dataRep->dbname.".".$commonParentModuleModel->tables.".".$commonParentModuleModel->primaryKey.'='.$commonParentModuleModelPrimaryKeyVaule;
+                unset($commonParentModuleModelOptions);
+            }            
 
-            $dataSource=$subModel->getFieldData(null,$linkedDataField);
+            $dataSource=$subModel->getFieldData(null,$linkedDataField,$subModelOptions);
             $dataSource=$security->filter($dataSource);
             $dataSourceArray=$dataSource['results'];
             $label=$dataSource['label'];
+            
+            unset($subModelOptions);
             
             if ($label==NULL) {
                 $label=$subModel->fieldsConfig[$linkedDataField]["definition"]["label"][$this->appLang];
