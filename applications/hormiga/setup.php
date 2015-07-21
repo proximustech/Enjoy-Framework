@@ -36,33 +36,6 @@ class hormigaSetup {
         
         $sql="
 
--- Volcando estructura para tabla hormiga.avances
-CREATE TABLE IF NOT EXISTS `avances` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `fecha_inicio` datetime DEFAULT NULL,
-  `duracion_minutos` int(11) DEFAULT NULL,
-  `avance` text,
-  `id_tareas` int(11) DEFAULT NULL,
-  `user_name` varchar(254) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_avances_tareas1_idx` (`id_tareas`),
-  CONSTRAINT `fk_avances_tareas1` FOREIGN KEY (`id_tareas`) REFERENCES `tareas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Avances de cada una de las tareas';
-
--- La exportación de datos fue deseleccionada.
-
-
--- Volcando estructura para tabla hormiga.etiquetas
-CREATE TABLE IF NOT EXISTS `etiquetas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `etiqueta` varchar(254) DEFAULT NULL,
-  `id_tipo_etiquetas` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_etiquetas_tipo_etiquetas_idx` (`id_tipo_etiquetas`),
-  CONSTRAINT `fk_etiquetas_tipo_etiquetas` FOREIGN KEY (`id_tipo_etiquetas`) REFERENCES `tipo_etiquetas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Permite Agrupar los Proyectos bajo varios criterios cualitativos';
-
--- La exportación de datos fue deseleccionada.
 
 
 -- Volcando estructura para tabla hormiga.proyectos
@@ -77,8 +50,6 @@ CREATE TABLE IF NOT EXISTS `proyectos` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Los estados del proyecto se manejan a traves de bpm';
 
--- La exportación de datos fue deseleccionada.
-
 
 -- Volcando estructura para tabla hormiga.proyectos_bpm
 CREATE TABLE IF NOT EXISTS `proyectos_bpm` (
@@ -90,39 +61,6 @@ CREATE TABLE IF NOT EXISTS `proyectos_bpm` (
   `info` varchar(254) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- La exportación de datos fue deseleccionada.
-
-
--- Volcando estructura para tabla hormiga.proyectos_etiquetas
-CREATE TABLE IF NOT EXISTS `proyectos_etiquetas` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `id_proyectos` int(11) DEFAULT NULL,
-  `id_etiquetas` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_proyectos_etiquetas_proyectos1_idx` (`id_proyectos`),
-  KEY `fk_proyectos_etiquetas_etiquetas1_idx` (`id_etiquetas`),
-  CONSTRAINT `fk_proyectos_etiquetas_proyectos1` FOREIGN KEY (`id_proyectos`) REFERENCES `proyectos` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_proyectos_etiquetas_etiquetas1` FOREIGN KEY (`id_etiquetas`) REFERENCES `etiquetas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Relacion varios a varios entre proyectos y etiquetas';
-
--- La exportación de datos fue deseleccionada.
-
-
--- Volcando estructura para tabla hormiga.proyectos_etiquetas_tareas
-CREATE TABLE IF NOT EXISTS `proyectos_etiquetas_tareas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_proyectos_etiquetas` bigint(20) unsigned NOT NULL,
-  `id_tareas` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_proyectos_etiquetas_tareas_proyectos_etiquetas1_idx` (`id_proyectos_etiquetas`),
-  KEY `fk_proyectos_etiquetas_tareas_tareas1_idx` (`id_tareas`),
-  CONSTRAINT `fk_proyectos_etiquetas_tareas_proyectos_etiquetas1` FOREIGN KEY (`id_proyectos_etiquetas`) REFERENCES `proyectos_etiquetas` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_proyectos_etiquetas_tareas_tareas1` FOREIGN KEY (`id_tareas`) REFERENCES `tareas` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- La exportación de datos fue deseleccionada.
-
 
 -- Volcando estructura para tabla hormiga.tareas
 CREATE TABLE IF NOT EXISTS `tareas` (
@@ -155,6 +93,20 @@ CREATE TABLE IF NOT EXISTS `tareas_bpm` (
 -- La exportación de datos fue deseleccionada.
 
 
+
+-- Volcando estructura para tabla hormiga.avances
+CREATE TABLE IF NOT EXISTS `avances` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fecha_inicio` datetime DEFAULT NULL,
+  `duracion_minutos` int(11) DEFAULT NULL,
+  `avance` text,
+  `id_tareas` int(11) DEFAULT NULL,
+  `user_name` varchar(254) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_avances_tareas1_idx` (`id_tareas`),
+  CONSTRAINT `fk_avances_tareas1` FOREIGN KEY (`id_tareas`) REFERENCES `tareas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Avances de cada una de las tareas';
+
 -- Volcando estructura para tabla hormiga.tipo_etiquetas
 CREATE TABLE IF NOT EXISTS `tipo_etiquetas` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -162,7 +114,48 @@ CREATE TABLE IF NOT EXISTS `tipo_etiquetas` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Permite agrupar las etiquetas bajo un criterio cualitativo';
 
+
+-- Volcando estructura para tabla hormiga.etiquetas
+CREATE TABLE IF NOT EXISTS `etiquetas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `etiqueta` varchar(254) DEFAULT NULL,
+  `id_tipo_etiquetas` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_etiquetas_tipo_etiquetas_idx` (`id_tipo_etiquetas`),
+  CONSTRAINT `fk_etiquetas_tipo_etiquetas` FOREIGN KEY (`id_tipo_etiquetas`) REFERENCES `tipo_etiquetas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Permite Agrupar los Proyectos bajo varios criterios cualitativos';
+
 -- La exportación de datos fue deseleccionada.
+
+
+
+-- Volcando estructura para tabla hormiga.proyectos_etiquetas
+CREATE TABLE IF NOT EXISTS `proyectos_etiquetas` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_proyectos` int(11) DEFAULT NULL,
+  `id_etiquetas` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_proyectos_etiquetas_proyectos1_idx` (`id_proyectos`),
+  KEY `fk_proyectos_etiquetas_etiquetas1_idx` (`id_etiquetas`),
+  CONSTRAINT `fk_proyectos_etiquetas_proyectos1` FOREIGN KEY (`id_proyectos`) REFERENCES `proyectos` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_proyectos_etiquetas_etiquetas1` FOREIGN KEY (`id_etiquetas`) REFERENCES `etiquetas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Relacion varios a varios entre proyectos y etiquetas';
+
+-- La exportación de datos fue deseleccionada.
+
+
+-- Volcando estructura para tabla hormiga.proyectos_etiquetas_tareas
+CREATE TABLE IF NOT EXISTS `proyectos_etiquetas_tareas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_proyectos_etiquetas` bigint(20) unsigned NOT NULL,
+  `id_tareas` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_proyectos_etiquetas_tareas_proyectos_etiquetas1_idx` (`id_proyectos_etiquetas`),
+  KEY `fk_proyectos_etiquetas_tareas_tareas1_idx` (`id_tareas`),
+  CONSTRAINT `fk_proyectos_etiquetas_tareas_proyectos_etiquetas1` FOREIGN KEY (`id_proyectos_etiquetas`) REFERENCES `proyectos_etiquetas` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `fk_proyectos_etiquetas_tareas_tareas1` FOREIGN KEY (`id_tareas`) REFERENCES `tareas` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 
 -- Volcando estructura para tabla hormiga.usuarios_proyectos
@@ -190,10 +183,6 @@ CREATE TABLE IF NOT EXISTS `usuarios_proyectos_tareas` (
   CONSTRAINT `fk_usuarios_proyectos_tareas_usuarios_proyectos1` FOREIGN KEY (`id_usuarios_proyectos`) REFERENCES `usuarios_proyectos` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- La exportación de datos fue deseleccionada.
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 
 
         ";
