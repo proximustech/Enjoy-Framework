@@ -39,6 +39,7 @@ class tareasModel extends modelBase {
                 "linkedField"=>"id_tareas",
                 "linkedDataField"=>"id_usuarios_proyectos",
                 "type"=>"multiple",
+                "commonParentModule"=>"proyectos",
             ),
             1=>array(
                 "model"=>&$proyectos_etiquetas_tareasModel ,
@@ -46,6 +47,7 @@ class tareasModel extends modelBase {
                 "linkedField"=>"id_tareas",
                 "linkedDataField"=>"id_proyectos_etiquetas",
                 "type"=>"multiple",
+                "commonParentModule"=>"proyectos",
             ),
         );
 
