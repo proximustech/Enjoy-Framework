@@ -170,15 +170,19 @@ class modelBase {
             
             if (count($this->config['bpmFlow']) and is_object($this->bpmModel)){ //checks if is object to avoid the nested bpmModel to insert 
 
-                $_REQUEST[$this->bpmModel->tables.'_user']=$_SESSION["user"];
-                $_REQUEST[$this->bpmModel->tables.'_id_process']=$newPrimaryKey;
-                $_REQUEST[$this->bpmModel->tables.'_state']=$this->config['bpmFlow']['initialState'];
-                $_REQUEST[$this->bpmModel->tables.'_date']=date('Y-m-d H:i:s');
-                $_REQUEST[$this->bpmModel->tables.'_info']=$_REQUEST['bpm_info'];                
-                $okOperation=$this->bpmModel->insertRecord();
-                if (!$okOperation) {
-                    throw new Exception("BPM: Insert Error");
-                }            
+                if ($this->config['bpmFlow']['bpmModel']==$this->tables) {
+                    $_REQUEST[$this->bpmModel->tables.'_user']=$_SESSION["user"];
+                    $_REQUEST[$this->bpmModel->tables.'_id_process']=$newPrimaryKey;
+                    $_REQUEST[$this->bpmModel->tables.'_state']=$this->config['bpmFlow']['initialState'];
+                    $_REQUEST[$this->bpmModel->tables.'_date']=date('Y-m-d H:i:s');
+                    $_REQUEST[$this->bpmModel->tables.'_info']=$_REQUEST['bpm_info'];                
+                    $okOperation=$this->bpmModel->insertRecord();
+                    if (!$okOperation) {
+                        throw new Exception("BPM: Insert Error");
+                    }
+                    
+                }
+                
             }
                  
         }
