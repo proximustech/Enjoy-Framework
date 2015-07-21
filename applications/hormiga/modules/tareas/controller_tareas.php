@@ -8,6 +8,7 @@ class modController extends controllerBase {
     function __construct(&$config) {
        
         $this->bpmFlow=array(
+            "bpmModel"=>"tareas",
             "initialState"=>"pendiente",
             "defaultInfo"=>array(),
             "states"=>array( //The diferent states that the process can have
