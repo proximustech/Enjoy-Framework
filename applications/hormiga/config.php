@@ -34,12 +34,25 @@ $config=array(
                 "Tipos de Etiquetas" => "index.php?app=hormiga&mod=tipo_etiquetas",
                 "Etiquetas" => "index.php?app=hormiga&mod=etiquetas",
             ),
-            "Avances por Proyecto"=>array(
-                "Activos" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=activado",
-                "Pausados" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=pausado",
-                "Finalizados" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=finalizado",
-                "Cancelados" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=cancelado",
-            ),            
+            "Visualizaciones" => array(
+                "Proyectos por estado"=>array(
+                    "Pendientes" => "index.php?app=hormiga&mod=proyectos&act=informeGeneral&filtroEstadoBpm=pendiente",
+                    "Activos" => "index.php?app=hormiga&mod=proyectos&act=informeGeneral&filtroEstadoBpm=activado",
+                    "Pausados" => "index.php?app=hormiga&mod=proyectos&act=informeGeneral&filtroEstadoBpm=pausado",
+                    "Finalizados" => "index.php?app=hormiga&mod=proyectos&act=informeGeneral&filtroEstadoBpm=finalizado",
+                    "Cancelados" => "index.php?app=hormiga&mod=proyectos&act=informeGeneral&filtroEstadoBpm=cancelado",
+                ),            
+                "Avances por Proyecto"=>array(
+                    "Pendientes" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=pendiente",
+                    "Activos" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=activado",
+                    "Pausados" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=pausado",
+                    "Finalizados" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=finalizado",
+                    "Cancelados" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=cancelado",
+                ),            
+                
+            ),
+            
+            
             "Proyectos" => "index.php?app=hormiga&mod=proyectos",
         ),
     ),
