@@ -1,4 +1,4 @@
-<span style="font-size: xx-large;">&nbsp;&nbsp;Avances por Usuario. Estado proyecto: <?php echo $_REQUEST['filtroEstadoBpm']; ?></span>
+<span style="font-size: xx-large;">&nbsp;&nbsp;Avances por Usuario. Estado proyecto: <span style="font-weight: bolder"> <?php echo $stateLabel; ?></span></span>
 <br/>
 
 <table class="crudTable">
