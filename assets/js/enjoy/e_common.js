@@ -1,5 +1,13 @@
 
 
+function euiOpenWindow(window){
+
+    if ($('#'+window).data("kendoWindow")) {
+        $('#'+window).data("kendoWindow").open();
+    }
+
+}
+
 function loadAjaxContent(url,container){
 
     $.ajax({

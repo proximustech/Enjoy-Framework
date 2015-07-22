@@ -5,7 +5,8 @@
 
         <link href="assets/css/enjoy/helpers.css" rel="stylesheet">
 
-        <script src="assets/js/jquery/jquery-1.7.1.min.js"></script>
+        <!--<script src="assets/js/jquery/jquery-1.7.1.min.js"></script>-->
+        <script src="assets/js/jquery/jquery-1.9.1.js"></script>
         
         <link href="assets/js/jquery/plugins/bootstrap/bootstrap.min.css" rel="stylesheet">
         <link href="assets/js/jquery/plugins/bootstrap/bootstrap-theme.min.css" rel="stylesheet">
