@@ -553,6 +553,11 @@ class modelBase {
         if (!key_exists('dataFieldConversion', $options['config'])) {
             $options['config']['dataFieldConversion']=true;
         }
+        if (isset($options['config']['getBpmState'])) {
+            if ($options['config']['getBpmState']===true) {
+                $options['fields'][]="(SELECT {$this->tables}_bpm.state FROM {$this->tables}_bpm WHERE {$this->tables}_bpm.id_process={$this->tables}.{$this->primaryKey} ORDER BY {$this->tables}_bpm.id DESC LIMIT 1) AS bpm_state";
+            }
+        }
         
         $whereSql = "";
         $additionalSql = "";
