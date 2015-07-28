@@ -53,6 +53,7 @@ class '.$module.'Model extends modelBase {
 //                "model"=>&$---Model,
 //                "keyField"=>"theOthertableName.idPossibly",
 //                "dataField"=>"another Field of the foreign table with data",
+//                "excludedTables"=>array("tables in modules that must not be asociated in this module querys"),
 //             ),
 //        );
 
@@ -62,6 +63,7 @@ class '.$module.'Model extends modelBase {
 //                "linkerField"=>$this->primaryKey,
 //                "linkedField"=>"external field that references this primary key",
 //                "linkedDataField"=>"similar as a foreignKey dataField",
+//                "commonParentModule"=>"module that is common to the model and the submodel to filter the data",
 //                "type"=>"multiple",
 //            ),
 //        );
