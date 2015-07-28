@@ -745,7 +745,7 @@ class modelBase {
         }        
         
         $sql = "SELECT $fields FROM $tables $whereSql $additionalSql";
-        echo $sql."<hr>";
+//        echo $sql."<hr>";
 
         try {
             if (key_exists('set', $options['config'])) {
@@ -910,9 +910,9 @@ class modelBase {
         
         if (!isset($options['excludedTables'])) {
             $options['excludedTables']=array();
-        }        
+        }
         
-        
+   
         foreach ($fkModel->foreignKeys as $foreignKey => $foreignKeyConfig ) {
             
             $fkExcludedTables=array();
