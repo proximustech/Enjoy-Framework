@@ -53,7 +53,8 @@ class '.$module.'Model extends modelBase {
 //                "model"=>&$---Model,
 //                "keyField"=>"theOthertableName.idPossibly",
 //                "dataField"=>"another Field of the foreign table with data",
-//                "excludedTables"=>array("tables in modules that must not be asociated in this module querys"),
+//                //"joinMode"=>"INNER",
+//                //"excludedTables"=>array("tables in modules that must not be asociated in this module querys"),
 //             ),
 //        );
 
