@@ -557,10 +557,11 @@ class modelBase {
         $whereSql = "";
         $additionalSql = "";
         
-        $relatedTables=array();
+//        $relatedTables=array();
         $relatedFields=array();
-        $relatedOptions=array();
-        $relatedTables[]=$this->dataRep->dbname.'.'.$this->tables;
+        $relatedConditions=array();
+        $relatedConditions[]=$this->dataRep->dbname.'.'.$this->tables;
+        
         
         foreach ($this->fieldsConfig as $field => $configSection) {
 
@@ -602,31 +603,33 @@ class modelBase {
                     $fkDataField = $this->foreignKeys[$field]['dataField'];
                     $fkModel = &$this->foreignKeys[$field]['model'];
 
-                    $relatedTablesOptions=array();
-                    if (isset($this->foreignKeys[$field]['excludedTables'])) {
-                        $relatedTablesOptions=array('excludedTables'=>$this->foreignKeys[$field]['excludedTables']);
-                    }
-                    
-                    $fkRelatedTables=$this->getRelatedTables($fkModel,$relatedTablesOptions);
-                    
-                    foreach ($fkRelatedTables as $fkRelatedTable) {
-                        
-                        if (!in_array($fkRelatedTable, $relatedTables)) {
-                            $relatedTables[]=$fkRelatedTable;
-                        }
-                        
-                    }
+//                    $relatedTablesOptions=array();
+//                    if (isset($this->foreignKeys[$field]['excludedTables'])) {
+//                        $relatedTablesOptions=array('excludedTables'=>$this->foreignKeys[$field]['excludedTables']);
+//                    }
+//                    
+//                    $fkRelatedTables=$this->getRelatedTables($fkModel,$relatedTablesOptions);
+//                    
+//                    foreach ($fkRelatedTables as $fkRelatedTable) {
+//                        
+//                        if (!in_array($fkRelatedTable, $relatedTables)) {
+//                            $relatedTables[]=$fkRelatedTable;
+//                        }
+//                        
+//                    }
                     
                     $relatedConditionsOptions=array();
                     if (isset($this->foreignKeys[$field]['excludedTables'])) {
-                        $relatedConditionsOptions=array('excludedTables'=>$this->foreignKeys[$field]['excludedTables']);
+                        $relatedConditionsOptions["excludedTables"]=$this->foreignKeys[$field]['excludedTables'];
                     }                    
-                    
-                    
+                    if (isset($this->foreignKeys[$field]['joinMode'])) {
+                        $relatedConditionsOptions["joinMode"]=$this->foreignKeys[$field]['joinMode'];
+                    }                    
+
                     $fkRelatedConditions=$this->getRelatedConditions($this->tables.'.'.$field,$fkModel,$fkKeyField,$relatedConditionsOptions);
                     
                     foreach ($fkRelatedConditions as $fkRelatedCondition) {
-                        $relatedOptions['where'][]=$fkRelatedCondition;
+                        $relatedConditions[]=$fkRelatedCondition;
                     }                    
                     
                     
@@ -701,23 +704,16 @@ class modelBase {
                         $linkerField=$subModelConfig['linkerField'];
                         $linkedField=$subModelConfig['linkedField'];
 
-                        $relatedTables[]=$subModel->dataRep->dbname.'.'.$subModel->tables;
-                        $relatedOptions['where'][]=$this->dataRep->dbname.'.'.$this->tables.'.'.$linkerField.'='.$subModel->dataRep->dbname.'.'.$subModel->tables.'.'.$linkedField;
+//                        $relatedTables[]=$subModel->dataRep->dbname.'.'.$subModel->tables;
+                        $relatedConditions[]=" INNER JOIN ".$subModel->dataRep->dbname.'.'.$subModel->tables." ON ".$this->dataRep->dbname.'.'.$this->tables.'.'.$linkerField.'='.$subModel->dataRep->dbname.'.'.$subModel->tables.'.'.$linkedField;
 
                     }   
                 }
             }
         }
 
-        $tables=implode(',',$relatedTables);
         $options['fields']=$relatedFields;
-        if (key_exists('where', $relatedOptions)) {
-            foreach ($relatedOptions['where'] as $relatedCondition) {
-                $options['where'][]=$relatedCondition;
-            }
-    
-        }        
-        
+        $tables=implode(' ', $relatedConditions);
         
         list($whereSql, $additionalSql, $fields) = $this->getSqlConf($options);
         
@@ -867,34 +863,32 @@ class modelBase {
      * @return array with the tables
      */
 
-    function getRelatedTables(&$fkModel,$options=array()) {
-        $relatedTables=array();
-        $relatedTables[]=$fkModel->dataRep->dbname.'.'.$fkModel->tables;
-        
-        if (!isset($options['excludedTables'])) {
-            $options['excludedTables']=array();
-        }
-        
-        foreach ($fkModel->foreignKeys as $foreignKey) {
-            
-            $fkExcludedTables=array();
-            if (isset($foreignKey['excludedTables'])) {
-                foreach ($foreignKey['excludedTables'] as $fkExcludedTable) {
-                    $fkExcludedTables[]=$fkExcludedTable;
-                }
-            }
-            $options["excludedTables"]=array_unique(array_merge($options["excludedTables"],$fkExcludedTables));
-            
-            if (!in_array($foreignKey['model']->tables,$options["excludedTables"])) {
-                foreach ($fkModel->getRelatedTables($foreignKey['model'],$options) as $fkRelatedTable) {
-                    $relatedTables[]=$fkRelatedTable;
-                }
-            }
-            
-        }     
-        
-        return $relatedTables;
-    }
+//    function getRelatedTables(&$fkModel,$options=array()) {
+//        
+//        if (!isset($options['excludedTables'])) {
+//            $options['excludedTables']=array();
+//        }
+//
+//        foreach ($fkModel->foreignKeys as $foreignKey) {
+//            
+//            $fkExcludedTables=array();
+//            if (isset($foreignKey['excludedTables'])) {
+//                foreach ($foreignKey['excludedTables'] as $fkExcludedTable) {
+//                    $fkExcludedTables[]=$fkExcludedTable;
+//                }
+//            }
+//            $options["excludedTables"]=array_unique(array_merge($options["excludedTables"],$fkExcludedTables));
+//            
+//            if (!in_array($foreignKey['model']->tables,$options["excludedTables"])) {
+//                foreach ($fkModel->getRelatedTables($foreignKey['model'],$options) as $fkRelatedTable) {
+//                    $relatedTables[]=$fkRelatedTable;
+//                }
+//            }
+//            
+//        }     
+//        
+//        return $relatedTables;
+//    }
     
     /**
      * Recursive Method to get all the conditions asociated with a model throug the foreign keys
@@ -905,13 +899,16 @@ class modelBase {
      */
     
     function getRelatedConditions($field,&$fkModel,$fkKeyField,$options=array()) {
-        $relatedConditions=array();
-        $relatedConditions[]="( ($field=$fkKeyField) OR $field=NULL  )";
-        
+
         if (!isset($options['excludedTables'])) {
             $options['excludedTables']=array();
         }
+        if (!isset($options['joinMode'])) {
+            $options['joinMode']="INNER";
+        }        
         
+        $relatedConditions=array();
+        $relatedConditions[]=$options['joinMode'] ." JOIN ".$this->dataRep->dbname.'.'.$fkModel->tables." ON $field=$fkKeyField ";
    
         foreach ($fkModel->foreignKeys as $foreignKey => $foreignKeyConfig ) {
             
@@ -922,7 +919,12 @@ class modelBase {
                 }
             }
             $options["excludedTables"]=array_unique(array_merge($options["excludedTables"],$fkExcludedTables));
-                        
+//            if (isset($foreignKeyConfig['joinMode'])) {
+//                $options['joinMode']=$foreignKeyConfig['joinMode'];
+//            }
+//            else{
+//                unset($options['joinMode']);
+//            }
             if (!in_array($foreignKeyConfig['model']->tables,$options["excludedTables"])) {
                 foreach ($fkModel->getRelatedConditions($fkModel->tables.'.'.$foreignKey,$foreignKeyConfig['model'],$foreignKeyConfig['keyField'],$options) as $relatedCondition) {
                     $relatedConditions[]=$relatedCondition;
