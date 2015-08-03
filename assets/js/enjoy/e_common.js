@@ -16,7 +16,9 @@ function loadAjaxContent(url,container){
         dataType: "html" ,
 
     }).done( function( result ) { 
-        $('#'+container).html(result);
+        if (container !== "") {
+            $('#'+container).html(result);
+        }
     }); 
 }
 

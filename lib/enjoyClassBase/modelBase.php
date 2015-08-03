@@ -539,6 +539,29 @@ class modelBase {
         return $okOperation;
     }
 
+    function quickFetch($sql="",$options=array()) {
+        if ($sql=="" and count($options)) {
+            list($whereSql, $additionalSql, $fields) = $this->getSqlConf($options);
+            $sql = "SELECT $fields FROM {$this->tables} $whereSql $additionalSql";
+        }
+
+        try {
+            if (key_exists('set', $options['config'])) {
+                $this->dataRep->pdo->exec("SET CHARACTER SET {$options['config']['set']}");
+            }
+            
+            $query = $this->dataRep->pdo->prepare($sql);
+            $query->execute();
+            $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $exc) {
+            $error= new error($this->config);
+            $error->show("SQL Error : " . $sql, $exc);
+        }
+
+        return $results;        
+    }
+    
+    
     /**
      * Fetchs info according with the model
      * @param array $options to build the sentence
@@ -741,7 +764,7 @@ class modelBase {
         }        
         
         $sql = "SELECT $fields FROM $tables $whereSql $additionalSql";
-//        echo $sql."<hr>";
+        //echo $this->tables."--><br>".$sql."<hr>";
 
         try {
             if (key_exists('set', $options['config'])) {
@@ -908,7 +931,7 @@ class modelBase {
         }        
         
         $relatedConditions=array();
-        $relatedConditions[]=$options['joinMode'] ." JOIN ".$this->dataRep->dbname.'.'.$fkModel->tables." ON $field=$fkKeyField ";
+        $relatedConditions[]=$options['joinMode'] ." JOIN ".$fkModel->dataRep->dbname.'.'.$fkModel->tables." ON $field=$fkKeyField ";
    
         foreach ($fkModel->foreignKeys as $foreignKey => $foreignKeyConfig ) {
             

@@ -529,7 +529,7 @@ class controllerBase {
      * @return string html of the crud result
      */
     
-    function crud($model,$dataRep=null) {
+    function crud($model,$dataRep=null,$options=array()) {
 
         //Setting the view to the index in the case of an bpm action with out view
         if (!file_exists($this->config['viewsDir'].'view_'.$this->config['flow']['act'].'.php') and $this->config['bpmData']!=null) {
@@ -538,7 +538,13 @@ class controllerBase {
         
         $baseAppTranslations = new base_language();
         $this->baseAppTranslation = $baseAppTranslations->lang;
-        $showCrudList = true;
+        if (isset($options['showCrudList'])) {
+            $showCrudList = $options['showCrudList'];
+        }
+        else{
+            $showCrudList = true;
+        }
+        
         $showOperationStatus = false;
         
         if (key_exists("crud", $_REQUEST)) {
