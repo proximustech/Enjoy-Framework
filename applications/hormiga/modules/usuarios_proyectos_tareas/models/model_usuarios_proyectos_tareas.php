@@ -32,6 +32,7 @@ class usuarios_proyectos_tareasModel extends modelBase {
                 "model"=>&$usuarios_proyectosModel,
                 "keyField"=>"usuarios_proyectos.id",
                 "dataField"=>"_enjoy_admin.users.user_name",
+                "excludedTables"=>array("proyectos"),
              ),
         );
 

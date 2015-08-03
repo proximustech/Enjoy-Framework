@@ -9,6 +9,7 @@ require_once "applications/enjoyAdmin/dataRep/app_dataRep.php";
 class usuarios_proyectosModel extends modelBase {
 
     var $tables="usuarios_proyectos";
+    var $usersModel;
 
     function __construct($dataRep, &$config,&$incomingModels=array()) {
         parent::__construct($dataRep, $config,$incomingModels);
@@ -17,7 +18,7 @@ class usuarios_proyectosModel extends modelBase {
         $this->primaryKey=$table->primaryKey;
         
         //$---Model=$this->getModuleModelInstance("---");
-        $usersModel=new usersModel(new enjoyAdminDataRep(),$this->config);
+        $this->usersModel=new usersModel(new enjoyAdminDataRep(),$this->config);
         $proyectosModel=$this->getModuleModelInstance("proyectos");
         
         
@@ -27,7 +28,7 @@ class usuarios_proyectosModel extends modelBase {
         
         $this->foreignKeys = array (
             "id_users" => array(
-                "model"=>&$usersModel,
+                "model"=>&$this->usersModel,
                 "keyField"=>"users.id",
                 "dataField"=>"user_name",
              ),

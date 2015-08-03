@@ -39,18 +39,18 @@ class etiquetasModel extends modelBase {
 //            ),
 //        );
 
-        $this->dependents=array(
-            "id"=>array(
-                0=>array(
-                  "mod"=>"proyectos",
-                    "act"=>"index",
-                    "keyField"=>"proyectos_etiquetas.id_etiquetas",
-                    "label"=>array(
-                        "es_es" =>"Proyectos",
-                    ),
-                ),              
-            ),
-        );
+//        $this->dependents=array(
+//            "id"=>array(
+//                0=>array(
+//                  "mod"=>"proyectos",
+//                    "act"=>"index",
+//                    "keyField"=>"proyectos_etiquetas.id_etiquetas",
+//                    "label"=>array(
+//                        "es_es" =>"Proyectos",
+//                    ),
+//                ),              
+//            ),
+//        );
 
     }
     

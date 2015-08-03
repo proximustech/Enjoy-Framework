@@ -23,6 +23,15 @@ class usersModel extends modelBase {
         
     }
     
+    function getId() {
+        
+        $options['fields'][]='id';
+        $options['where'][]="user_name='{$_SESSION['user']}'";
+        $result=$this->fetch($options);
+        return $result["results"][0]['id'];
+        
+    }
+    
     
 }
 

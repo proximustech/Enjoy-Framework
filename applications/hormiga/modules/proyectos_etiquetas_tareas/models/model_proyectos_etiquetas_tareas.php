@@ -27,11 +27,13 @@ class proyectos_etiquetas_tareasModel extends modelBase {
                 "model"=>&$tareasModel,
                 "keyField"=>"tareas.id",
                 "dataField"=>"tarea",
+                "excludedTables"=>array("proyectos"),
              ),
             "id_proyectos_etiquetas" => array(
                 "model"=>&$proyectos_etiquetasModel,
                 "keyField"=>"proyectos_etiquetas.id",
                 "dataField"=>"_CONCAT(tipo_etiquetas.tipo_etiqueta,'_',etiquetas.etiqueta)",
+                "excludedTables"=>array("proyectos"),
              ),
         );
 

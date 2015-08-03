@@ -8,6 +8,8 @@ require_once "applications/hormiga/modules/avances/models/table_avances.php";
 class avancesModel extends modelBase {
 
     var $tables="avances";
+    var $usuarios_proyectosModel;
+    var $usuarios_proyectos_tareasModel;
 
     function __construct($dataRep, &$config,&$incomingModels=array()) {
         parent::__construct($dataRep, $config,$incomingModels);
@@ -16,7 +18,8 @@ class avancesModel extends modelBase {
         $this->primaryKey=$table->primaryKey;
         
         $tareasModel=$this->getModuleModelInstance("tareas");
-        $usuarios_proyectosModel=$this->getModuleModelInstance("usuarios_proyectos");
+        $this->usuarios_proyectosModel=$this->getModuleModelInstance("usuarios_proyectos");
+        $this->usuarios_proyectos_tareasModel=$this->getModuleModelInstance("usuarios_proyectos_tareas");
                 
         $this->label=array(
             "es_es"=>"Avances",
@@ -53,6 +56,22 @@ class avancesModel extends modelBase {
 //            ),
 //        );
 
+    }
+    
+    function traerTareasDisponibles() {
+
+        $userId=$this->usuarios_proyectosModel->usersModel->getId();
+        
+        $options['fields'][]='proyectos.proyecto';
+        $options['fields'][]='tareas.id AS id_tarea';
+        $options['fields'][]='tareas.tarea';
+        $options['where'][]="usuarios_proyectos.id_users='$userId'";
+        $result=$this->usuarios_proyectos_tareasModel->fetch($options);
+        $tareas=$result["results"];
+        return $tareas;
+        
+        //return $this->usuarios_proyectos_tareasModel->quickfetch("",$options);
+        
     }
     
 }

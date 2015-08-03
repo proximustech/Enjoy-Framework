@@ -23,7 +23,7 @@ $config=array(
     ),
     "helpers"=>array(
         "crud_listMaxLines"=>"50000",
-        "crud_encryptPrimaryKeys"=>true,
+        "crud_encryptPrimaryKeys"=>false,
         
     ),
     "menu"=>array(
@@ -54,6 +54,7 @@ $config=array(
             
             
             "Proyectos" => "index.php?app=hormiga&mod=proyectos",
+            "Utilidades" => "index.php?app=hormiga&mod=avances&act=utilidades",
         ),
     ),
 )
