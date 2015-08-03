@@ -52,6 +52,17 @@ class table_articles {
                     "widget" => "textarea",
                 ),
             ),
+            "file" => array(
+                "definition" => array(
+                    "type" => "file",
+//                    "options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Adjunto",
+                    ),
+                    //"widget" => "textarea",
+                ),
+            ),
             "active" => array(
                 "definition" => array(
                     "type" => "bool",

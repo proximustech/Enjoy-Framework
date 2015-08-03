@@ -74,8 +74,9 @@ class cmsSetup {
 
             CREATE TABLE IF NOT EXISTS `enjoy_cms`.`articles` (
               `id` BIGINT NOT NULL AUTO_INCREMENT,
-              `title` VARCHAR(245) NOT NULL,
+              `title` VARCHAR(254) NOT NULL,
               `body` MEDIUMTEXT NOT NULL,
+              `file` VARCHAR(254) NOT NULL,
               `active` TINYINT(1) NOT NULL,
               `topics_id` INT NOT NULL,
               PRIMARY KEY (`id`),
