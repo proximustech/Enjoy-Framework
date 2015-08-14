@@ -9,6 +9,8 @@
             <th>Tarea</th>
             <th>Fecha</th>
             <th>Avance</th>
+            <th>Minutos</th>
+
         </tr>
     </thead>
     <tbody>
@@ -19,6 +21,7 @@
             <td><?php echo $avance['tarea']; ?></td>
             <td><?php echo $avance['fecha_inicio']; ?></td>
             <td><?php echo $avance['avance']; ?></td>
+            <td><?php echo $avance['duracion_minutos']; ?></td>
         </tr>
         <?php endforeach; ?>
     </tbody>

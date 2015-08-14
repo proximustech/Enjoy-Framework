@@ -1,3 +1,21 @@
+<style>
+    
+    .tarea{
+        background-color: #0CF; 
+        border-style: solid;
+        border-radius: 10px;
+        border-color: black;
+        font-size: 15px;
+        text-align: center;
+        vertical-align: middle;
+        padding: 3px
+                
+    }    
+    .tarea.activa {
+        color: white
+    }
+</style>
+
 <span style="font-size: xx-large;">&nbsp;&nbsp;Vista de proyectos por Estado :<span style="font-weight: bolder"> <?php echo $stateLabel; ?></span></span>
 <br/>
 <script>
@@ -29,7 +47,19 @@
             <td><b><?php echo $proyecto['proyecto']; ?></b></td>
             <td><?php echo $proyecto['comentarios_proyecto']; ?></td>
             <td><?php echo $proyecto['prioridad_tarea']; ?></td>
-            <td><b><?php echo $proyecto['tarea']; ?></b></td>
+            <td>
+                <b>
+                    <?php 
+                        echo $proyecto['tarea']."<br>"; 
+                        if ($proyecto['tarea_bpm_state']=="activado"){
+                            echo "<div class='tarea activa'>{$tareasBpmLabelsArray[$proyecto['tarea_bpm_state']]}</div>";
+                        }
+                        else{
+                            echo "<div class='tarea'> {$tareasBpmLabelsArray[$proyecto['tarea_bpm_state']]} </div>";
+                        }
+                    ?>
+                </b>
+            </td>
             <td><?php echo $proyecto['comentarios_tarea']; ?></td>
             <td>
                 <?php  

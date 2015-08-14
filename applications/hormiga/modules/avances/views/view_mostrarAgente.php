@@ -1,7 +1,14 @@
 <?php $idContenedorPrincipal=time(); ?>
 <span id="<?php echo $idContenedorPrincipal ?>">
-<span style="font-size: xx-large;">&nbsp;&nbsp;Registro de Avances</span>
-<iframe src="index.php?app=hormiga&mod=avances&act=renovarSesion" width="0" height="0"></iframe>
+
+<table>
+<tr>
+    <td><span style="font-size: xx-large;">&nbsp;&nbsp;Registro de Avances&nbsp;&nbsp;</span></td>
+    <td><iframe src="index.php?app=hormiga&mod=avances&act=renovarSesion" width='250' height='60'></iframe></td>
+</tr>
+</table>
+<br>
+
 <?php
 
 $uig=new uiGenerator();

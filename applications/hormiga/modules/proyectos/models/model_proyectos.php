@@ -101,6 +101,7 @@ class proyectosModel extends modelBase {
                     hormiga.proyectos.proyecto,
                     hormiga.tareas.tarea,
                     hormiga.avances.fecha_inicio,
+                    hormiga.avances.duracion_minutos,
                     hormiga.avances.avance
             from 
                     hormiga.proyectos
@@ -202,34 +203,35 @@ class proyectosModel extends modelBase {
     function proyectosXbpm($estado) {
         
         $sql="
-            select 
-                    hormiga.proyectos.id,
-                    hormiga.proyectos.proyecto,
-                    hormiga.proyectos.prioridad AS prioridad_proyecto,
-                    hormiga.proyectos.comentarios AS comentarios_proyecto,
-                    hormiga.tareas.id AS id_tarea,
-                    hormiga.tareas.tarea,
-                    hormiga.tareas.prioridad AS prioridad_tarea,
-                    hormiga.tareas.comentarios AS comentarios_tarea
-            from 
-                    hormiga.proyectos
-                    JOIN hormiga.tareas ON hormiga.tareas.id_proyectos=hormiga.proyectos.id
+            SELECT 
+                hormiga.proyectos.id,
+                hormiga.proyectos.proyecto,
+                hormiga.proyectos.prioridad AS prioridad_proyecto,
+                hormiga.proyectos.comentarios AS comentarios_proyecto,
+                hormiga.tareas.id AS id_tarea,
+                hormiga.tareas.tarea,
+                (SELECT tareas_bpm.state FROM tareas_bpm WHERE tareas_bpm.id_process=tareas.id ORDER BY tareas_bpm.id DESC LIMIT 1) AS tarea_bpm_state,
+                hormiga.tareas.prioridad AS prioridad_tarea,
+                hormiga.tareas.comentarios AS comentarios_tarea
+            FROM 
+                hormiga.proyectos
+                JOIN hormiga.tareas ON hormiga.tareas.id_proyectos=hormiga.proyectos.id
             WHERE
-                    hormiga.proyectos.id IN (
+                hormiga.proyectos.id IN (
 
-                            SELECT 
-                                    id_process
-                            FROM 
-                                    proyectos_bpm
-                            WHERE 
-                                    id IN(
-                                            SELECT MAX(id)
-                                            FROM proyectos_bpm
-                                            GROUP BY id_process
-                                    ) 
-                                    AND state = '$estado'	
+                    SELECT 
+                        id_process
+                    FROM 
+                        proyectos_bpm
+                    WHERE 
+                        id IN(
+                                SELECT MAX(id)
+                                FROM proyectos_bpm
+                                GROUP BY id_process
+                        ) 
+                        AND state = '$estado'	
 
-                    )            
+                )            
 
         ";
         

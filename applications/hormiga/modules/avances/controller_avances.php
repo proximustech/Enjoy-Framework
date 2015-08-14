@@ -49,6 +49,8 @@ class modController extends controllerBase {
         $_REQUEST["avances_avance"]=$_REQUEST["avance"];
         $_REQUEST["crud"]="add";
         
+		$this->config['permission']['add']=true;
+        
         $options=array();
         $options['showCrudList']=false;
         $this->crud($this->baseModel,$this->dataRep,$options);
@@ -58,6 +60,7 @@ class modController extends controllerBase {
         
         $options=array();
         $options["where"][]="(avances.duracion_minutos = 0 or avances.duracion_minutos IS NULL)";
+        $options["where"][]="avances.user_name='".$_SESSION['user']."'";
         $options["additional"][]="ORDER BY id DESC LIMIT 1";
         $result=$this->baseModel->quickFetch("",$options);
         $avance=$result[0];
@@ -70,6 +73,8 @@ class modController extends controllerBase {
         $_REQUEST["avances_avance"]=$avance['avance']." --> ".$_REQUEST["avance"];
         $_REQUEST["crud"]="change";
         
+		$this->config['permission']['change']=true;
+        
         $this->resultData['useLayout']=false;
         $this->resultData['viewFile']="applications/hormiga/modules/avances/views/view_mostrarAgente.php";
         
@@ -79,8 +84,38 @@ class modController extends controllerBase {
         $this->mostrarAgenteAction();
         
     }
+
     function utilidadesAction() {
-        
+    }
+    
+    function renovarSesionAction() {
+
+        $this->resultData['useLayout']=false;
+
+        session_start(); //Para refrescar la sesion
+
+        $options=array();
+
+        $options["fields"][]="SUM(duracion_minutos) AS totalMinutos";
+        $options["where"][]="avances.fecha_inicio > '".date("Y-m-d")." 00:00:00'";
+        $options["where"][]="avances.duracion_minutos > 0";
+	$options["where"][]="avances.user_name='".$_SESSION['user']."'";
+
+        $result=$this->baseModel->quickFetch("",$options);
+        $horasAcumuladasHoy=round((($result[0]['totalMinutos'])/60),1);
+
+        $options=array();
+        $options["where"][]="(avances.duracion_minutos = 0 or avances.duracion_minutos IS NULL)";
+        $options["where"][]="avances.user_name='".$_SESSION['user']."'";
+        $options["additional"][]="ORDER BY id DESC LIMIT 1";
+        $result=$this->baseModel->quickFetch("",$options);
+        $avancePendiente=$result[0];
+
+
+	$this->resultData['output']['horasAcumuladasHoy']=$horasAcumuladasHoy;
+        $this->resultData['output']['horasDelAvancePendiente']=round((strtotime(date("Y-m-d H:i")) - strtotime($avancePendiente['fecha_inicio']) ) / 3600,1 );
+
+
     }
 
 }

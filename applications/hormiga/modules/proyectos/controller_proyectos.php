@@ -158,6 +158,7 @@ class modController extends controllerBase {
         
         $estado=$_REQUEST['filtroEstadoBpm'];
         $proyectos=$this->baseModel->proyectosXbpm($estado);
+        $bpmTareas=require_once 'applications/hormiga/modules/tareas/bpm_tareas.php';
         
         $etiquetasProyectos=array();
         $usuariosProyectos=array();
@@ -181,8 +182,17 @@ class modController extends controllerBase {
                 }
             }
             
+            $estadoUnidadesNegociadas=array();
+            $unidadesNegociadas=array();
+            foreach ($resultNegociaciones as $negociacion) {
+                $unidadesNegociadas[]=$negociacion['unidad'];
+                $estadoUnidadesNegociadas[$negociacion['unidad']]=$bpmNegociaciones['states'][$negociacion['bpm_state']]['label'][$this->config["base"]["language"]];
+            }            
+            
         }
         
+        
+        $this->resultData['output']['tareasBpmLabelsArray']=$this->getBpmLabelsArray($bpmTareas);
         $this->resultData['output']['usuariosProyectos']=$usuariosProyectos;
         $this->resultData['output']['etiquetasProyectos']=$etiquetasProyectos;
         $this->resultData['output']['usuariosTareas']=$usuariosTareas;
