@@ -4,37 +4,44 @@
 require_once "lib/enjoyClassBase/controllerBase.php";
 
 class modController extends controllerBase {
-
-    var $pbmFlow=array();
     
-    function __conscruct($config) {
-        parent::__construct($config);
-        
+    function __construct(&$config) {
+       
         $this->bpmFlow=array(
             "initialState"=>"pendienteXagendar",
+            "defaultInfo"=>array(),
             "states"=>array(
                 "pendienteXagendar"=>array(
                     "label"=>array(
-                        "es_es"=>"Pendiente por agendar",
+                        "es_es"=>"Sin Asignar no joda !!",
                     ),
                     "actions"=>array(
                         "agendar"=>array(
                             "label"=>array(
-                                "es_es"=>"Solicitar",
+                                "es_es"=>"Asignar",
                             ),
+                            "results"=>array('agendado'),
                         ),
-                        "cancelarAgendamiento"=>array(
+                        "noAgendar"=>array(
                             "label"=>array(
-                                "es_es"=>"Cancelar Agendamiento",
+                                "es_es"=>"No Agendar",
                             ),
+                            "results"=>array('agendamientoCancelado'),
+                            "roles"=>array('invitado'),
                         ),
                     )
                 ),
                 "agendado"=>array(
                     "label"=>array(
-                        "es_es"=>"Agendado",
+                        "es_es"=>"Asignado",
                     ),
                     "actions"=>array(
+                        "desAgendar"=>array(
+                            "label"=>array(
+                                "es_es"=>"Dar de baja la asignacion",
+                            ),
+                            "results"=>array('desAgendado'),
+                        ),                        
                     ),
                 ),
                 "agendamientoCancelado"=>array(
@@ -44,24 +51,28 @@ class modController extends controllerBase {
                     "actions"=>array(
                     ),
                 ),
+                "desAgendado"=>array(
+                    "label"=>array(
+                        "es_es"=>"Asignamiento dado de baja",
+                    ),
+                    "actions"=>array(
+                    ),
+                ),
             ),
         );
+        
+        parent::__construct($config);
     }
-    
     function indexAction() {
         $this->crud($this->baseModel,$this->dataRep);
     }
     function agendarAction() {
-        $resultArray=array(
-            "result"=>"agendado",
-        );
-        $this->resultData["output"]=json_encode($resultArray);
+        $this->crud($this->baseModel,$this->dataRep);
     }
-    function cancelarAgendamientoAction() {
-        $resultArray=array(
-            "result"=>"agendamientoCancelado",
-        );
-        $this->resultData["output"]=json_encode($resultArray);        
+    function desAgendarAction() {
+        $this->crud($this->baseModel,$this->dataRep);
+    }
+    function noAgendarAction() {
+        $this->crud($this->baseModel,$this->dataRep);
     }    
-
 }

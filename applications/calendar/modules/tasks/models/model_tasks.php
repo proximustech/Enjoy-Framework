@@ -12,7 +12,7 @@ class tasksModel extends modelBase {
 
     var $tables="tasks";
 
-    function __construct($dataRep, $config) {
+    function __construct($dataRep, &$config) {
         parent::__construct($dataRep, $config);
         $table=new table_tasks();
         $this->fieldsConfig=$table->fieldsConfig;

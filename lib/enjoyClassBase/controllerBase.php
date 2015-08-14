@@ -66,6 +66,14 @@ class controllerBase {
         $this->dataRep= null;
     }
     
+    function getBpmLabelsArray($bpmFlow) {
+        $resultArray=array();
+        foreach ($bpmFlow['states'] as $state => $unused) {
+            $resultArray[$state]=$bpmFlow['states'][$state]['label'][$this->config["base"]["language"]];
+        }
+        return $resultArray;
+        
+    }
     function bpmCallAction() {
         if (isset($_REQUEST['new_bpm_state'])) {
             $this->changeBpmStateProcess($bpmInfo);

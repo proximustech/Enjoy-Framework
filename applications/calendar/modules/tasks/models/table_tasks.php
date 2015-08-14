@@ -19,17 +19,6 @@ class table_tasks {
                     //"widget" => "textarea",
                 ),
             ),
-            "projects_id" => array(
-                "definition" => array(
-                    "type" => "number",
-                    "options"=>array("required"),
-                    "default" => "",
-                    "label" => array(
-                        "es_es" => "Proyecto",
-                    ),
-                    //"widget" => "textarea",
-                ),
-            ),
             "task" => array(
                 "definition" => array(
                     "type" => "string",
@@ -37,6 +26,17 @@ class table_tasks {
                     "default" => "",
                     "label" => array(
                         "es_es" => "Tarea",
+                    ),
+                    //"widget" => "textarea",
+                ),
+            ),
+            "projects_id" => array(
+                "definition" => array(
+                    "type" => "number",
+                    "options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Proyecto",
                     ),
                     //"widget" => "textarea",
                 ),

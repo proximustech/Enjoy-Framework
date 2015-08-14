@@ -1,6 +1,6 @@
 <?php
 
-class table_bpm {
+class table_element_relations {
 
     var $primaryKey = "id";
     var $fieldsConfig;
@@ -18,43 +18,39 @@ class table_bpm {
                     ),
                     //"widget" => "textarea",
                 ),
-                "viewsPresence"=>array(),
             ),
-            "id_process" => array(
+            "parent_id" => array(
                 "definition" => array(
                     "type" => "number",
                     "options"=>array("required"),
                     "default" => "",
                     "label" => array(
-                        "es_es" => "Proceso",
+                        "es_es" => "Padre",
                     ),
                     //"widget" => "textarea",
                 ),
-                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
             ),
-            "state" => array(
+            "child_id" => array(
+                "definition" => array(
+                    "type" => "number",
+                    "options"=>array("required"),
+                    "default" => "",
+                    "label" => array(
+                        "es_es" => "Hijo",
+                    ),
+                    //"widget" => "textarea",
+                ),
+            ),
+            "comment" => array(
                 "definition" => array(
                     "type" => "string",
-                    "options"=>array("required"),
+                    //"options"=>array("required"),
                     "default" => "",
                     "label" => array(
-                        "es_es" => "Estado",
+                        "es_es" => "Comentario",
                     ),
-                    //"widget" => "textarea",
+                    "widget" => "textarea",
                 ),
-                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
-            ),
-            "date" => array(
-                "definition" => array(
-                    "type" => "dateTime",
-                    "options"=>array("required"),
-                    "default" => "",
-                    "label" => array(
-                        "es_es" => "Fecha",
-                    ),
-                    //"widget" => "textarea",
-                ),
-                //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
             ),
         );
     }        
