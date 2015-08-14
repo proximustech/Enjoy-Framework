@@ -31,6 +31,7 @@ class roles_applications_modulesModel extends modelBase {
                 "model"=>&$roles_applicationsModel,
                 "keyField"=>'roles_applications.id',
                 "dataField"=>"_CONCAT(roles.name,'-',applications.name)",
+		"excludedTables"=>array("applications"),
              ),
             "id_module" => array(
                 "model"=>&$modulesModel,
