@@ -42,7 +42,7 @@ $config=array(
                     "Finalizados" => "index.php?app=hormiga&mod=proyectos&act=informeGeneral&filtroEstadoBpm=finalizado",
                     "Cancelados" => "index.php?app=hormiga&mod=proyectos&act=informeGeneral&filtroEstadoBpm=cancelado",
                 ),            
-                "Avances por Proyecto"=>array(
+                "Avances por Usuario"=>array(
                     "Pendientes" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=pendiente",
                     "Activos" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=activado",
                     "Pausados" => "index.php?app=hormiga&mod=proyectos&act=listarAvancesXUsuario&filtroEstadoBpm=pausado",

@@ -50,6 +50,9 @@
             <td>
                 <b>
                     <?php 
+                        if (!isset($tareasBpmLabelsArray[$proyecto['tarea_bpm_state']])) {
+                            $proyecto['tarea_bpm_state']="pendiente";
+                        }
                         echo $proyecto['tarea']."<br>"; 
                         if ($proyecto['tarea_bpm_state']=="activado"){
                             echo "<div class='tarea activa'>{$tareasBpmLabelsArray[$proyecto['tarea_bpm_state']]}</div>";
