@@ -4,6 +4,7 @@
         <!--<meta charset="utf-8">-->  <!-- makes accents work bad-->
 
         <link href="assets/css/enjoy/helpers.css" rel="stylesheet">
+        <link href="assets/css/enjoy/generic.css" rel="stylesheet">
 
         <!--<script src="assets/js/jquery/jquery-1.7.1.min.js"></script>-->
         <script src="assets/js/jquery/jquery-1.9.1.js"></script>
