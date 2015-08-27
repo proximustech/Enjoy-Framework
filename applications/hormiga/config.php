@@ -51,6 +51,9 @@ $config=array(
                 ),            
                 
             ),
+            "Reportes"=>array(
+                "Proyectos x Usuario" => "index.php?app=hormiga&mod=proyectos&act=totalesXusuario",
+            ),            
             
             
             "Proyectos" => "index.php?app=hormiga&mod=proyectos",

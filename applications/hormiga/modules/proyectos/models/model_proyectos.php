@@ -242,4 +242,44 @@ class proyectosModel extends modelBase {
         
     }
     
+    function totalesXusuario() {
+        $month=$_REQUEST["month"];
+        $year=$_REQUEST["year"];
+        
+        if ($month==12) {
+            $nextMonth=1;
+            $nextYear=$year+1;
+        }
+        else{
+            $nextMonth=$month + 1;
+            $nextYear=$year;
+        }
+        
+        
+        $month=$_REQUEST["month"];
+        
+        $sql="
+            SELECT 
+                avances.user_name,
+                proyectos.proyecto,
+                ROUND(SUM(avances.duracion_minutos)/60,1) AS total_horas
+            FROM 
+                proyectos
+                JOIN tareas ON tareas.id_proyectos=proyectos.id
+                JOIN avances ON avances.id_tareas=tareas.id
+            WHERE
+                avances.fecha_inicio >= '$year-$month-01 00:00:00' AND
+                avances.fecha_inicio < '$nextYear-$nextMonth-01 00:00:00'
+            GROUP BY
+                avances.user_name,proyectos.proyecto
+            ORDER BY
+                avances.user_name,proyectos.proyecto
+        ";
+        
+        $query = $this->dataRep->pdo->prepare($sql);
+        $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        return $results;           
+        
+    }
 }

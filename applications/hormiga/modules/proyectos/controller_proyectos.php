@@ -180,14 +180,7 @@ class modController extends controllerBase {
                 if (!in_array($etiqueta['etiqueta'], $etiquetasProyectos[$proyecto['id']])) {
                     $etiquetasProyectos[$proyecto['id']][]=$etiqueta['etiqueta'];
                 }
-            }
-            
-            $estadoUnidadesNegociadas=array();
-            $unidadesNegociadas=array();
-            foreach ($resultNegociaciones as $negociacion) {
-                $unidadesNegociadas[]=$negociacion['unidad'];
-                $estadoUnidadesNegociadas[$negociacion['unidad']]=$bpmNegociaciones['states'][$negociacion['bpm_state']]['label'][$this->config["base"]["language"]];
-            }            
+            }         
             
         }
         
@@ -198,6 +191,14 @@ class modController extends controllerBase {
         $this->resultData['output']['usuariosTareas']=$usuariosTareas;
         $this->resultData['output']['proyectos']=$proyectos;
         $this->resultData['output']['stateLabel']=$this->bpmFlow['states'][$estado]['label'][$this->config["base"]["language"]];
+    }
+      
+    function totalesXusuarioAction() {
+    }
+    
+    function listarTotalesXusuarioAction() {
+        $this->resultData['useLayout']=false;
+        $this->resultData['output']['totales']=$this->baseModel->totalesXusuario();
     }
     
 }
