@@ -303,6 +303,11 @@ class modelBase {
 
     function updateRecord() {
         
+        $options = array();
+        $options['config']['dataFieldConversion'] = false;
+        $oldRegisterData = $this->fetchRecord($options);
+        unset($options);  
+        
         $validator= new validatorBase($this->config, $this->fieldsConfig,$this->primaryKey);
         $register=array();        
 
@@ -322,6 +327,9 @@ class modelBase {
                         } else {
                             $addField = false; //avoid inserting data if not required and empty
                         }
+                    }
+                    elseif ($value == "" and is_null($oldRegisterData[$field]) and !in_array("required", $fieldsOptions)) {
+                        $addField = false; //avoid generating sql data if not required and empty to let null values be kept
                     }
 
                     if ($addField) {                    
@@ -764,7 +772,7 @@ class modelBase {
         }        
         
         $sql = "SELECT $fields FROM $tables $whereSql $additionalSql";
-        //echo $this->tables."--><br>".$sql."<hr>";
+//        echo $this->tables."--><br>".$sql."<hr>";
 
         try {
             if (key_exists('set', $options['config'])) {
@@ -793,8 +801,12 @@ class modelBase {
     protected function getWhereConf($options) {
 
         if (key_exists("where", $options)) {
+            $newWhereConditionsArray=array();
+            foreach ($options["where"] as $whereCondition) {
+                $newWhereConditionsArray[]="(".$whereCondition.")";
+            }
             $whereSql = " WHERE ";
-            $whereSql.= implode(" AND ", $options["where"]);
+            $whereSql.= implode(" AND ", $newWhereConditionsArray);
         } else {
             $whereSql = "";
         }
@@ -809,12 +821,8 @@ class modelBase {
      */
     protected function getSqlConf($options) {
 
-        if (key_exists("where", $options)) {
-            $whereSql = " WHERE ";
-            $whereSql.= implode(" AND ", $options["where"]);
-        } else {
-            $whereSql = "";
-        }
+        $whereSql = $this->getWhereConf($options);
+        
         if (key_exists("additional", $options)) {
             $additionalSql = implode(" ", $options["additional"]);
         } else {

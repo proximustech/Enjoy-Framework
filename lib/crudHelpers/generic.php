@@ -543,16 +543,20 @@ class crud implements crud_Interface {
                     $fkModel=&$this->model->foreignKeys[$field]['model'];
                     
                     $fkOptions=array();
-//                    if (key_exists("where", $this->model->foreignKeys[$field])) {
-//                        $fkOptions['where'][]=$this->model->foreignKeys[$field]['where'];
-//                    }                 
+                    if (key_exists("where", $this->model->foreignKeys[$field])) {
+                        foreach ($this->model->foreignKeys[$field]['where'] as $foreignKeyCondition) {
+                            $foreignKeyCondition=str_replace('crud_primary_key', $register[$this->model->primaryKey], $foreignKeyCondition);
+                            $fkOptions['where'][]=$foreignKeyCondition;
+                            
+                        }
+                    }                 
                     if (key_exists("keyField", $_REQUEST)) {
                         if (key_exists("commonParentModule", $this->model->foreignKeys[$field])) {
                             $commonParentModuleModelOptions=array();
                             $commonParentModuleModel=$this->model->getModuleModelInstance($this->model->foreignKeys[$field]['commonParentModule']);
                             $commonParentModuleModelOptions['fields'][]='_'.$this->model->dataRep->dbname.".".$commonParentModuleModel->tables.".".$commonParentModuleModel->primaryKey." AS commonParentPk";
-                            $commonParentModuleModelOptions['where'][]=$fkModel->tables.".{$fkModel->primaryKey}={$_REQUEST['keyValue']}";;
-                            $commonParentModuleModelResult=$fkModel->fetch($commonParentModuleModelOptions);
+                            $commonParentModuleModelOptions['where'][]=$this->model->tables.".{$_REQUEST['keyField']}={$_REQUEST['keyValue']}";;
+                            $commonParentModuleModelResult=$this->model->fetch($commonParentModuleModelOptions);
                             $commonParentModuleModelPrimaryKeyVaule=$commonParentModuleModelResult['results'][0]['commonParentPk'];
                             $fkOptions['where'][]=$this->model->dataRep->dbname.".".$commonParentModuleModel->tables.".".$commonParentModuleModel->primaryKey.'='.$commonParentModuleModelPrimaryKeyVaule;
                             unset($commonParentModuleModelOptions);

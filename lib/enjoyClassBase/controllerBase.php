@@ -43,8 +43,15 @@ class controllerBase {
         if (class_exists($dataRepName)) {
             $baseModelClass=$this->config['flow']['mod'].'Model';
             if (class_exists($baseModelClass)) {
+                
+                if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                    if (key_exists('keyValue', $_REQUEST)) {
+                        $_REQUEST['keyValue'] = $this->encripter->decode($_REQUEST['keyValue']);
+                    }                
+                }                    
+                
                 $this->baseModel = new $baseModelClass(new $dataRepName(), $this->config);
-                $this->decodeKeys($this->baseModel);
+                $this->decodePrimaryKey($this->baseModel);
                 if (count($this->bpmFlow)) {
                     $this->config['bpmFlow']=$this->bpmFlow;
                     $this->setBpmInfo();
@@ -259,17 +266,14 @@ class controllerBase {
      * @param object $model
      */
     
-    function decodeKeys($model) {
+    function decodePrimaryKey($model) {
 
         if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
-            session_start();
-
+            //session_start();
             if (key_exists($model->tables . '_' . $model->primaryKey, $_REQUEST)) {
                 $_REQUEST[$model->tables . '_' . $model->primaryKey] = $this->encripter->decode($_REQUEST[$model->tables . '_' . $model->primaryKey]);
             }
-            if (key_exists('keyValue', $_REQUEST)) {
-                $_REQUEST['keyValue'] = $this->encripter->decode($_REQUEST['keyValue']);
-            }
+
         }        
         
     }
