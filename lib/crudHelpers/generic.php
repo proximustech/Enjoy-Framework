@@ -153,6 +153,7 @@ class table implements table_Interface {
 
         $html = "<table class='crudTable'>";
         $html.="<thead><tr>";
+        $html.="<th>-</th>";
         foreach ($headers as $header) {
             $html.="<th>" . $header . "</th>";
         }
@@ -164,6 +165,103 @@ class table implements table_Interface {
         foreach ($results as $resultRow) {
 
             $html.="<tr>";
+          
+            $additionalFieldActionsCode = "";
+            foreach ($additionalFiledsConfig["actions"] as $additionalFiled) {
+
+                $label = $additionalFiled["label"];
+                $module = $additionalFiled["mod"];
+                $action = $additionalFiled["act"];
+
+                if (key_exists("parameters", $additionalFiled)) {
+                    $parameters = $additionalFiled["parameters"];
+                }
+
+                if (key_exists("fieldParameters", $additionalFiled)) {
+                    foreach ($additionalFiled["fieldParameters"] as $fieldParameter) {
+                        
+                        if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                            $fieldParameterValue=$encryption->encode($resultRow[$fieldParameter], $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
+                        }
+                        else{
+                            $fieldParameterValue=$resultRow[$fieldParameter];
+                        }                        
+                        
+                        $parameters[] = "{$this->model->tables}.$fieldParameter=" . $fieldParameterValue;
+                    }
+                }
+
+                $additionalFieldActionsCode .=" " . $navigator->action($action, $label, $parameters, $module) . " ";
+            }
+            
+            $buttonsCode="";
+            foreach ($additionalFiledsConfig["buttons"] as $buttonType=>$buttonInfo) {
+                $primaryKeyValue=$resultRow[$this->model->primaryKey];
+                if ($this->config["helpers"]['crud_encryptPrimaryKeys'])
+                    $primaryKeyValue=$encryption->encode($primaryKeyValue, $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
+                
+                $title=$buttonInfo['label'];
+                $buttonClass='btn btn-info';
+                $spanClass='glyphicon glyphicon-record';
+                if($buttonInfo['label']==$this->baseAppTranslation["delete"]){
+                    $buttonInfo['label']="";
+                    $buttonClass='btn btn-danger';
+                    $spanClass='glyphicon glyphicon-remove';
+                }
+                $buttonsCode.="<button class='$buttonClass' title='$title' onclick=\"{$buttonInfo['jsFunction']}('{$primaryKeyValue}');\"><span class='$spanClass'></span></button>";
+            }            
+            
+            
+            
+            $registerDropDown="
+                <div class='btn-group'>
+                    <button class='btn btn-inverse dropdown-toggle' data-toggle='dropdown'>&nbsp;<span class='caret'></span>&nbsp;</button>
+                    <ul class='dropdown-menu'>";
+
+            if ($additionalFieldActionsCode != "" or $buttonsCode != "") {
+                $registerDropDown.="<li style='margin:7px'><span>" . $additionalFieldActionsCode . " ".$buttonsCode. "</span></li>";
+            }
+            if (count($this->model->dependents)) {
+                
+                      
+                
+                foreach ($this->model->dependents as $parentField =>$parentFieldArray) {
+                    
+                    foreach ($parentFieldArray as $keyFieldNumber=>$keyFieldConfig) {
+
+                        $dependentModule=$keyFieldConfig['mod'];
+                        $dependentAction=$keyFieldConfig['act'];
+                        $dependentKeyField=$keyFieldConfig['keyField'];
+                        $dependentLabel=$keyFieldConfig['label'][$this->config["base"]["language"]];
+
+                        if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
+                            $keyValue=$encryption->encode($resultRow[$parentField], $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
+                        }
+                        else{
+                            $keyValue=$resultRow[$parentField];
+                        }
+
+                        $resultRowValues = array_values($resultRow);
+                        
+                        $parameters[]="keyField=".$dependentKeyField;
+                        $parameters[]="keyValue=".$keyValue;
+                        $parameters[]="keyLabel=".$resultRowValues[1];
+                        $parameters[]="modelLabel=".$this->model->label[$this->config["base"]["language"]];
+
+                        $registerDropDown.= "<li>".$navigator->action($dependentAction, $dependentLabel, $parameters,$dependentModule)."</li> ";
+    //                    $dependents.= " ".$navigator->action($dependentAction, $dependentLabel, $parameters,$dependentModule) ." ";
+                        
+                    }
+                    
+                }
+                
+    
+            }            
+            $registerDropDown.="</ul></div>";
+            
+            $html.="<td>$registerDropDown</td>";
+            
+            
 //            $primaryKeyValue = NULL;
             foreach ($resultRow as $field => $resultValue) {
 //                if (strtolower($resultLabel) == $additionalFiledsConfig["primaryKey"]) {
@@ -230,7 +328,7 @@ class table implements table_Interface {
                        
                     }
                     
-                    if ($fkChangePermission or $fkViewPermission or $this->config['permission']['isAdmin']) {
+                    if ($fkChangePermission or $fkViewPermission or $this->config['permission']['isAdmin'] and $this->model->foreignKeys[$field]['button']) {
                         
                         if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
                             $primaryKeyValue = $encryption->encode($resultRow[$this->model->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
@@ -270,7 +368,7 @@ class table implements table_Interface {
                         $downloadCode= $navigator->action($this->config['flow']['act'], "glyphicon-download", $parameters);                
                     }
                     
-                    if ($this->fieldsConfig[$field]["definition"]["type"]=="number") {
+                    if ($this->fieldsConfig[$field]["definition"]["type"]=="number" and !key_exists('dataSourceArray', $this->fieldsConfig[$field]["definition"]) and !key_exists($field, $this->model->foreignKeys)) {
                         $resultValueTemp=number_format($resultValue,0);
                         $styleCode="style='text-align:right'";
                         if (key_exists('options', $this->fieldsConfig[$field]["definition"])){
@@ -288,96 +386,6 @@ class table implements table_Interface {
                 
             }
             
-            $dependents="";
-            
-            if (count($this->model->dependents)) {
-                
-                $dependents.="
-                    <div class='btn-group'>
-                        <button class='btn btn-inverse dropdown-toggle' data-toggle='dropdown'>&nbsp;<span class='caret'></span>&nbsp;</button>
-                        <ul class='dropdown-menu'>";
-                      
-                
-//                foreach ($this->model->dependents as $parentField =>$keyFieldConfig) {
-                foreach ($this->model->dependents as $parentField =>$parentFieldArray) {
-                    
-                    foreach ($parentFieldArray as $keyFieldNumber=>$keyFieldConfig) {
-
-                        $dependentModule=$keyFieldConfig['mod'];
-                        $dependentAction=$keyFieldConfig['act'];
-                        $dependentKeyField=$keyFieldConfig['keyField'];
-                        $dependentLabel=$keyFieldConfig['label'][$this->config["base"]["language"]];
-
-                        if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
-                            $keyValue=$encryption->encode($resultRow[$parentField], $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
-                        }
-                        else{
-                            $keyValue=$resultRow[$parentField];
-                        }
-
-                        $resultRowValues = array_values($resultRow);
-                        
-                        $parameters[]="keyField=".$dependentKeyField;
-                        $parameters[]="keyValue=".$keyValue;
-                        $parameters[]="keyLabel=".$resultRowValues[1];
-                        $parameters[]="modelLabel=".$this->model->label[$this->config["base"]["language"]];
-
-                        $dependents.= "<li>".$navigator->action($dependentAction, $dependentLabel, $parameters,$dependentModule)."</li> ";
-    //                    $dependents.= " ".$navigator->action($dependentAction, $dependentLabel, $parameters,$dependentModule) ." ";
-                        
-                    }
-                    
-                }
-                
-                $dependents.="</ul></div>";
-    
-            }
-            
-
-            $additionalFieldActionsCode = "";
-            foreach ($additionalFiledsConfig["actions"] as $additionalFiled) {
-
-                $label = $additionalFiled["label"];
-                $module = $additionalFiled["mod"];
-                $action = $additionalFiled["act"];
-
-                if (key_exists("parameters", $additionalFiled)) {
-                    $parameters = $additionalFiled["parameters"];
-                }
-
-                if (key_exists("fieldParameters", $additionalFiled)) {
-                    foreach ($additionalFiled["fieldParameters"] as $fieldParameter) {
-                        
-                        if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
-                            $fieldParameterValue=$encryption->encode($resultRow[$fieldParameter], $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
-                        }
-                        else{
-                            $fieldParameterValue=$resultRow[$fieldParameter];
-                        }                        
-                        
-                        $parameters[] = "{$this->model->tables}.$fieldParameter=" . $fieldParameterValue;
-                    }
-                }
-
-                $additionalFieldActionsCode .=" " . $navigator->action($action, $label, $parameters, $module) . " ";
-            }
-            
-            $buttonsCode="";
-            foreach ($additionalFiledsConfig["buttons"] as $buttonType=>$buttonInfo) {
-                $primaryKeyValue=$resultRow[$this->model->primaryKey];
-                if ($this->config["helpers"]['crud_encryptPrimaryKeys'])
-                    $primaryKeyValue=$encryption->encode($primaryKeyValue, $this->config["appServerConfig"]['encryption']['hashText'].$_SESSION["userInfo"]['lastLoginStamp']);
-                
-                $title=$buttonInfo['label'];
-                $buttonClass='btn btn-info';
-                $spanClass='glyphicon glyphicon-record';
-                if($buttonInfo['label']==$this->baseAppTranslation["delete"]){
-                    $buttonInfo['label']="";
-                    $buttonClass='btn btn-danger';
-                    $spanClass='glyphicon glyphicon-remove';
-                }
-                $buttonsCode.="<button class='$buttonClass' title='$title' onclick=\"{$buttonInfo['jsFunction']}('{$primaryKeyValue}');\"><span class='$spanClass'></span></button>";
-            }
 
             $additionalFieldExtraCode = "";
 
@@ -394,11 +402,6 @@ class table implements table_Interface {
                     }
                 }
             }
-
-            if ($additionalFieldActionsCode != "" or $buttonsCode != "") {
-                $html.="<td>$dependents" . $additionalFieldActionsCode . " ".$buttonsCode. "</td>";
-            }
-
 
             if ($additionalFieldExtraCode) {
                 $html.="<td>" . $additionalFieldExtraCode . "</td>";
@@ -979,7 +982,7 @@ class crud implements crud_Interface {
         if ($this->config['permission']['change'] or $this->config['permission']['view']) {
             
             if ($this->config['permission']['change'] and $this->config['bpmData']!=null) {
-                $additionalFiledsConfig["buttons"]["bpmStates"]["label"] = $this->baseAppTranslation["edit"];
+                $additionalFiledsConfig["buttons"]["bpmStates"]["label"] = $this->baseAppTranslation["editBpm"];
                 $additionalFiledsConfig["buttons"]["bpmStates"]["jsFunction"] = "showBpmActions";                
             }
             //else{
@@ -1010,9 +1013,9 @@ class crud implements crud_Interface {
             $additionalFiledsConfig["buttons"]["delete"]["jsFunction"] = "showDelete";
         }
         
-        if (isset($additionalFiledsConfig["actions"]) or isset($additionalFiledsConfig["buttons"])) {
-            $additionalFiledsConfig["headers"][] = $this->baseAppTranslation["operations"];
-        }
+//        if (isset($additionalFiledsConfig["actions"]) or isset($additionalFiledsConfig["buttons"])) {
+//            $additionalFiledsConfig["headers"][] = $this->baseAppTranslation["operations"];
+//        }
         
 
         $table = new Table($this->model);

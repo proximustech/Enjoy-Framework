@@ -13,7 +13,7 @@ class base_language {
         "edit" => "Editar",
         "delete" => "Borrar",       
         "save" => "Guardar",       
-        "operations" => "Operaciones",
+        //"operations" => "Operaciones",
         "yes" => "Si",
         "no" => "No",
         "back" => "Atras",
@@ -34,6 +34,7 @@ class base_language {
         "uniqueError" => "Se ha impedido generar datos duplicados para el campo: ",
         
         //BPM
+        "editBpm" => "Editar Flujo del Proceso",       
         "bpmState" => "Estado del Proceso",
         "availableActionsFor" => "Acciones disponibles para:",
         "registeringAction" => "Aplicar Acci&oacute;n:",
