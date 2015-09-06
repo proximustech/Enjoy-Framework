@@ -294,7 +294,7 @@ class controllerBase {
 
             if ($fieldConfig['definition']['type']=='file') {
                 $fileFields[]=$field;
-                $filesPath=$this->config['appServerConfig']['base']['controlPath']."files".$this->ds.$this->config['flow']['app'].$this->ds.$this->config['flow']['mod'].$this->ds.$field;
+                $filesPath=$this->config['appServerConfig']['base']['controlPath']."files".$this->ds.$this->config['flow']['app'].$this->ds.$this->config['flow']['mod'].$this->ds;
             }
 
 
@@ -315,9 +315,10 @@ class controllerBase {
     function crudDownLoadFile($model) {
         list($filesPath,$fileFields)=$this->crudGetFileFields($model);
         
+        $fileField=$_REQUEST["fileField"];
         $register = $model->fetchRecord();
-        $fileName=$register[$_REQUEST["fileField"]];
-        $fileLocation=$filesPath.$this->ds.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$fileName;
+        $fileName=$register[$fileField];
+        $fileLocation=$filesPath.$fileField.$this->ds.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$fileName;
 
         if (file_exists($fileLocation)) {
             header('Content-Description: File Transfer');
@@ -371,7 +372,7 @@ class controllerBase {
                     $_REQUEST[$model->tables . '_' . $fileField] = $register[$fileField];
                 } else { //Save the attached file
                     if ($register[$fileField] != "") {//Erase the old file
-                        $fileLocation = $filesPath . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_' . $register[$fileField];
+                        $fileLocation = $filesPath .$fileField. $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_' . $register[$fileField];
                         unlink($fileLocation);  
                     }
                     $_REQUEST[$model->tables . '_' . $fileField] = $_FILES[$model->tables . '_' . $fileField]['name'];
@@ -380,22 +381,20 @@ class controllerBase {
         }
     }
     
-    function crudFieldFileCreation($model) {
+    function crudFieldFileCreation($model,$registerId) {
         
         
         list($filesPath,$fileFields)=$this->crudGetFileFields($model);
         
         if (count($fileFields)) {
-
-            if (!file_exists($filesPath)) {
-                mkdir($filesPath, 0770, TRUE);
-            }
-
+         
             foreach ($fileFields as $fileField) {
-
-                if ($_FILES[$model->tables . '_' . $fileField]['name'] != "") {
-
-                    $newFileLocation = $filesPath . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_' . $_FILES[$model->tables . '_' . $fileField]['name'];
+                
+                if ($_REQUEST[$model->tables . '_' . $fileField]!="" and $_FILES[$model->tables . '_' . $fileField]['name'] !="") {
+                    if (!file_exists($filesPath.$this->ds.$fileField)) {                
+                        mkdir($filesPath.$this->ds.$fileField, 0770, TRUE);
+                    }
+                    $newFileLocation = $filesPath. $this->ds.$fileField . $this->ds . $registerId . '_' . $_FILES[$model->tables . '_' . $fileField]['name'];
                     move_uploaded_file($_FILES[$model->tables . '_' . $fileField]['tmp_name'], $newFileLocation);
                 }
             }
@@ -430,6 +429,7 @@ class controllerBase {
                     $fkFilesPath = $this->config['appServerConfig']['base']['controlPath'] . "files" . $this->ds . $this->config['flow']['app'] . $this->ds . $fkModuleName . $this->ds . $field;
                 }
 
+                list($fkFilesPath,$fkFileFields)=$this->crudGetFileFields($fkModel);
 
                 if (count($fkFileFields)) {
                     $register = $fkModel->fetchRecord();
@@ -447,21 +447,8 @@ class controllerBase {
 
                 $okOperation = $fkModel->updateRecord();
 
-                if (count($fkFileFields)) {
-
-                    if (!file_exists($fkFilesPath)) {
-                        mkdir($fkFilesPath, 0770, TRUE);
-                    }
-
-                    foreach ($fkFileFields as $fileField) {
-
-                        if ($_FILES[$fkModel->tables . '_' . $fileField]['name'] != "") {
-
-                            $newFileLocation = $fkFilesPath . $this->ds . $_REQUEST[$fkModel->tables . '_' . $fkModel->primaryKey] . '_' . $_FILES[$fkModel->tables . '_' . $fileField]['name'];
-                            move_uploaded_file($_FILES[$fkModel->tables . '_' . $fileField]['tmp_name'], $newFileLocation);
-                        }
-                    }
-                }
+                $registerId=$_REQUEST[$fkModel->tables . '_' . $fkModel->primaryKey];
+                $this->crudFieldFileCreation($fkModel,$registerId);
             }
         }
         
@@ -485,16 +472,8 @@ class controllerBase {
         }
 
         if (count($fileFields)) {
-
-            if (!file_exists($filesPath)) {
-                mkdir($filesPath, 0770, TRUE);
-            }
-
-            $newId = $this->baseModel->dataRep->getLastInsertId();
-            foreach ($fileFields as $fileField) {
-                $newFileLocation = $filesPath . $this->ds . $newId . '_' . $_FILES[$model->tables . '_' . $fileField]['name'];
-                move_uploaded_file($_FILES[$model->tables . '_' . $fileField]['tmp_name'], $newFileLocation);
-            }
+            $registerId = $this->baseModel->dataRep->getLastInsertId();
+            $this->crudFieldFileCreation($this->baseModel,$registerId);
         }
         
         return $okOperation;
@@ -507,7 +486,7 @@ class controllerBase {
         if (count($fileFields)) {
             $register = $model->fetchRecord();
             foreach ($fileFields as $fileField) {
-                $fileLocation = $filesPath . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_' . $register[$fileField];
+                $fileLocation = $filesPath. $fileField . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_' . $register[$fileField];
                 unlink($fileLocation);
             }
         }
@@ -528,7 +507,8 @@ class controllerBase {
             return "validation";
         }
 
-        $this->crudFieldFileCreation($model);
+        $registerId=$_REQUEST[$model->tables . '_' . $model->primaryKey];
+        $this->crudFieldFileCreation($model,$registerId);
         return $okOperation;
     }
     

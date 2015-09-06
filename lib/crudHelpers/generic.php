@@ -890,7 +890,7 @@ class crud implements crud_Interface {
                     
                     $toolBar='
                         <div class="btn-group">
-                            <button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown">&nbsp;<span class="glyphicon glyphicon-send"></span>&nbsp;</button>
+                            <button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown">&nbsp;<span class="glyphicon glyphicon-folder-open"></span>&nbsp;</button>
                             <ul class="dropdown-menu">';
                     
 
