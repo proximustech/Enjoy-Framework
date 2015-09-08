@@ -209,14 +209,19 @@ class modelBase {
             $error= new error($this->config);
             $errorMessage=$exc->getMessage();
             $errorCode=$exc->errorInfo[1];
+            
+            $baseAppTranslations = new base_language();
+            $baseAppTranslation = $baseAppTranslations->lang;                     
+
             if ($errorCode==$this->dataRep->uniqueErrorCode) {
-
-                $baseAppTranslations = new base_language();
-                $baseAppTranslation = $baseAppTranslations->lang;                     
-
-                $duplicatedField=$this->dataRep->getFieldFromErrorMessage($errorCode,$errorMessage);
-                $duplicatedFieldLabel=$this->fieldsConfig[$duplicatedField]["definition"]["label"][$this->config["base"]["language"]];
-                throw new Exception($baseAppTranslation["uniqueError"].$duplicatedFieldLabel);
+                $duplicatedData=$this->dataRep->getFieldFromErrorMessage($errorCode,$errorMessage);
+                if (isset($this->fieldsConfig[$duplicatedData]["definition"]["label"][$this->config["base"]["language"]])) {
+                    $duplicatedDataLabel=$this->fieldsConfig[$duplicatedData]["definition"]["label"][$this->config["base"]["language"]];
+                }
+                elseif (isset($this->indexConfig[$duplicatedData]["definition"]["label"][$this->config["base"]["language"]])) {
+                    $duplicatedDataLabel=$this->indexConfig[$duplicatedData]["definition"]["label"][$this->config["base"]["language"]];
+                }
+                throw new Exception($baseAppTranslation["uniqueError"].$duplicatedDataLabel);
             }
             else{
                 $error->log($errorMessage);
@@ -318,13 +323,15 @@ class modelBase {
                 if (key_exists($this->tables.'_'.$field, $_REQUEST)) {
                     $value = $_REQUEST[$this->tables.'_'.$field];
                     
-                    if ($value == "" and $configSection["definition"]["type"]=='date' or $configSection["definition"]["type"]=="dateTime") {
-                        if (isset($this->fieldsConfig[$field]["definition"]["options"])) {
-                            $fieldsOptions = $this->fieldsConfig[$field]["definition"]["options"];
-                            if (!in_array("required", $fieldsOptions) and $_REQUEST[$this->tables . '_' . $field] == "") {
-                                $addField = false; //avoid inserting data if not required and empty
-                            }
-                        } else {
+                    if (isset($this->fieldsConfig[$field]["definition"]["options"])) {
+                        $fieldsOptions = $this->fieldsConfig[$field]["definition"]["options"];
+                    }
+                    else{
+                        $fieldsOptions = array();
+                    }
+                    
+                    if ($value == "" and ($configSection["definition"]["type"]=='date' or $configSection["definition"]["type"]=="dateTime")) {
+                        if (!in_array("required", $fieldsOptions) and $_REQUEST[$this->tables . '_' . $field] == "") {
                             $addField = false; //avoid inserting data if not required and empty
                         }
                     }
@@ -527,15 +534,20 @@ class modelBase {
                 $error= new error($this->config);
                 
                 $errorMessage=$exc->getMessage();
-                $errorCode=$exc->getCode();
+                $errorCode=$exc->errorInfo[1];
+                
+                $baseAppTranslations = new base_language();
+                $baseAppTranslation = $baseAppTranslations->lang;   
+                
                 if ($errorCode==$this->dataRep->uniqueErrorCode) {
-                    
-                    $baseAppTranslations = new base_language();
-                    $baseAppTranslation = $baseAppTranslations->lang;                     
-                    
-                    $duplicatedField=$this->dataRep->getFieldFromErrorMessage($errorCode,$errorMessage);
-                    $duplicatedFieldLabel=$this->fieldsConfig[$duplicatedField]["definition"]["label"][$this->config["base"]["language"]];
-                    throw new Exception($baseAppTranslation["uniqueError"].$duplicatedFieldLabel);
+                    $duplicatedData=$this->dataRep->getFieldFromErrorMessage($errorCode,$errorMessage);
+                    if (isset($this->fieldsConfig[$duplicatedData]["definition"]["label"][$this->config["base"]["language"]])) {
+                        $duplicatedDataLabel=$this->fieldsConfig[$duplicatedData]["definition"]["label"][$this->config["base"]["language"]];
+                    }
+                    elseif (isset($this->indexConfig[$duplicatedData]["definition"]["label"][$this->config["base"]["language"]])) {
+                        $duplicatedDataLabel=$this->indexConfig[$duplicatedData]["definition"]["label"][$this->config["base"]["language"]];
+                    }
+                    throw new Exception($baseAppTranslation["uniqueError"].$duplicatedDataLabel);
                 }
                 else{
                     $error->log($errorMessage);
