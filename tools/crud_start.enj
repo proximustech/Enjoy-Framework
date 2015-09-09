@@ -40,6 +40,7 @@ class '.$module.'Model extends modelBase {
         parent::__construct($dataRep, $config,$incomingModels);
         $table=new table_'.$module.'();
         $this->fieldsConfig=$table->fieldsConfig;
+        $this->indexConfig=$table->indexConfig;        
         $this->primaryKey=$table->primaryKey;
         
         //$---Model=$this->getModuleModelInstance("---");
@@ -50,11 +51,14 @@ class '.$module.'Model extends modelBase {
         
 //        $this->foreignKeys = array (
 //            "id_---" => array(
+//                "button"=>false, # Show a button to see the foreign key details
 //                "model"=>&$---Model,
 //                "keyField"=>"theOthertableName.idPossibly",
 //                "dataField"=>"another Field of the foreign table with data",
 //                //"joinMode"=>"INNER",
 //                //"excludedTables"=>array("tables in modules that must not be asociated in this module querys"),
+//                //"commonParentModule"=>"module that is common as parent between this main module and this foreign key module to automatically filter data",
+//                //"where"=>array("SQL statements array. The crud_primary_key text will be replaced by the register primarykey value when editing forms"),
 //             ),
 //        );
 
@@ -96,6 +100,7 @@ class table_'.$module.' {
 
     var $primaryKey = "id";
     var $fieldsConfig;
+    var $indexConfig;    
 
     function __construct() {
 
@@ -113,6 +118,15 @@ class table_'.$module.' {
                 //"viewsPresence"=>array("list","createForm","editForm","editFkForm"),
             ),
         );
+//        $this->indexConfig = array(
+//            "table_index_name" => array(
+//                "definition" => array(
+//                    "label" => array(
+//                        "es_es" => "table_index_name",
+//                    ),
+//                ),
+//            ),
+//        );        
     }        
 }   ';
 
