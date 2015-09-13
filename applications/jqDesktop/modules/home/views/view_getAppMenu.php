@@ -12,10 +12,12 @@ function showTreeMenu($menuArray,$appName) {
         if (is_array($target)) {
             $tempResult=showTreeMenu($target,$appName);
             if ($tempResult != "") {
-                //$finalResult.= "<li><span class='folder'>$menu</span><ul>";
-                $finalResult.= $tempResult;
-                //$finalResult.= "</ul></li>";
+                $tempResult="<div data-role='collapsible'>
+                    <h4>$menu</h4>
+                    $tempResult
+                </div>";
             }
+            $finalResult.=$tempResult;
         }
         else{
             $showLink=true;
