@@ -1,3 +1,9 @@
+<!--Librerias para generar las graficas-->
+
+<link rel="stylesheet" type="text/css" href="assets/js/c3/c3.min.css">
+<script src="assets/js/c3/d3.v3.min.js" charset="utf-8"></script>
+<script src="assets/js/c3/c3.min.js" charset="utf-8"></script>
+
 <script>
     function generarListado(){
         loadAjaxContent('index.php?app=hormiga&mod=proyectos&act=listarTotalesXusuario&year='+$("#year").val()+'&month='+$("#month").val(),'totales');

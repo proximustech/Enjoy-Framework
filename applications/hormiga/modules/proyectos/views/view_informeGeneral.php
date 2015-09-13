@@ -1,5 +1,4 @@
-<style>
-    
+<style> 
     .tarea{
         background-color: #0CF; 
         border-style: solid;
@@ -11,9 +10,26 @@
         padding: 3px
                 
     }    
-    .tarea.activa {
+    .tarea.pendiente {
+	background-color: white;
+        color: black
+    }	
+    .tarea.activado {
+	background-color: green;
         color: white
     }
+    .tarea.finalizado {
+	background-color: purple;
+        color: white
+    }
+    .tarea.pausado {
+	background-color: grey;
+        color: white
+    }
+    .tarea.cancelado {
+	background-color: brown;
+        color: white
+    }	
 </style>
 
 <span style="font-size: xx-large;">&nbsp;&nbsp;Vista de proyectos por Estado :<span style="font-weight: bolder"> <?php echo $stateLabel; ?></span></span>
@@ -54,12 +70,7 @@
                             $proyecto['tarea_bpm_state']="pendiente";
                         }
                         echo $proyecto['tarea']."<br>"; 
-                        if ($proyecto['tarea_bpm_state']=="activado"){
-                            echo "<div class='tarea activa'>{$tareasBpmLabelsArray[$proyecto['tarea_bpm_state']]}</div>";
-                        }
-                        else{
-                            echo "<div class='tarea'> {$tareasBpmLabelsArray[$proyecto['tarea_bpm_state']]} </div>";
-                        }
+                        echo "<div class='tarea {$proyecto['tarea_bpm_state']}'>{$tareasBpmLabelsArray[$proyecto['tarea_bpm_state']]}</div>";
                     ?>
                 </b>
             </td>
