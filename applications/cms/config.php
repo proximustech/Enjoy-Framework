@@ -17,7 +17,7 @@ $config=array(
         "debug"=>true,
         "useAuthentication"=>true, //Defines if the application use permissions schema
         "publicActions"=>array( //In concordance with useAuthentication = true when some action modules does not require authentication
-            "articles"=>array("get"),
+            "articles"=>array("get","index"),
         ),         
         
     ),
