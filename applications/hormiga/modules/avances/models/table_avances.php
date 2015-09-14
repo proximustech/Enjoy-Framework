@@ -72,7 +72,7 @@ class table_avances {
                 "definition" => array(
                     "type" => "number",
                     //"options"=>array("required"),
-                    "default" => "0",
+                    "default" => "1",
                     "label" => array(
                         "es_es" => "Duraci&oacute;n en Minutos",
                     ),
