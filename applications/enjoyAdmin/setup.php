@@ -91,7 +91,7 @@ class enjoyAdminSetup {
               `id_app` INT(10) NULL DEFAULT NULL,
               `name` VARCHAR(254) NOT NULL,
               PRIMARY KEY (`id`),
-              UNIQUE INDEX `name` (`name` ASC),
+              UNIQUE INDEX `name` (`name`, `id_app`),
               INDEX `fk_modules_applications1_idx` (`id_app` ASC),
               CONSTRAINT `fk_modules_applications1`
                 FOREIGN KEY (`id_app`)
