@@ -13,20 +13,21 @@
         var currentUserDataColumns=[];
     </script>
     <?php
+    $registersCounter=0;
     foreach ($totales as $total) {
 
         $registersCounter++;
         if ($total["user_name"] != $lastTotalUser) {
            
             if ($lastTotalUser != "") {
+                $previousRegisterCounter=$registersCounter-1;
                 echo "<tr><th style='text-align: right'>Total</th><td>$totalHours</td></tr>";
-                echo "<tr><td colspan=2>&nbsp <div id='grafica_{$total["user_name"]}'></div>  &nbsp</td></tr>";
+                echo "<tr><td colspan=2>&nbsp <div id='grafica_$previousRegisterCounter'></div>  &nbsp</td></tr>";
                 $totalHours=0;
-                
                 ?>
                 <script>
-                    var <?php echo "grafica_{$total["user_name"]}" ?> = c3.generate({
-                      bindto: '#<?php echo "grafica_{$total["user_name"]}" ?>',
+                    var <?php echo "grafica_$previousRegisterCounter" ?> = c3.generate({
+                      bindto: '#<?php echo "grafica_$previousRegisterCounter" ?>',
                       data: {
                         columns: currentUserDataColumns,
                         type: 'bar',
@@ -69,12 +70,12 @@
 
     }
     echo "<tr><th style='text-align: right'>Total</th><td>$totalHours</td></tr>";
-    echo "<tr><td colspan=2>&nbsp <div id='grafica_{$total["user_name"]}'></div>  &nbsp</td></tr>";
+    echo "<tr><td colspan=2>&nbsp <div id='grafica_$registersCounter'></div>  &nbsp</td></tr>";
     ?>
 
     <script>
-        var <?php echo "grafica_{$total["user_name"]}" ?> = c3.generate({
-          bindto: '#<?php echo "grafica_{$total["user_name"]}" ?>',
+        var lastChart = c3.generate({
+          bindto: '#<?php echo "grafica_$registersCounter" ?>',
           data: {
             columns: currentUserDataColumns,
             type: 'bar',
