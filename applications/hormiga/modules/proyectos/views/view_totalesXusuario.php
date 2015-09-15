@@ -51,9 +51,13 @@ $monthSelector=$uig->getCode($uiJson,$uiArray);
         <td>
             <?php echo $yearSelector; ?>
         </td>
+    </tr>
+    <tr>
         <td>
             <?php echo $monthSelector; ?>
         </td>
+    </tr>
+    <tr>
         <td>
             <button class="eui_button" onclick="generarListado()">Generar</button>
         </td>
