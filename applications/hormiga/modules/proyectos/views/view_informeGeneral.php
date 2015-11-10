@@ -103,8 +103,9 @@
 <script>
     $(document).ready(function(){
                 $(".window").kendoWindow({
-                    actions: ["Maximize", "Minimize", "Close"],
+                    actions: ["Maximize","Close"],
                     draggable: true,
+                    visible: false,
                     position: {
                         top: 100,
                         left: 100
