@@ -31,7 +31,10 @@
 
         <script src="assets/js/jquery/plugins/dataTables/media/js/jquery.dataTables.min.js"></script>
         <link rel="stylesheet" href="assets/js/jquery/plugins/dataTables/media/css/jquery.dataTables.css" />
-        <link rel="stylesheet" href="assets/js/jquery/plugins/dataTables/media/css/jquery.dataTables_themeroller.css" />        
+        <link rel="stylesheet" href="assets/js/jquery/plugins/dataTables/media/css/jquery.dataTables_themeroller.css" />
+        <script src="assets/js/jquery/plugins/dataTables/extras/TableTools/media/js/ZeroClipboard.js" /></script>
+        <script src="assets/js/jquery/plugins/dataTables/extras/TableTools/media/js/TableTools.js" /></script>
+        <link rel="stylesheet" href="assets/js/jquery/plugins/dataTables/extras/TableTools/media/css/TableTools.css" />        
         
         <!--KendoUi Set-->
 
@@ -71,10 +74,38 @@
                     "sPaginationType": "full_numbers",
                     "oLanguage": {
                         "sUrl": "assets/js/jquery/plugins/dataTables/languages/<?php  echo $language  ?>.txt"
-                    }
+                    },
+                    "sDom": '<"H"Tfr>t<"F"ip>',
+                    "oTableTools": {
+                        "sSwfPath": "assets/js/jquery/plugins/dataTables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
+			"aButtons": [
+				{
+					"sExtends": "print",
+					"sButtonText": "Ver solo datos"
+				},
+				{
+					"sExtends":    "collection",
+					"sButtonText": "Descargar",
+					"aButtons":    [ 
+                                            {
+                                                    "sExtends": "csv",
+                                                    "sButtonText": "en csv"
+                                            },                                            
+                                            {
+                                                    "sExtends": "pdf",
+                                                    "sButtonText": "en pdf"
+                                            },                                            
+                                            {
+                                                    "sExtends": "copy",
+                                                    "sButtonText": "al Portapapeles"
+                                            },                                            
+                                        ]
+				}                                
+			]                
+                    },
                 });
                 $("body").css({"visibility":"visible"}); //show body only when it is fully loaded
-                $("body").hide(0).delay(300).fadeIn(80); //Default Fade In
+//                $("body").hide(0).delay(300).fadeIn(80); //Default Fade In (Warning: this line makes datatables export data buttons inoperant)
                 
                 $( "#crudForm" ).submit(
                     function( event ) {
