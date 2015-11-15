@@ -35,6 +35,9 @@
         <script src="assets/js/jquery/plugins/dataTables/extras/TableTools/media/js/ZeroClipboard.js" /></script>
         <script src="assets/js/jquery/plugins/dataTables/extras/TableTools/media/js/TableTools.js" /></script>
         <link rel="stylesheet" href="assets/js/jquery/plugins/dataTables/extras/TableTools/media/css/TableTools.css" />        
+        <script src="assets/js/jquery/plugins/dataTables/extras/ColReorder/media/js/ColReorder.js" /></script>
+        <link rel="stylesheet" href="assets/js/jquery/plugins/dataTables/extras/ColReorder/media/css/ColReorder.css" />        
+        <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.0.0/css/responsive.jqueryui.min.css" />        
         
         <!--KendoUi Set-->
 
@@ -75,7 +78,7 @@
                     "oLanguage": {
                         "sUrl": "assets/js/jquery/plugins/dataTables/languages/<?php  echo $language  ?>.txt"
                     },
-                    "sDom": '<"H"Tfr>t<"F"ip>',
+                    "sDom": 'R<"H"lTfr>t<"F"ip>',
                     "oTableTools": {
                         "sSwfPath": "assets/js/jquery/plugins/dataTables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
 			"aButtons": [
@@ -102,10 +105,10 @@
                                         ]
 				}                                
 			]                
-                    },
-                });
+                    },      
+                });           
                 $("body").css({"visibility":"visible"}); //show body only when it is fully loaded
-//                $("body").hide(0).delay(300).fadeIn(80); //Default Fade In (Warning: this line makes datatables export data buttons inoperant)
+                $("body").hide(0).delay(300).fadeIn(180); //Default Fade In (Warning: this line makes datatables export data buttons inoperant if configured without aButtons)
                 
                 $( "#crudForm" ).submit(
                     function( event ) {
