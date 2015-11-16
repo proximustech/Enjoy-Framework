@@ -2,8 +2,9 @@
 <br>
 <span class="eui_note blue" style="font-size: large;">&nbsp;&nbsp;<?php echo $_REQUEST["year"] ."-".$_REQUEST["month"]; ?></span>
 <br>
+<br>
 <center>
-    <table class="niceTable" width="45%">
+    <table class="niceTable" width="85%">
 
     <?php
     $lastTotalUser="";
@@ -22,7 +23,7 @@
             if ($lastTotalUser != "") {
                 $previousRegisterCounter=$registersCounter-1;
                 echo "<tr><th style='text-align: right'>Total</th><td>$totalHours</td></tr>";
-                echo "<tr><td colspan=2>&nbsp <div id='grafica_$previousRegisterCounter'></div>  &nbsp</td></tr>";
+                echo "<tr><td style='width:50%'><div id='grafica_$previousRegisterCounter'></div></td><td style='width:50%'><div id='divGraficaTareas_{$total["user_name"]}'></div>&nbsp</td></tr>";                
                 $totalHours=0;
                 ?>
                 <script>
@@ -31,9 +32,7 @@
                       data: {
                         columns: currentUserDataColumns,
                         type: 'bar',
-                        onclick: function (d, element) { console.log("onclick", d, element); },
-                        onmouseover: function (d) { console.log("onmouseover", d); },
-                        onmouseout: function (d) { console.log("onmouseout", d); }
+                        onclick: function (d, element) { showTasksGraph(d.name,"<?php echo $total["user_name"]; ?>","<?php echo "divGraficaTareas_{$total["user_name"]}"; ?>"); },                        
                       },
                       axis: {
                         x: {
@@ -70,7 +69,7 @@
 
     }
     echo "<tr><th style='text-align: right'>Total</th><td>$totalHours</td></tr>";
-    echo "<tr><td colspan=2>&nbsp <div id='grafica_$registersCounter'></div>  &nbsp</td></tr>";
+    echo "<tr><td style='width:50%'><div id='grafica_$registersCounter'></div></td><td style='width:50%'><div id='divGraficaTareas_{$total["user_name"]}'></div>&nbsp</td></tr>";                
     ?>
 
     <script>
@@ -79,9 +78,10 @@
           data: {
             columns: currentUserDataColumns,
             type: 'bar',
-            onclick: function (d, element) { console.log("onclick", d, element); },
-            onmouseover: function (d) { console.log("onmouseover", d); },
-            onmouseout: function (d) { console.log("onmouseout", d); }
+            onclick: function (d, element) { showTasksGraph(d.name,"<?php echo $total["user_name"]; ?>","<?php echo "divGraficaTareas_{$total["user_name"]}"; ?>"); },
+            //onclick: function (d, element) { console.log("onclick", d, element); },
+            //onmouseover: function (d) { console.log("onmouseover", d); },
+            //onmouseout: function (d) { console.log("onmouseout", d); }
           },
           axis: {
             x: {
@@ -95,6 +95,11 @@
             },
           }
         });
+        
+        function showTasksGraph(id,user,div){
+            loadAjaxContent("index.php?app=hormiga&mod=proyectos&act=listarTotalesTareaXusuario&user="+user+"&proyecto="+id+'&year='+$("#year").val()+'&month='+$("#month").val(),div)
+        }
+        
     </script>
     </table>
 </center>

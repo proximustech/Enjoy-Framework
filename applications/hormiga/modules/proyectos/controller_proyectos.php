@@ -201,4 +201,11 @@ class modController extends controllerBase {
         $this->resultData['output']['totales']=$this->baseModel->totalesXusuario();
     }
     
+    function listarTotalesTareaXusuarioAction() {
+        
+        $this->resultData['useLayout']=false;
+        $this->resultData['output']['totales']=$this->baseModel->totalesTareaXusuario();
+        
+    }
+    
 }
