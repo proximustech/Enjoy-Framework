@@ -2,7 +2,7 @@
 <span id="<?php echo $idContenedorPrincipal ?>">
 
 <table>
-<tr>
+    <tr style="color: ">
     <td><span style="font-size: xx-large;">&nbsp;&nbsp;Registro de Avances&nbsp;&nbsp;</span></td>
     <td><iframe src="index.php?app=hormiga&mod=avances&act=renovarSesion" width='250' height='60'></iframe></td>
 </tr>
@@ -51,6 +51,7 @@ echo $uig->getCode($uiJson,$uiArray);
         $("#descripcionFin").prop('disabled', false);
         $("#iniciar").prop('disabled', true);
         $("#finalizar").prop('disabled', false);
+        $("#finalizar").prop('style', 'color:white;background-color:darkseagreen');
         
         
         loadAjaxContent('index.php?app=hormiga&mod=avances&act=iniciarAvance&idTarea='+$("#tarea").val()+'&avance='+$("#descripcionInicio").val(),'');

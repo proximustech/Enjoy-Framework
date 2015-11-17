@@ -23,7 +23,7 @@
             if ($lastTotalUser != "") {
                 $previousRegisterCounter=$registersCounter-1;
                 echo "<tr><th style='text-align: right'>Total</th><td>$totalHours</td></tr>";
-                echo "<tr><td style='width:50%'><div id='grafica_$previousRegisterCounter'></div></td><td style='width:50%'><div id='divGraficaTareas_{$total["user_name"]}'></div>&nbsp</td></tr>";                
+                echo "<tr><td style='width:50%'><div id='grafica_$previousRegisterCounter'></div></td><td style='width:50%'><div id='divGraficaTareas_$lastTotalUser'></div>&nbsp</td></tr>";                
                 $totalHours=0;
                 ?>
                 <script>
@@ -32,7 +32,7 @@
                       data: {
                         columns: currentUserDataColumns,
                         type: 'bar',
-                        onclick: function (d, element) { showTasksGraph(d.name,"<?php echo $total["user_name"]; ?>","<?php echo "divGraficaTareas_{$total["user_name"]}"; ?>"); },                        
+                        onclick: function (d, element) { showTasksGraph(d.name,"<?php echo $lastTotalUser; ?>","<?php echo "divGraficaTareas_$lastTotalUser"; ?>"); },                        
                       },
                       axis: {
                         x: {

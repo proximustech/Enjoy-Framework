@@ -285,6 +285,7 @@ class proyectosModel extends modelBase {
     
     function totalesTareaXusuario() {
         
+        $user=$_REQUEST["user"];
         $proyecto=$_REQUEST["proyecto"];
         $month=$_REQUEST["month"];
         $year=$_REQUEST["year"];
@@ -309,7 +310,7 @@ class proyectosModel extends modelBase {
                 JOIN tareas ON tareas.id_proyectos=proyectos.id
                 JOIN avances ON avances.id_tareas=tareas.id
             WHERE
-                avances.user_name= '{$_SESSION['user']}' AND
+                avances.user_name= '$user' AND
                 proyectos.proyecto = '$proyecto' AND
                 avances.fecha_inicio >= '$year-$month-01 00:00:00' AND
                 avances.fecha_inicio < '$nextYear-$nextMonth-01 00:00:00'

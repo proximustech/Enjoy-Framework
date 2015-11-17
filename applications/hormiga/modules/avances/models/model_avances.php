@@ -66,6 +66,8 @@ class avancesModel extends modelBase {
         $options['fields'][]='tareas.id AS id_tarea';
         $options['fields'][]='tareas.tarea';
         $options['where'][]="usuarios_proyectos.id_users='$userId'";
+        $options['where'][]="tareas.id IN (SELECT id_process FROM tareas_bpm WHERE state='activado')";
+        $options['where'][]="proyectos.id IN (SELECT id_process FROM proyectos_bpm WHERE state='activado')";
         $result=$this->usuarios_proyectos_tareasModel->fetch($options);
         $tareas=$result["results"];
         return $tareas;
