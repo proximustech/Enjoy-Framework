@@ -60,20 +60,22 @@ class avancesModel extends modelBase {
     
     function traerTareasDisponibles() {
 
+        //filtrar solo las tareas activas de los proyectos activos
+
         $userId=$this->usuarios_proyectosModel->usersModel->getId();
-        
+
         $options['fields'][]='proyectos.proyecto';
         $options['fields'][]='tareas.id AS id_tarea';
         $options['fields'][]='tareas.tarea';
         $options['where'][]="usuarios_proyectos.id_users='$userId'";
-        $options['where'][]="tareas.id IN (SELECT id_process FROM tareas_bpm WHERE state='activado')";
-        $options['where'][]="proyectos.id IN (SELECT id_process FROM proyectos_bpm WHERE state='activado')";
+        $options['where'][]="tareas.id IN (SELECT id_process FROM tareas_bpm WHERE tareas_bpm.id_process=tareas.id AND 'activado' IN ( SELECT tareas_bpm.state FROM tareas_bpm WHERE tareas_bpm.id IN ( SELECT MAX(id) FROM tareas_bpm WHERE tareas_bpm.id_process=tareas.id ) ) GROUP BY id_process )";
+        $options['where'][]="proyectos.id IN (SELECT id_process FROM proyectos_bpm WHERE proyectos_bpm.id_process=proyectos.id AND 'activado' IN ( SELECT proyectos_bpm.state FROM proyectos_bpm WHERE proyectos_bpm.id IN ( SELECT MAX(id) FROM proyectos_bpm WHERE proyectos_bpm.id_process=proyectos.id ) ) GROUP BY id_process )";
         $result=$this->usuarios_proyectos_tareasModel->fetch($options);
         $tareas=$result["results"];
         return $tareas;
-        
+
         //return $this->usuarios_proyectos_tareasModel->quickfetch("",$options);
-        
+
     }
     
 }

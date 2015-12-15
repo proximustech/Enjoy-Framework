@@ -1,5 +1,12 @@
 <?php $idContenedorPrincipal=time(); ?>
 <span id="<?php echo $idContenedorPrincipal ?>">
+    
+<style>
+    .corriendo {
+        color:white;
+        background-color:darkseagreen;
+    }
+</style>
 
 <table>
     <tr style="color: ">
@@ -51,7 +58,7 @@ echo $uig->getCode($uiJson,$uiArray);
         $("#descripcionFin").prop('disabled', false);
         $("#iniciar").prop('disabled', true);
         $("#finalizar").prop('disabled', false);
-        $("#finalizar").prop('style', 'color:white;background-color:darkseagreen');
+        $("#finalizar").addClass('corriendo');
         
         
         loadAjaxContent('index.php?app=hormiga&mod=avances&act=iniciarAvance&idTarea='+$("#tarea").val()+'&avance='+$("#descripcionInicio").val(),'');
