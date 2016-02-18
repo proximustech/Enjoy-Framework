@@ -6,6 +6,7 @@ class dataRep implements dataRep_Interface {
 
     var $pdo=null;
     var $host;
+    var $port=3306;
     var $dbname;
     var $username;
     var $password;
@@ -46,7 +47,7 @@ class dataRep implements dataRep_Interface {
     }
     
     
-    function getLastInsertId() {
+    function getLastInsertId($sequence) {
         
         $sql = "SELECT LAST_INSERT_ID() AS lastId";
 

@@ -44,7 +44,7 @@ class modelBase {
      */
     function fethLimited($options=array()) {
         
-        $options["additional"][]="LIMIT 0,".$this->config["helpers"]["crud_listMaxLines"];
+        $options["additional"][]="LIMIT {$this->config["helpers"]["crud_listMaxLines"]} OFFSET 0 ";
         return $this->fetch($options);
     
     }
@@ -127,7 +127,7 @@ class modelBase {
         $okOperation=$this->insert($options);
         
         if ($okOperation) {
-            $newPrimaryKey=$this->dataRep->getLastInsertId();
+            $newPrimaryKey=$this->dataRep->getLastInsertId($this->tables."_".$this->primaryKey);
 
             foreach ($this->subModels as $subModelEnry => $subModelConfig) {
 
@@ -784,7 +784,7 @@ class modelBase {
         }        
         
         $sql = "SELECT $fields FROM $tables $whereSql $additionalSql";
-//        echo $this->tables."--><br>".$sql."<hr>";
+        //echo $this->tables."--><br>".$sql."<hr>";
 
         try {
             if (key_exists('set', $options['config'])) {
