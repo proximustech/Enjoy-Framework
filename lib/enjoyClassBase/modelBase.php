@@ -1003,13 +1003,13 @@ class modelBase {
 
             if (substr($dataField, 0, 1) == '_') { //It is a computed field
                 $dataField = substr($dataField, 1);
-                $options["fields"][] = "_$dataField AS relationField";                
+                $options["fields"][] = "_$dataField AS relation_field";
             }
             else {
-                $options["fields"][] = "_{$this->tables}.$dataField AS relationField";                
+                $options["fields"][] = "_{$this->tables}.$dataField AS relation_field";
             }
             
-            $options["fields"][] = "_$keyField AS relationId";
+            $options["fields"][] = "_$keyField AS relation_id";
 
             $options['config']['dataFieldConversion']=false;
             $resultData=$this->fetch($options);

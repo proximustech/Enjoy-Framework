@@ -601,19 +601,19 @@ class crud implements crud_Interface {
                 if ($type=='bool') {
                     
                     if ($this->config["base"]["language"]=='es_es') {
-                        $relationFieldTrue="Si";
-                        $relationFieldFalse="No";
+                        $relation_fieldTrue="Si";
+                        $relation_fieldFalse="No";
                     }
                     
                     
                     $dataSourceArray = array(
                         0 => array(
-                            'relationId'=>'1',
-                            'relationField'=>$relationFieldTrue,
+                            'relation_id'=>'1',
+                            'relation_field'=>$relation_fieldTrue,
                         ),
                         1 => array(
-                            'relationId'=>'0',
-                            'relationField'=>$relationFieldFalse,
+                            'relation_id'=>'0',
+                            'relation_field'=>$relation_fieldFalse,
                         ),
                     );
                 }                  
@@ -634,12 +634,12 @@ class crud implements crud_Interface {
                         foreach ($dataSourceArray as $dataSourceRow) {
 
                             $selected = '';
-//                            if ($value == $dataSourceRow['relationId'] or $value == $dataSourceRow['relationField']) {
-                            if ($value == $dataSourceRow['relationId'] or $cascadeMode) {
+//                            if ($value == $dataSourceRow['relation_id'] or $value == $dataSourceRow['relation_field']) {
+                            if ($value == $dataSourceRow['relation_id'] or $cascadeMode) {
                                 $selected = ' selected ';
                             }
-//                            $html.="<option $selected value='{$dataSourceRow['relationId']}'>{$dataSourceRow['relationField']}</option>";
-                            $selectOptions.="<option $selected value='{$dataSourceRow['relationId']}'>{$dataSourceRow['relationField']}</option>";
+//                            $html.="<option $selected value='{$dataSourceRow['relation_id']}'>{$dataSourceRow['relation_field']}</option>";
+                            $selectOptions.="<option $selected value='{$dataSourceRow['relation_id']}'>{$dataSourceRow['relation_field']}</option>";
                         }    
                     }
                     else{
@@ -783,11 +783,11 @@ class crud implements crud_Interface {
             foreach ($dataSourceArray as $dataSourceRow) {
 
                 $selected = '';
-                if (in_array($dataSourceRow['relationField'],$linkedDataFieldRegisters)) {
+                if (in_array($dataSourceRow['relation_field'],$linkedDataFieldRegisters)) {
                     $selected = ' selected ';
                 }
-                //$html.="<option $selected value='{$dataSourceRow['relationId']}'>{$dataSourceRow['relationField']}</option>";
-                $selectOptions.="<option $selected value='{$dataSourceRow['relationId']}'>{$dataSourceRow['relationField']}</option>";
+                //$html.="<option $selected value='{$dataSourceRow['relation_id']}'>{$dataSourceRow['relation_field']}</option>";
+                $selectOptions.="<option $selected value='{$dataSourceRow['relation_id']}'>{$dataSourceRow['relation_field']}</option>";
             }               
             //$html.="</select></td></tr>";
             $uiArray["selectControl"]["value"]=$selectOptions;

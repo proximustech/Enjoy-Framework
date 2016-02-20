@@ -36,6 +36,10 @@ class helper {
                 $this->configArray["tag"][substr($key,2)]=$value;
             }
             else{
+                if ($key=="name") {
+                    //replacing invalid jquery characters for id
+                    $value=str_replace(".", "_", $value);
+                }
                 $this->configArray["control"][$key]=$value;
             }
         }
@@ -90,7 +94,7 @@ class helper {
     }
     
     /**
-     * Returns the beging part of the control code
+     * Returns the begining part of the control code
      * @return string
      */
     
