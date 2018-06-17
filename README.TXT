@@ -27,4 +27,4 @@ HOW TO USE THE CRUD FUNCTIONALITIES
 ===================
 Visit http://www.enjoyframework.com and watch the videos
 
-More documentation comes soon!!! ( Full instalation, front end lanaguage helper and more )
+More documentation comes soon!!! ( Full installation, front end lanaguage helper and more )
