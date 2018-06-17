@@ -26,3 +26,5 @@ Above, app means application, mod module and act action wich is the method insid
 HOW TO USE THE CRUD FUNCTIONALITIES
 ===================
 Visit http://www.enjoyframework.com and watch the videos
+
+More documentation comes soon!!!
