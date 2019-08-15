@@ -215,7 +215,7 @@ class modelBase {
             $query->execute();
             $okOperation=true;
         } catch (PDOException $exc) {
-            $error= new error($this->config);
+            $error= new errorTool($this->config);
             $errorMessage=$exc->getMessage();
             $errorCode=$exc->errorInfo[1];
             
@@ -514,7 +514,7 @@ class modelBase {
                 $query->execute();
                 $okOperation=true;
             } catch (Exception $exc) {
-                $error= new error($this->config);
+                $error= new errorTool($this->config);
                 $error->log($exc->getMessage());
                 $okOperation=false;
             }            
@@ -543,7 +543,7 @@ class modelBase {
                 $query->execute();
                 $okOperation=true;
             } catch (Exception $exc) {
-                $error= new error($this->config);
+                $error= new errorTool($this->config);
                 
                 $errorMessage=$exc->getMessage();
                 $errorCode=$exc->errorInfo[1];
@@ -586,7 +586,7 @@ class modelBase {
             $query->execute();
             $results = $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $exc) {
-            $error= new error($this->config);
+            $error= new errorTool($this->config);
             $error->show("SQL Error : " . $sql, $exc);
         }
 
@@ -782,7 +782,7 @@ class modelBase {
                 $results = $query->fetchAll(PDO::FETCH_ASSOC);
                 $resultArray["totalRegisters"] = $results[0]["total"];
             } catch (Exception $exc) {
-                $error = new error($this->config);
+                $error = new errorTool($this->config);
                 $error->show("SQL Error : " . $sql, $exc);
             }
 
@@ -807,7 +807,7 @@ class modelBase {
             $query->execute();
             $results = $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $exc) {
-            $error= new error($this->config);
+            $error= new errorTool($this->config);
             $error->show("SQL Error : " . $sql, $exc);
         }
 

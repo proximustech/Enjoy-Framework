@@ -41,4 +41,3 @@ class base_language {
         
     );
 }
-

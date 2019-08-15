@@ -1,6 +1,6 @@
 <?php
 
-class error {
+class errorTool {
 
     var $config;
     

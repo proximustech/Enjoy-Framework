@@ -328,7 +328,7 @@ class table implements table_Interface {
                        
                     }
                     
-                    if ($fkChangePermission or $fkViewPermission or $this->config['permission']['isAdmin'] and $this->model->foreignKeys[$field]['button']) {
+                    if (($fkChangePermission or $fkViewPermission or $this->config['permission']['isAdmin']) and $this->model->foreignKeys[$field]['button']) {
                         
                         if ($this->config["helpers"]['crud_encryptPrimaryKeys']) {
                             $primaryKeyValue = $encryption->encode($resultRow[$this->model->primaryKey], $this->config["appServerConfig"]['encryption']['hashText'] . $_SESSION["userInfo"]['lastLoginStamp']);
