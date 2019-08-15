@@ -43,8 +43,10 @@ class table_roles_applications_modules {
                     "dataSourceArray"=>array(
                         "LVACR"=>"Listar,Ver,Agregar,Cambiar,Remover",
                         "LVAC"=>"Listar,Ver,Agregar,Cambiar",
+                        "LVAR"=>"Listar,Ver,Agregar,Remover",
                         "LVA"=>"Listar,Ver,Agregar",
                         "LVC"=>"Listar,Ver,Cambiar",
+                        "LVR"=>"Listar,Ver,Remover",                        
                         "LV"=>"Listar,Ver",
                         "LA"=>"Listar,Agregar",
                         "LC"=>"Listar,Cambiar",
