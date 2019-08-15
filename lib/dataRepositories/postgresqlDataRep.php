@@ -10,9 +10,9 @@ class dataRep implements dataRep_Interface {
     var $dbname;
     var $username;
     var $password;
-    
+
     //var $uniqueErrorCode="1062";
-    
+
     function __construct() {
         //The extender has to define in the __construct the connection parameters
 
@@ -20,29 +20,21 @@ class dataRep implements dataRep_Interface {
          * Avoid the replacements PHP makes over parameters with points and other special caracters
          * First needed when using postgresql
          */
-        
-        function getRealRequest($sourceArray) {
-
-            $tempArray = array();
-            foreach ($sourceArray as $parameter => $value) {
-                $parameter=str_replace("public_", "public.", $parameter);
-                $tempArray[$parameter] = $value;
-            }
-            return $tempArray;
-        }
-
+        try {
         if (count($_GET)) {
-            $_GET = getRealRequest($_GET);
+            $_GET = dataRepUtilities::getRealRequest($_GET);
         }
         if (count($_POST)) {
-            $_POST=getRealRequest($_POST);
+            $_POST= dataRepUtilities::getRealRequest($_POST);
         }
         if (count($_REQUEST)) {
-            $_REQUEST=getRealRequest($_REQUEST);
+            $_REQUEST= dataRepUtilities::getRealRequest($_REQUEST);
         }
         if (count($_FILES)) {
-            $_FILES=getRealRequest($_FILES);
+            $_FILES= dataRepUtilities::getRealRequest($_FILES);
         }
+        }catch (Exception $e) {}
+
 
     }
 
@@ -50,17 +42,17 @@ class dataRep implements dataRep_Interface {
 
         $this->pdo = new PDO("pgsql:host=" . $this->host .";port=" . $this->port. ";dbname=" . $this->dbname, $this->username, $this->password);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
+
         return $this->pdo;
-        
+
     }
-    
+
     function close() {
         $this->pdo = null;
     }
 
     public function dbExists($dataBase=null) {
-        
+
 //        if ($dataBase == null) $dataBase=$this->dbname;
 //
 //        $sql="SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME='$dataBase'";
@@ -72,19 +64,19 @@ class dataRep implements dataRep_Interface {
 //            return true;
 //        }
 //        else return false;
-        
+
     }
-    
-    
+
+
     function getLastInsertId($sequence) {
 
         //SELECT currval('seq_name')
 
         $sequence=$sequence."_seq";
         return $this->pdo->lastInsertId($sequence);
-        
-    }    
-    
+
+    }
+
     public function getFieldFromErrorMessage($errorCode,$errorMessage) {
 //        $messageArray=explode(" ", $errorMessage);
 //        $field="";
@@ -94,7 +86,7 @@ class dataRep implements dataRep_Interface {
 //        }
 //
 //        return $field;
-        
+
     }
 
     public function __destruct() {
@@ -103,3 +95,18 @@ class dataRep implements dataRep_Interface {
 
 
 }
+
+class dataRepUtilities {
+
+        public static function getRealRequest($sourceArray) {
+
+            $tempArray = array();
+            foreach ($sourceArray as $parameter => $value) {
+                $parameter=str_replace("public_", "public.", $parameter);
+                $tempArray[$parameter] = $value;
+            }
+            return $tempArray;
+        }
+
+}
+

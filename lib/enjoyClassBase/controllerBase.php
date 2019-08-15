@@ -191,6 +191,8 @@ class controllerBase {
     
     function run($act) {
         $this->resultData["useLayout"] = true;
+        $this->resultData["layout"]="layout";
+        
         $this->resultData["view"] = $act; //Default View
         $action=$act."Action";
         $this->$action();    
@@ -317,10 +319,71 @@ class controllerBase {
         
         $fileField=$_REQUEST["fileField"];
         $register = $model->fetchRecord();
-        $fileName=$register[$fileField];
-        $fileLocation=$filesPath.$fileField.$this->ds.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$fileName;
+        
+        $fileFieldData = @unserialize($register[$fileField]);
+
+        $fileCounter=0;
+        if ($fileFieldData !== false) {
+            foreach ($fileFieldData as $fileName) {
+                $fileLocation = $filesPath . $fileField . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_'.$fileCounter.'_' . $fileName;
+                if (isset($_REQUEST["fileIndex"])) {
+                    if ($fileCounter == $_REQUEST["fileIndex"]) {
+                        break;
+                    }
+                }
+                else break; //taking the first one by default
+                
+                $fileCounter++;
+            }
+        } else {
+            $fileName=$register[$fileField];
+            $fileLocation=$filesPath.$fileField.$this->ds.$_REQUEST[$model->tables.'_'.$model->primaryKey].'_'.$fileName;
+        }
+
+        
+        
 
         if (file_exists($fileLocation)) {
+            
+            if (isset($_REQUEST["thumbnailScale"])) {
+                
+                $thumbNailfileLocation = $fileLocation . ".thumbNail";
+                
+//                //Using GD                
+//                $image = imagecreatefromjpeg($fileLocation);
+//                list($width, $height) = getimagesize($fileLocation);
+//                
+//                $newWidth=$width / $_REQUEST["thumbnailScale"];
+//                $newHeight=$height / $_REQUEST["thumbnailScale"];               
+//
+//                $thumbNail = imagecreatetruecolor($newWidth, $newHeight);
+//                imagecopyresampled($thumbNail, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+//                imagejpeg($thumbNail, $fileLocation, 100);
+//                
+//                
+                #Using ImageMagik
+
+                if (!file_exists($thumbNailfileLocation)) {
+                   
+                    list($width, $height) = getimagesize($fileLocation);                
+
+                    $newWidth=$width / $_REQUEST["thumbnailScale"];
+                    $newHeight=$height / $_REQUEST["thumbnailScale"];                
+
+                    $image = new \Imagick(realpath($fileLocation));
+                    $image->scaleImage($newWidth, $newHeight, true);
+                    $image->writeimage("jpg:".$thumbNailfileLocation);
+                    //header("Content-Type: image/jpg");
+                    //echo $image->getImageBlob();
+                    //exit();
+                    
+                    $fileLocation = $thumbNailfileLocation;
+                            
+                }
+                $fileLocation = $thumbNailfileLocation;
+
+            }
+            
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
             header('Content-Disposition: attachment; filename=' . $fileName);
@@ -362,20 +425,46 @@ class controllerBase {
     function crudFieldFileControl($model) {
         
         list($filesPath,$fileFields)=$this->crudGetFileFields($model);
-        
+            
         if (count($fileFields)) {
             $register = $model->fetchRecord();
             foreach ($fileFields as $fileField) {
-
+                        
+                $_REQUEST[$model->tables . '_' . $fileField] = $_FILES[$model->tables . '_' . $fileField]['name'];
+                    
                 //If no new file attached, mantein the previous one
-                if ($_FILES[$model->tables . '_' . $fileField]['name'] == "" ) {
+                if ($_REQUEST[$model->tables . '_' . $fileField][0]=="") {
                     $_REQUEST[$model->tables . '_' . $fileField] = $register[$fileField];
-                } else { //Save the attached file
-                    if ($register[$fileField] != "") {//Erase the old file
-                        $fileLocation = $filesPath .$fileField. $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_' . $register[$fileField];
-                        unlink($fileLocation);  
+                }
+                else{//Erase old ones and save the attached file
+                    $_REQUEST[$model->tables . '_' . $fileField] =  serialize($_REQUEST[$model->tables . '_' . $fileField]);
+                    $valueArray = unserialize($register[$fileField]);
+                    $fileCounter=0;
+                    foreach ($valueArray as $nameInArray) {
+
+                        $fileLocation = $filesPath. $fileField . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] .'_' .$fileCounter. '_' . $nameInArray;
+                        unlink($fileLocation);
+                        if (file_exists($fileLocation.".thumbNail")) {
+                            unlink($fileLocation.".thumbNail");
+                        }
+
+                        $fileCounter++;
+
                     }
-                    $_REQUEST[$model->tables . '_' . $fileField] = $_FILES[$model->tables . '_' . $fileField]['name'];
+
+                    $multipleFileCounter=0;
+                    foreach ($_FILES[$model->tables . '_' . $fileField]['name'] as $not => $used) {
+                        if ($_FILES[$model->tables . '_' . $fileField]['name'][$multipleFileCounter] != "") {
+
+                            if (!file_exists($filesPath . $this->ds . $fileField)) {
+                                mkdir($filesPath . $this->ds . $fileField, 0770, TRUE);
+                            }
+                            $newFileLocation = $filesPath . $this->ds . $fileField . $this->ds . $register[$this->baseModel->primaryKey] . '_' . $multipleFileCounter . '_' . $_FILES[$model->tables . '_' . $fileField]['name'][$multipleFileCounter];
+                            move_uploaded_file($_FILES[$model->tables . '_' . $fileField]['tmp_name'][$multipleFileCounter], $newFileLocation);
+                        }
+                        
+                        $multipleFileCounter++;
+                    }
                 }
             }
         }
@@ -387,17 +476,24 @@ class controllerBase {
         list($filesPath,$fileFields)=$this->crudGetFileFields($model);
         
         if (count($fileFields)) {
-         
+ 
             foreach ($fileFields as $fileField) {
-                
-                if ($_REQUEST[$model->tables . '_' . $fileField]!="" and $_FILES[$model->tables . '_' . $fileField]['name'] !="") {
-                    if (!file_exists($filesPath.$this->ds.$fileField)) {                
-                        mkdir($filesPath.$this->ds.$fileField, 0770, TRUE);
+                $multipleFileCounter=0;
+                foreach ($_REQUEST[$model->tables . '_' . $fileField] as $fileName) {
+                    
+                    if ($_FILES[$model->tables . '_' . $fileField]['name'][$multipleFileCounter] !="") {
+                                        
+                        if (!file_exists($filesPath . $this->ds . $fileField)) {
+                            mkdir($filesPath . $this->ds . $fileField, 0770, TRUE);
+                        }
+                        $newFileLocation = $filesPath . $this->ds . $fileField . $this->ds . $registerId . '_' .$multipleFileCounter .'_' .$_FILES[$model->tables . '_' . $fileField]['name'][$multipleFileCounter];
+                        move_uploaded_file($_FILES[$model->tables . '_' . $fileField]['tmp_name'][$multipleFileCounter], $newFileLocation);
                     }
-                    $newFileLocation = $filesPath. $this->ds.$fileField . $this->ds . $registerId . '_' . $_FILES[$model->tables . '_' . $fileField]['name'];
-                    move_uploaded_file($_FILES[$model->tables . '_' . $fileField]['tmp_name'], $newFileLocation);
+                    $multipleFileCounter++;
                 }
+                
             }
+            
         }
     }
     
@@ -438,6 +534,9 @@ class controllerBase {
                         if ($_FILES[$fkModel->tables . '_' . $fileField]['name'] != "" and $register[$fileField] != "") {
                             $fileLocation = $fkFilesPath . $this->ds . $_REQUEST[$fkModel->tables . '_' . $fkModel->primaryKey] . '_' . $register[$fileField];
                             unlink($fileLocation);
+                            if (file_exists($fileLocation.".thumbNail")) {
+                                unlink($fileLocation.".thumbNail");
+                            }                            
                             $_REQUEST[$fkModel->tables . '_' . $fileField] = $_FILES[$fkModel->tables . '_' . $fileField]['name'];
                         } elseif ($register[$fileField] != "") {
                             $_REQUEST[$fkModel->tables . '_' . $fileField] = $register[$fileField];
@@ -472,7 +571,7 @@ class controllerBase {
         }
 
         if (count($fileFields)) {
-            $registerId = $this->baseModel->dataRep->getLastInsertId();
+            $registerId = $this->baseModel->dataRep->getLastInsertId($this->baseModel->tables."_".$this->baseModel->primaryKey);
             $this->crudFieldFileCreation($this->baseModel,$registerId);
         }
         
@@ -486,8 +585,21 @@ class controllerBase {
         if (count($fileFields)) {
             $register = $model->fetchRecord();
             foreach ($fileFields as $fileField) {
-                $fileLocation = $filesPath. $fileField . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] . '_' . $register[$fileField];
-                unlink($fileLocation);
+                
+                $valueArray = unserialize($register[$fileField]);
+                $fileCounter=0;
+                foreach ($valueArray as $nameInArray) {
+                                        
+                    $fileLocation = $filesPath. $fileField . $this->ds . $_REQUEST[$model->tables . '_' . $model->primaryKey] .'_' .$fileCounter. '_' . $nameInArray;
+                    unlink($fileLocation);
+                    if (file_exists($fileLocation.".thumbNail")) {
+                        unlink($fileLocation.".thumbNail");
+                    }
+                    
+                    $fileCounter++;
+                    
+                }
+
             }
         }
         $okOperation = $model->deleteRecord();

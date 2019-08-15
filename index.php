@@ -236,7 +236,12 @@ $modController->run($act);
  */
 
 
-$layoutFile="applications/$app/layout.php";
+if (isset($modController->resultData["layoutFile"])) {
+    $layoutFile=$modController->resultData["layoutFile"];
+}
+else{
+    $layoutFile="applications/$app/".$modController->resultData["layout"].".php";  
+}
 
 if (isset($modController->resultData["viewFile"])) {
     $viewFile=$modController->resultData["viewFile"];
@@ -277,5 +282,3 @@ elseif (file_exists($viewFile)) {
 
 //$error = new error($config);
 //$error->show("Debug Requested");
-
-?>

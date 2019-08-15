@@ -249,7 +249,7 @@ class fileControl extends helper {
             <label class='$labelClass'>{$this->configArray["control"]['caption']}</label>
             </td>
             <td>
-            <input type='file' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}' {$this->tagProperties}>
+            <input type='file' id='{$this->configArray["control"]['name']}' name='{$this->configArray["control"]['name']}[]' {$this->tagProperties} multiple='multiple'>
             </td></tr></table>
         ";
         

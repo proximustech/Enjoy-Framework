@@ -74,13 +74,22 @@ class modelBase {
                     if ($addField) {
                         $register[$field]=$_REQUEST[$this->tables.'_'.$field];
                         $options["fields"][]=$field;
-                            $options["values"][0][]="'".$_REQUEST[$this->tables.'_'.$field]."'";
-                            
+                        if (is_array($_REQUEST[$this->tables.'_'.$field])) {
+                            $options["values"][0][]="'".serialize($_REQUEST[$this->tables.'_'.$field])."'";
                         }
-                        
+                        else {
+
+                            if ($this->dataRep->utf8) {
+                                $options["values"][0][]="'".utf8_encode($_REQUEST[$this->tables.'_'.$field])."'";
+                            }
+                            else $options["values"][0][]="'".$_REQUEST[$this->tables.'_'.$field]."'";
+                        }
+
                     }
+                        
                 }
             }
+        }
         
         $validationResult=$validator->validateFields($register);
         
@@ -341,7 +350,10 @@ class modelBase {
 
                     if ($addField) {                    
                         $register[$field] = $value;
-                        $options["set"][] = "$field='$value'";
+                        if ($this->dataRep->utf8) {
+                            $options["set"][] = "$field='".utf8_encode($value)."'";
+                        }
+                        else $options["set"][] = "$field='$value'";
                     }
                     
                 }
@@ -888,11 +900,21 @@ class modelBase {
             $fieldsSql = "";
         }
         if (key_exists("values", $options)) {
+
+            $rowCounter=1;
             foreach ($options["values"] as $valuesRow) {
-                $valuesSql = "(";
-                $valuesSql.= implode(",", $valuesRow);
-                $valuesSql.=")";
+                
+                if ($rowCounter > 1) {
+                    $valuesSql.=",";
+                }
+                
+                $valuesSql .= "(";
+                $valuesSql .= implode(",", $valuesRow);
+                $valuesSql .=")";
+                
+                $rowCounter ++;
             }
+
         } else {
             $valuesSql = "";
         }

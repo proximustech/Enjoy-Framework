@@ -355,7 +355,12 @@ class table implements table_Interface {
                     $styleCode="";
                     $downloadCode="";
                     if ($this->fieldsConfig[$field]["definition"]["type"]=='file' and $resultValue!='') {
-
+                        $resultValueArray=  unserialize($resultValue);
+                        $resultValue="";
+                        foreach ($resultValueArray as $nameInArray) {
+                            $resultValue.="<br/>".$nameInArray;
+                        }
+                        
                         $parameters[]="fileField=$field";
                         $parameters[]="crud=downloadFile";
                         
@@ -365,7 +370,7 @@ class table implements table_Interface {
                         else{
                             $parameters[] = "{$this->model->tables}_{$this->model->primaryKey}=" . $resultRow[$this->model->primaryKey];
                         }
-                        $downloadCode= $navigator->action($this->config['flow']['act'], "glyphicon-download", $parameters);                
+                        //$downloadCode= $navigator->action($this->config['flow']['act'], "glyphicon-download", $parameters);                
                     }
                     
                     if ($this->fieldsConfig[$field]["definition"]["type"]=="number" and !key_exists('dataSourceArray', $this->fieldsConfig[$field]["definition"]) and !key_exists($field, $this->model->foreignKeys)) {
@@ -377,7 +382,12 @@ class table implements table_Interface {
                             }
                         }
                         $resultValue=$resultValueTemp;
-                    }                    
+                    }
+                    elseif( !key_exists('dataSourceArray', $this->fieldsConfig[$field]["definition"]) and !key_exists($field, $this->model->foreignKeys)){
+                        if ($this->model->dataRep->utf8) {
+                            $resultValue=utf8_decode($resultValue);
+                        }
+                    }
                     
                     
                     $html.="<td $styleCode>$downloadCode " . $resultValue . "</td>";
@@ -447,7 +457,8 @@ class crud implements crud_Interface {
         $register=$security->filter($register);
         $navigator = new navigator($this->config);
 
-        $moduleName=$this->model->tables;        
+        $moduleNameArray=explode(".",$this->model->tables);
+	$moduleName=$moduleNameArray[count($moduleNameArray)-1];
         //Makes a detailed verification of the permissions becouse some times the $this->config['permission'] refers to a different module
         if (key_exists($moduleName, $_SESSION['userInfo']['privileges'][$this->config['flow']['app']])) {
             $modulePermissions=$_SESSION['userInfo']['privileges'][$this->config['flow']['app']][$moduleName];
@@ -677,7 +688,12 @@ class crud implements crud_Interface {
                     }                                        
                     elseif ($type=='file') {
                         //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<input type='file' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</td></tr>";
-                        $uiArray["fileControl"]["value"]=$value;
+                        $resultValueArray=unserialize($value);
+                        $value="";
+                        foreach ($resultValueArray as $nameInArray) {
+                            $value.="<br/>".$nameInArray;
+                        }
+                        $uiArray["fileControl"]["value"]=$resultValue;
                         $fileFieldCode=$uig->getCode('{"fileControl":{"name":"'."{$this->model->tables}_$field".'","caption":"'.$label.':"'.$aditionalEuiOptions.'}}',$uiArray);
 
                         if ($editing and $value!="") {
@@ -687,7 +703,7 @@ class crud implements crud_Interface {
                             $parameters[]="crud=downloadFile";
                             $parameters[] = "{$this->model->tables}_{$this->model->primaryKey}=".$primaryKeyValue;
                             
-                            $downloadCode= $navigator->action($this->config['flow']['act'], "glyphicon-download", $parameters);                          
+                            //$downloadCode= $navigator->action($this->config['flow']['act'], "glyphicon-download", $parameters);                          
                             
                             $html.="$value<table><tr><td>".$fileFieldCode."</td><td>".$downloadCode."</td></tr></table>";
                         }
@@ -696,6 +712,10 @@ class crud implements crud_Interface {
                         }
                     }                                        
                     elseif ($type=='string' or $type=="number") {
+
+                        if ($this->model->dataRep->utf8) {
+                            $value=utf8_decode($value);
+                        }
                         if ( $widget=='textarea') {
     
                             //$html.="<tr><td>$label :&nbsp;</td><td>&nbsp;<textarea rows='20' id='{$this->model->tables}_$field' name='{$this->model->tables}_$field' >$value</textarea></td></tr>";
@@ -795,7 +815,7 @@ class crud implements crud_Interface {
         }
         
         $submitButton="";
-        if ($changePermission and $editing or ( $addPermission and !$editing ) or $this->config['permission']['isAdmin'] ) {
+        if (($changePermission and $editing) or ( $addPermission and !$editing ) or $this->config['permission']['isAdmin'] ) {
 
             /*
              var $myForm = $('#myForm')
