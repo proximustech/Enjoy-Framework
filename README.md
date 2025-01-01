@@ -1,7 +1,8 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 # Enjoy Framework
+Now this project is ARCHIVED. This framework was the basis for many web apps in the past, giving excelent results in very short time. The most valuable features of the Enjoy Framework will be included in the Liberty Platform project.
 
-Plain PHP 5,7 MVC Framework
+Plain PHP 5,7 MVC Framework. 
 
 
 ## Main Features
